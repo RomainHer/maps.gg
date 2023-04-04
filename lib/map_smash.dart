@@ -2,11 +2,70 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:graphql/client.dart';
+import 'package:maps_gg/maker_layer_tournament.dart';
 
-/// Determine the current position of the device.
-///
-/// When the location services are not enabled or permissions
-/// are denied the `Future` will return an error.
+Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
+  final httpLink = HttpLink(
+    'https://api.start.gg/gql/alpha',
+  );
+  final authLink = AuthLink(
+    getToken: () async => 'Bearer 7896090b713048a15a1df5eacdc2d260',
+  );
+  Link link = authLink.concat(httpLink);
+  final GraphQLClient client = GraphQLClient(
+    cache: GraphQLCache(),
+    link: link,
+  );
+  const String readTournamentsAroud = r'''
+    query SocalTournaments($perPage: Int, $coordinates: String!, $radius: String!) {
+      tournaments(query: {
+        perPage: $perPage
+        filter: {
+          location: {
+            distanceFrom: $coordinates,
+            distance: $radius
+          }
+        }
+      }) {
+        nodes {
+          id
+          name
+          city
+          lat
+          lng
+        }
+      }
+    }
+  ''';
+
+  const int perPage = 10;
+  String coordinates = "$latitude,$longitude";
+  const String radius = "50mi";
+
+  final QueryOptions options = QueryOptions(
+    document: gql(readTournamentsAroud),
+    variables: <String, dynamic>{
+      'perPage': perPage,
+      'coordinates': coordinates,
+      'radius': radius
+    },
+  );
+  final QueryResult result = await client.query(options);
+
+  List<dynamic> coordinatesTournaments = [];
+  if (result.hasException) {
+    debugPrint(result.exception.toString());
+  } else {
+    for (var element in result.data!['tournaments']['nodes']) {
+      coordinatesTournaments
+          .add({'lat': element['lat'], 'lng': element['lng']});
+    }
+  }
+  debugPrint(coordinatesTournaments.toString());
+  return coordinatesTournaments;
+}
+
 Future<Position> _determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;
@@ -45,6 +104,9 @@ Future<Position> _determinePosition() async {
 }
 
 class MapSmash extends StatelessWidget {
+  final latitude = 48.729024;
+  final longitude = -3.463714;
+
   const MapSmash({super.key});
 
   @override
@@ -54,10 +116,38 @@ class MapSmash extends StatelessWidget {
         title: const Text("Maps.gg"),
       ),
       body: FutureBuilder(
-          future: _determinePosition(),
+          future: _requestApi(latitude, longitude),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              return Text(snapshot.data as String);
+              /*_requestApi(snapshot.data!.latitude, snapshot.data!.longitude);*/
+
+              return FlutterMap(
+                options: MapOptions(
+                  center: LatLng(latitude, longitude), // Coordonnées de Paris
+                  zoom: 13.0,
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    subdomains: const ['a', 'b', 'c'],
+                  ),
+                  MarkerLayerTournaments(coordonates: snapshot.data),
+                  MarkerLayer(
+                    markers: [
+                      Marker(
+                        width: 80.0,
+                        height: 80.0,
+                        point: LatLng(latitude, longitude),
+                        builder: (ctx) => const Icon(
+                          Icons.location_pin,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              );
             } else {
               return const CircularProgressIndicator();
             }
