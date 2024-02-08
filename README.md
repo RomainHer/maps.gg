@@ -1,16 +1,13 @@
 # maps_gg
 
-A new Flutter project.
+A flutter app that show you the location of nearest smash tournament around you.
 
-## Getting Started
+## Installation
 
-This project is a starting point for a Flutter application.
+1. Clone the repository
+2. Run `flutter pub get` to install the dependencies
+3. Run `flutter doctor` to check if you have all the necessary tools
+4. Run `flutter devices` or `flutter emulators` to check if you have any devices or emulators available
+5. Run `flutter run` to start the app
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+> **_NOTE:_** : if the "Running Gradle task 'assembleDebug'..." takes too long, you can try to run `flutter clean` and then `flutter run` again. Or go to the android folder and run `./gradlew clean` and then `flutter run` again.

@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:graphql/client.dart';
-import 'package:maps_gg/maker_layer_tournament.dart';
+import 'package:maps_gg/marker_layer_tournament.dart';
+import 'package:maps_gg/tournament_info.dart';
 
 Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
   final httpLink = HttpLink(
@@ -18,52 +22,129 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
     link: link,
   );
   const String readTournamentsAroud = r'''
-    query SocalTournaments($perPage: Int, $coordinates: String!, $radius: String!) {
+    query SocalTournaments($perPage: Int, $coordinates: String!, $radius: String!, $timestampNow: Timestamp) {
       tournaments(query: {
         perPage: $perPage
         filter: {
           location: {
             distanceFrom: $coordinates,
             distance: $radius
-          }
+          },
+          afterDate: $timestampNow
         }
       }) {
         nodes {
           id
           name
-          city
+          images {
+            type
+            url
+            ratio
+          }
           lat
           lng
+          numAttendees
+          startAt
+          registrationClosesAt
+          events(limit: 10) {
+            name
+            competitionTier
+            numEntrants
+            videogame {
+              images (type: "primary") {
+                url
+                ratio
+              }
+            }
+          }
+          venueAddress
+          url(relative: false)
+          links {
+            facebook
+            discord
+          }
+          primaryContact
+          primaryContactType
+          rules
         }
       }
     }
   ''';
 
-  const int perPage = 10;
+  const int perPage = 500;
   String coordinates = "$latitude,$longitude";
-  const String radius = "50mi";
+  const String radius = "100mi";
+  //const int timestampNowtest = 1680699455;
+
+  DateTime datetimeNow = DateTime.now();
+  double tmp = datetimeNow.millisecondsSinceEpoch / 1000;
+  int timestampNow = tmp.round();
+
+  /*debugPrint(timestampNow.toString());
+  DateTime dateTmp = DateTime.fromMillisecondsSinceEpoch(timestampNow * 1000);
+  String formattedDateTmp = DateFormat('dd/MM/yyyy H:mm:ss').format(dateTmp);
+  debugPrint(formattedDateTmp);*/
 
   final QueryOptions options = QueryOptions(
     document: gql(readTournamentsAroud),
     variables: <String, dynamic>{
       'perPage': perPage,
       'coordinates': coordinates,
-      'radius': radius
+      'radius': radius,
+      'timestampNow': timestampNow
     },
   );
   final QueryResult result = await client.query(options);
 
-  List<dynamic> coordinatesTournaments = [];
+  List<dynamic> dataTournaments = [];
   if (result.hasException) {
     debugPrint(result.exception.toString());
   } else {
-    for (var element in result.data!['tournaments']['nodes']) {
-      coordinatesTournaments
-          .add({'lat': element['lat'], 'lng': element['lng']});
+    for (var tournament in result.data!['tournaments']['nodes']) {
+      var tournamentDetail = {
+        'id': tournament['id'],
+        'name': tournament['name'],
+        'lat': tournament['lat'],
+        'lng': tournament['lng'],
+        'date': tournament['startAt'],
+        'registrationEnd': tournament['registrationClosesAt'],
+        'numAttendees': tournament['numAttendees'],
+        'venueAddress': tournament['venueAddress'],
+        'url': tournament['url'],
+        'facebook': tournament['links']['facebook'],
+        'discord': tournament['links']['discord'],
+        'contact': {
+          'link': tournament['primaryContact'],
+          'type': tournament['primaryContactType'],
+        },
+        'rules': tournament['rules']
+      };
+
+      for (var image in tournament['images']) {
+        if (image['type'] == 'profile') {
+          tournamentDetail['profileImage'] = {
+            'url': image['url'],
+            'ratio': image['ratio']
+          };
+        }
+      }
+
+      var eventsData = [];
+      for (var event in tournament['events']) {
+        eventsData.add({
+          'name': event['name'],
+          'image': event['videogame']['images'][0]['url'],
+          'competitionTier': event['competitionTier'],
+          'numEntrants': event['numEntrants'],
+        });
+      }
+      tournamentDetail['events'] = eventsData;
+
+      dataTournaments.add(tournamentDetail);
     }
   }
-  debugPrint(coordinatesTournaments.toString());
-  return coordinatesTournaments;
+  //debugPrint(coordinatesTournaments.toString());
+  return dataTournaments;
 }
 
 Future<Position> _determinePosition() async {
@@ -103,11 +184,17 @@ Future<Position> _determinePosition() async {
   return await Geolocator.getCurrentPosition();
 }
 
-class MapSmash extends StatelessWidget {
+class MapSmash extends StatefulWidget {
   final latitude = 48.729024;
   final longitude = -3.463714;
-
   const MapSmash({super.key});
+
+  @override
+  State<MapSmash> createState() => _MapSmashState();
+}
+
+class _MapSmashState extends State<MapSmash> {
+  final tournamentInfoWidgetKey = GlobalKey<TournamentInfoState>();
 
   @override
   Widget build(BuildContext context) {
@@ -115,68 +202,65 @@ class MapSmash extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Maps.gg"),
       ),
-      body: FutureBuilder(
-          future: _requestApi(latitude, longitude),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              /*_requestApi(snapshot.data!.latitude, snapshot.data!.longitude);*/
-
-              return FlutterMap(
-                options: MapOptions(
-                  center: LatLng(latitude, longitude), // Coordonnées de Paris
-                  zoom: 13.0,
-                ),
-                children: [
-                  TileLayer(
-                    urlTemplate:
-                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    subdomains: const ['a', 'b', 'c'],
-                  ),
-                  MarkerLayerTournaments(coordonates: snapshot.data),
-                  MarkerLayer(
-                    markers: [
-                      Marker(
-                        width: 80.0,
-                        height: 80.0,
-                        point: LatLng(latitude, longitude),
-                        builder: (ctx) => const Icon(
-                          Icons.location_pin,
-                          color: Colors.blue,
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              );
-            } else {
-              return const CircularProgressIndicator();
-            }
-          }),
-      /*FlutterMap(
-        options: MapOptions(
-          center: LatLng(48.8566, 2.3522), // Coordonnées de Paris
-          zoom: 13.0,
-        ),
+      body: Stack(
         children: [
-          TileLayer(
-            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: const ['a', 'b', 'c'],
+          FutureBuilder(
+            future: _determinePosition(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return FutureBuilder(
+                    future: _requestApi(
+                        snapshot.data!.latitude, snapshot.data!.longitude),
+                    builder: (context, snapshot2) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        /*_requestApi(snapshot.data!.latitude, snapshot.data!.longitude);*/
+
+                        return FlutterMap(
+                          options: MapOptions(
+                            center: LatLng(
+                                snapshot.data!.latitude,
+                                snapshot
+                                    .data!.longitude), // Coordonnées de Paris
+                            zoom: 8.0,
+                          ),
+                          children: [
+                            TileLayer(
+                              urlTemplate:
+                                  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                              subdomains: const ['a', 'b', 'c'],
+                            ),
+                            MarkerLayerTournaments(
+                              tournamentsData: snapshot2.data,
+                              showInfoWidget: tournamentInfoWidgetKey,
+                            ),
+                            MarkerLayer(
+                              markers: [
+                                Marker(
+                                  width: 80.0,
+                                  height: 80.0,
+                                  point: LatLng(snapshot.data!.latitude,
+                                      snapshot.data!.longitude),
+                                  builder: (ctx) => const Icon(
+                                    Icons.location_pin,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        );
+                      } else {
+                        return const CircularProgressIndicator();
+                      }
+                    });
+              } else {
+                return const CircularProgressIndicator();
+              }
+            },
           ),
-          MarkerLayer(
-            markers: [
-              Marker(
-                width: 80.0,
-                height: 80.0,
-                point: LatLng(48.8566, 2.3522), // Coordonnées de Paris
-                builder: (ctx) => const Icon(
-                  Icons.location_pin,
-                  color: Colors.red,
-                ),
-              ),
-            ],
-          ),
+          TournamentInfo(key: tournamentInfoWidgetKey),
         ],
-      ),*/
+      ),
     );
   }
 }
