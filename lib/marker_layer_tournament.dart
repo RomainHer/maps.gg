@@ -23,7 +23,7 @@ class MarkerLayerTournaments extends StatelessWidget {
             width: 140.0,
             height: 140.0,
             point: LatLng(tournament['lat'], tournament['lng']),
-            builder: (ctx) => MarkerContentTournament(
+            child: MarkerContentTournament(
               tournamentId: tournament['id'],
               tournamentName: tournament['name'],
               tournamentDate: tournament['date'],

@@ -1,8 +1,5 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:graphql/client.dart';
@@ -14,7 +11,7 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
     'https://api.start.gg/gql/alpha',
   );
   final authLink = AuthLink(
-    getToken: () async => 'Bearer 7896090b713048a15a1df5eacdc2d260',
+    getToken: () async => 'Bearer d5d8a776d10a680ffa26d2893243b31a',//auther token 7896090b713048a15a1df5eacdc2d260
   );
   Link link = authLink.concat(httpLink);
   final GraphQLClient client = GraphQLClient(
@@ -73,7 +70,7 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
 
   const int perPage = 500;
   String coordinates = "$latitude,$longitude";
-  const String radius = "100mi";
+  const String radius = "200mi";
   //const int timestampNowtest = 1680699455;
 
   DateTime datetimeNow = DateTime.now();
@@ -217,11 +214,11 @@ class _MapSmashState extends State<MapSmash> {
 
                         return FlutterMap(
                           options: MapOptions(
-                            center: LatLng(
+                            initialCenter: LatLng(
                                 snapshot.data!.latitude,
                                 snapshot
                                     .data!.longitude), // Coordonnées de Paris
-                            zoom: 8.0,
+                            initialZoom: 8.0,
                           ),
                           children: [
                             TileLayer(
@@ -240,7 +237,7 @@ class _MapSmashState extends State<MapSmash> {
                                   height: 80.0,
                                   point: LatLng(snapshot.data!.latitude,
                                       snapshot.data!.longitude),
-                                  builder: (ctx) => const Icon(
+                                  child: const Icon(
                                     Icons.location_pin,
                                     color: Colors.blue,
                                   ),

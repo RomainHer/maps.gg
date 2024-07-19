@@ -63,8 +63,16 @@ class TournamentInfoState extends State<TournamentInfo> {
           child: Container(
             padding: const EdgeInsets.all(8),
             color: Colors.white,
-            child: Column(
+            child: Column(   
               children: [
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () { 
+                    setState(() {
+                      showTournamentInfo = false;
+                    });
+                  },
+                ),
                 Text(tournamentName),
                 Text(capitalizeFirstLetterOfEachWord(dateFormat.format(
                     DateTime.fromMillisecondsSinceEpoch(

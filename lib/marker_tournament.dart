@@ -50,7 +50,7 @@ class _MarkerContentTournamentState extends State<MarkerContentTournament> {
                       child: Text(
                         widget.tournamentName,
                         overflow: TextOverflow.ellipsis,
-                        textScaleFactor: textFactor,
+                        textScaler: TextScaler.linear(textFactor),
                         style: const TextStyle(
                           color: Colors.white,
                         ),
