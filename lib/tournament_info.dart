@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
 String capitalizeFirstLetterOfEachWord(String input) {
@@ -17,72 +16,27 @@ String capitalizeFirstLetterOfEachWord(String input) {
   return result;
 }
 
-class TournamentInfo extends StatefulWidget {
-  const TournamentInfo({super.key});
+class TournamentInfo extends StatelessWidget {
+  const TournamentInfo({super.key, required this.tournamentName, required this.tournamentDate, required this.tournamentUrlImage});
 
-  @override
-  State<TournamentInfo> createState() => TournamentInfoState();
-}
-
-class TournamentInfoState extends State<TournamentInfo> {
-  String tournamentName = "";
-  int tournamentDate = 0;
-  String tournamentUrlImage = "";
-  bool showTournamentInfo = false;
-
-  late DateFormat dateFormat;
-
-  showHideTournamentInfo(
-      String tournamentName, int tournamentDate, String tournamentUrlImage) {
-    setState(() {
-      if (this.tournamentName != tournamentName) {
-        this.tournamentName = tournamentName;
-        this.tournamentDate = tournamentDate;
-        this.tournamentUrlImage = tournamentUrlImage;
-        showTournamentInfo = true;
-      } else {
-        showTournamentInfo = !showTournamentInfo;
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    initializeDateFormatting();
-    dateFormat = DateFormat.yMMMMEEEEd('fr');
-  }
+  final String tournamentName;
+  final int tournamentDate;
+  final String tournamentUrlImage;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(child: Container()),
-        Visibility(
-          visible: showTournamentInfo,
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            color: Colors.white,
-            child: Column(   
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () { 
-                    setState(() {
-                      showTournamentInfo = false;
-                    });
-                  },
-                ),
-                Text(tournamentName),
-                Text(capitalizeFirstLetterOfEachWord(dateFormat.format(
-                    DateTime.fromMillisecondsSinceEpoch(
-                        tournamentDate * 1000)))),
-                Image.network(tournamentUrlImage, width: 30, height: 30),
-              ],
-            ),
-          ),
+    return SizedBox(
+      height: 200,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Text(tournamentName),
+            Text(capitalizeFirstLetterOfEachWord(DateFormat.yMMMMEEEEd('fr').format(DateTime.fromMillisecondsSinceEpoch(tournamentDate * 1000)))),
+            Image.network(tournamentUrlImage, width: 30, height: 30),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

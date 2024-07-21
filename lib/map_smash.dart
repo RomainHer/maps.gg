@@ -4,7 +4,6 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:graphql/client.dart';
 import 'package:maps_gg/marker_layer_tournament.dart';
-import 'package:maps_gg/tournament_info.dart';
 
 Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
   final httpLink = HttpLink(
@@ -191,7 +190,6 @@ class MapSmash extends StatefulWidget {
 }
 
 class _MapSmashState extends State<MapSmash> {
-  final tournamentInfoWidgetKey = GlobalKey<TournamentInfoState>();
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +226,6 @@ class _MapSmashState extends State<MapSmash> {
                             ),
                             MarkerLayerTournaments(
                               tournamentsData: snapshot2.data,
-                              showInfoWidget: tournamentInfoWidgetKey,
                             ),
                             MarkerLayer(
                               markers: [
@@ -255,7 +252,6 @@ class _MapSmashState extends State<MapSmash> {
               }
             },
           ),
-          TournamentInfo(key: tournamentInfoWidgetKey),
         ],
       ),
     );

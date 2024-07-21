@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'map_smash.dart';
 
 void main() {
-  runApp(const MapGGApp());
+  initializeDateFormatting("fr", null).then((_) => runApp(const MapGGApp()));
 }
 
 class MapGGApp extends StatelessWidget {

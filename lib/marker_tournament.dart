@@ -6,7 +6,6 @@ class MarkerContentTournament extends StatefulWidget {
   final String tournamentName;
   final int tournamentDate;
   final String tournamentUrlImage;
-  final GlobalKey<TournamentInfoState> showInfoWidget;
 
   const MarkerContentTournament({
     super.key,
@@ -14,7 +13,6 @@ class MarkerContentTournament extends StatefulWidget {
     required this.tournamentName,
     required this.tournamentDate,
     required this.tournamentUrlImage,
-    required this.showInfoWidget,
   });
 
   @override
@@ -33,10 +31,17 @@ class _MarkerContentTournamentState extends State<MarkerContentTournament> {
             Expanded(
               child: InkWell(
                 onTap: () => {
-                  widget.showInfoWidget.currentState?.showHideTournamentInfo(
-                      widget.tournamentName,
-                      widget.tournamentDate,
-                      widget.tournamentUrlImage)
+                  showModalBottomSheet<void>(
+                    context: context,
+                    showDragHandle: true,
+                    builder: (BuildContext context) {
+                      return TournamentInfo(
+                        tournamentName: widget.tournamentName, 
+                        tournamentDate: widget.tournamentDate, 
+                        tournamentUrlImage: widget.tournamentUrlImage
+                      );
+                    },
+                  )
                 },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
