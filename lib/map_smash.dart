@@ -4,6 +4,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:graphql/client.dart';
 import 'package:maps_gg/marker_layer_tournament.dart';
+import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
+
 
 Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
   final httpLink = HttpLink(
@@ -217,11 +219,13 @@ class _MapSmashState extends State<MapSmash> {
                                 snapshot
                                     .data!.longitude), // Coordonnées de Paris
                             initialZoom: 8.0,
+                            interactionOptions: const InteractionOptions(flags: InteractiveFlag.all & ~InteractiveFlag.rotate)
                           ),
                           children: [
                             TileLayer(
+                              tileProvider: CancellableNetworkTileProvider(),
                               urlTemplate:
-                                  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                  "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                               subdomains: const ['a', 'b', 'c'],
                             ),
                             MarkerLayerTournaments(

@@ -1,8 +1,8 @@
-#  maps_gg
+# maps_gg
 
 A flutter app that show you the location of nearest smash tournament around you.
 
-##  Installation
+## Installation
 
 1. Clone the repository
 2. Run `flutter pub get` to install the dependencies
