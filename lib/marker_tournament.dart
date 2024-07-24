@@ -6,6 +6,10 @@ class MarkerContentTournament extends StatefulWidget {
   final String tournamentName;
   final int tournamentDate;
   final String tournamentUrlImage;
+  final List<dynamic> tournamentEvents;
+  final String tournamentVenueAddress;
+  final String tournamentUrl;
+  final int tournamentNumAttendees;
 
   const MarkerContentTournament({
     super.key,
@@ -13,6 +17,10 @@ class MarkerContentTournament extends StatefulWidget {
     required this.tournamentName,
     required this.tournamentDate,
     required this.tournamentUrlImage,
+    required this.tournamentEvents,
+    required this.tournamentVenueAddress,
+    required this.tournamentUrl,
+    required this.tournamentNumAttendees,
   });
 
   @override
@@ -38,7 +46,11 @@ class _MarkerContentTournamentState extends State<MarkerContentTournament> {
                       return TournamentInfo(
                         tournamentName: widget.tournamentName, 
                         tournamentDate: widget.tournamentDate, 
-                        tournamentUrlImage: widget.tournamentUrlImage
+                        tournamentUrlImage: widget.tournamentUrlImage,
+                        tournamentEvents: widget.tournamentEvents,
+                        tournamentVenueAddress: widget.tournamentVenueAddress,
+                        tournamentUrl: widget.tournamentUrl,
+                        tournamentNumAttendees: widget.tournamentNumAttendees
                       );
                     },
                   )

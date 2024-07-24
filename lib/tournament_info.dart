@@ -17,11 +17,15 @@ String capitalizeFirstLetterOfEachWord(String input) {
 }
 
 class TournamentInfo extends StatelessWidget {
-  const TournamentInfo({super.key, required this.tournamentName, required this.tournamentDate, required this.tournamentUrlImage});
+  const TournamentInfo({super.key, required this.tournamentName, required this.tournamentDate, required this.tournamentUrlImage, required this.tournamentEvents, required this.tournamentVenueAddress, required this.tournamentUrl, required this.tournamentNumAttendees});
 
   final String tournamentName;
   final int tournamentDate;
   final String tournamentUrlImage;
+  final List<dynamic> tournamentEvents;
+  final String tournamentVenueAddress;
+  final String tournamentUrl;
+  final int tournamentNumAttendees;
 
   getNumberDaysBeforeTournament() {
     var daysBefore = getDifferenceInDays(DateTime.now(), DateTime.fromMillisecondsSinceEpoch(tournamentDate*1000));
@@ -89,6 +93,42 @@ class TournamentInfo extends StatelessWidget {
                 )
               ],
             ),
+            Text(tournamentVenueAddress), //TODO: copy tournament venue address to clipboard when clicked
+            Row(
+              children: [
+                TextButton(
+                  style: ButtonStyle(
+                    foregroundColor: WidgetStateProperty.all<Color>(Colors.blue),
+                  ),
+                  onPressed: () {
+                    //TODO: Open the address in a map app
+                    //Go to => https://stackoverflow.com/questions/43149055/how-do-i-open-a-web-browser-url-from-my-flutter-code
+                  },
+                  child: const Text('On Google Maps'),
+                ),
+                TextButton(
+                  style: ButtonStyle(
+                    foregroundColor: WidgetStateProperty.all<Color>(Colors.blue),
+                  ),
+                  onPressed: () {
+                    //TODO: Open the address in a map app
+                    //Go to => https://stackoverflow.com/questions/43149055/how-do-i-open-a-web-browser-url-from-my-flutter-code
+                  },
+                  child: const Text('On Waze'),
+                ),
+              ]
+            ),
+            TextButton(
+              style: ButtonStyle(
+                foregroundColor: WidgetStateProperty.all<Color>(Colors.blue),
+              ),
+              onPressed: () {
+                //TODO: Open the tournament URL in a browser
+                //Go to => https://stackoverflow.com/questions/43149055/how-do-i-open-a-web-browser-url-from-my-flutter-code
+              },
+              child: const Text('Go to start.gg'),
+            ),
+            Text("$tournamentNumAttendees participants"),
           ],
         ),
     );

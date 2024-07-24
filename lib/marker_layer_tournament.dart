@@ -25,6 +25,10 @@ class MarkerLayerTournaments extends StatelessWidget {
               tournamentName: tournament['name'],
               tournamentDate: tournament['date'],
               tournamentUrlImage: tournament['profileImage']['url'],
+              tournamentEvents: tournament['events'],
+              tournamentVenueAddress: tournament['venueAddress'],
+              tournamentUrl: tournament['url'],
+              tournamentNumAttendees: tournament['numAttendees'],
             ),
           ),
         );
