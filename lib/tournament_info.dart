@@ -78,7 +78,12 @@ class TournamentInfo extends StatelessWidget {
                   ),
                   clipBehavior: Clip.antiAlias,
                   elevation: 10,
-                  child: Image.network(tournamentUrlImage, width: 70, height: 70),
+                  child: Image.network(
+                    tournamentUrlImage, 
+                    width: 70, 
+                    height: 70,
+                    loadingBuilder: (context, child, loadingProgress) => loadingProgress == null ? child : const SizedBox(height: 70, width: 70, child: CircularProgressIndicator()),
+                  ),
                 ),
                 Container(
                   padding: const EdgeInsets.all(10),
