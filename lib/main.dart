@@ -27,7 +27,7 @@ class MapGGApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MapSmash(),
+      home: MapSmash(),
     );
   }
 }

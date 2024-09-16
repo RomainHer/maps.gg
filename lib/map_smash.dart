@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:graphql/client.dart';
@@ -185,7 +186,8 @@ Future<Position> _determinePosition() async {
 class MapSmash extends StatefulWidget {
   final latitude = 48.729024;
   final longitude = -3.463714;
-  const MapSmash({super.key});
+  final PopupController _popupController = PopupController();
+  MapSmash({super.key});
 
   @override
   State<MapSmash> createState() => _MapSmashState();
@@ -212,40 +214,47 @@ class _MapSmashState extends State<MapSmash> {
                       if (snapshot.connectionState == ConnectionState.done) {
                         /*_requestApi(snapshot.data!.latitude, snapshot.data!.longitude);*/
 
-                        return FlutterMap(
-                          options: MapOptions(
-                            initialCenter: LatLng(
-                                snapshot.data!.latitude,
-                                snapshot
-                                    .data!.longitude), // Coordonnées de Paris
-                            initialZoom: 8.0,
-                            interactionOptions: const InteractionOptions(flags: InteractiveFlag.all & ~InteractiveFlag.rotate)
-                          ),
-                          children: [
-                            TileLayer(
-                              tileProvider: CancellableNetworkTileProvider(),
-                              urlTemplate:
-                                  "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                              subdomains: const ['a', 'b', 'c'],
+                        return PopupScope(
+                          popupController: widget._popupController,
+                          child: FlutterMap(
+                            options: MapOptions(
+                              initialCenter: LatLng(
+                                  snapshot.data!.latitude,
+                                  snapshot
+                                      .data!.longitude), // Coordonnées de Paris
+                              initialZoom: 8.0,
+                              maxZoom: 18.0,
+                              interactionOptions: const InteractionOptions(flags: InteractiveFlag.all & ~InteractiveFlag.rotate),
+                              onTap: (_, __) => widget._popupController
+                                  .hideAllPopups(),
                             ),
-                            MarkerLayerTournaments(
-                              tournamentsData: snapshot2.data,
-                            ),
-                            MarkerLayer(
-                              markers: [
-                                Marker(
-                                  width: 80.0,
-                                  height: 80.0,
-                                  point: LatLng(snapshot.data!.latitude,
-                                      snapshot.data!.longitude),
-                                  child: const Icon(
-                                    Icons.location_pin,
-                                    color: Colors.blue,
+                            children: [
+                              TileLayer(
+                                tileProvider: CancellableNetworkTileProvider(),
+                                urlTemplate:
+                                    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                subdomains: const ['a', 'b', 'c'],
+                              ),
+                              MarkerLayerTournaments(
+                                tournamentsData: snapshot2.data,
+                                popupController: widget._popupController,
+                              ),
+                              MarkerLayer(
+                                markers: [
+                                  Marker(
+                                    width: 80.0,
+                                    height: 80.0,
+                                    point: LatLng(snapshot.data!.latitude,
+                                        snapshot.data!.longitude),
+                                    child: const Icon(
+                                      Icons.location_pin,
+                                      color: Colors.blue,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            )
-                          ],
+                                ],
+                              )
+                            ],
+                          ),
                         );
                       } else {
                         return const CircularProgressIndicator();
