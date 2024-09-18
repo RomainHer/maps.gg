@@ -8,6 +8,8 @@ class MarkerContentTournament extends StatefulWidget {
   final String tournamentUrlImage;
   final List<dynamic> tournamentEvents;
   final String tournamentVenueAddress;
+  final double tournamentVenueLat;
+  final double tournamentVenueLng;
   final String tournamentUrl;
   final int tournamentNumAttendees;
 
@@ -19,6 +21,8 @@ class MarkerContentTournament extends StatefulWidget {
     required this.tournamentUrlImage,
     required this.tournamentEvents,
     required this.tournamentVenueAddress,
+    required this.tournamentVenueLat,
+    required this.tournamentVenueLng,
     required this.tournamentUrl,
     required this.tournamentNumAttendees,
   });
@@ -49,6 +53,8 @@ class _MarkerContentTournamentState extends State<MarkerContentTournament> {
                         tournamentUrlImage: widget.tournamentUrlImage,
                         tournamentEvents: widget.tournamentEvents,
                         tournamentVenueAddress: widget.tournamentVenueAddress,
+                        tournamentVenueLat: widget.tournamentVenueLat,
+                        tournamentVenueLng: widget.tournamentVenueLng,
                         tournamentUrl: widget.tournamentUrl,
                         tournamentNumAttendees: widget.tournamentNumAttendees
                       );

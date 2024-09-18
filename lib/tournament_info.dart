@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 String capitalizeFirstLetterOfEachWord(String input) {
   List<String> words = input.split(' ');
@@ -17,13 +18,28 @@ String capitalizeFirstLetterOfEachWord(String input) {
 }
 
 class TournamentInfo extends StatelessWidget {
-  const TournamentInfo({super.key, required this.tournamentName, required this.tournamentDate, required this.tournamentUrlImage, required this.tournamentEvents, required this.tournamentVenueAddress, required this.tournamentUrl, required this.tournamentNumAttendees});
+  const TournamentInfo(
+    {
+      super.key, 
+      required this.tournamentName, 
+      required this.tournamentDate, 
+      required this.tournamentUrlImage, 
+      required this.tournamentEvents, 
+      required this.tournamentVenueAddress,
+      required this.tournamentVenueLat,
+      required this.tournamentVenueLng,
+      required this.tournamentUrl, 
+      required this.tournamentNumAttendees
+    }
+  );
 
   final String tournamentName;
   final int tournamentDate;
   final String tournamentUrlImage;
   final List<dynamic> tournamentEvents;
   final String tournamentVenueAddress;
+  final double tournamentVenueLat;
+  final double tournamentVenueLng;
   final String tournamentUrl;
   final int tournamentNumAttendees;
 
@@ -56,6 +72,12 @@ class TournamentInfo extends StatelessWidget {
   
   getNextMidnight(DateTime date) {
     return DateTime(date.year, date.month, date.day + 1);
+  }
+
+  Future<void> _launchUrl(String url) async {
+    if (!await launchUrl(Uri.parse(Uri.encodeFull(url)))) {
+      throw Exception('Could not launch $url');
+    }
   }
 
   @override
@@ -106,8 +128,9 @@ class TournamentInfo extends StatelessWidget {
                     foregroundColor: WidgetStateProperty.all<Color>(Colors.blue),
                   ),
                   onPressed: () {
-                    //TODO: Open the address in a map app
-                    //Go to => https://stackoverflow.com/questions/43149055/how-do-i-open-a-web-browser-url-from-my-flutter-code
+                    //Open the address in a maps app
+                    //https://www.google.com/maps/search/?api=1&query=$tournamentVenueAddress
+                    _launchUrl("https://www.google.com/maps/search/?api=1&query=$tournamentVenueAddress");
                   },
                   child: const Text('On Google Maps'),
                 ),
@@ -116,8 +139,10 @@ class TournamentInfo extends StatelessWidget {
                     foregroundColor: WidgetStateProperty.all<Color>(Colors.blue),
                   ),
                   onPressed: () {
-                    //TODO: Open the address in a map app
-                    //Go to => https://stackoverflow.com/questions/43149055/how-do-i-open-a-web-browser-url-from-my-flutter-code
+                    //Open the address in a waze app
+                    //https://www.waze.com/ul?ll=$lat,$lng&navigate=yes
+                    //https://waze.com/ul?q=$tournamentVenueAddress
+                    _launchUrl("https://www.waze.com/ul?ll=$tournamentVenueLat,$tournamentVenueLng&navigate=yes");
                   },
                   child: const Text('On Waze'),
                 ),
@@ -128,8 +153,8 @@ class TournamentInfo extends StatelessWidget {
                 foregroundColor: WidgetStateProperty.all<Color>(Colors.blue),
               ),
               onPressed: () {
-                //TODO: Open the tournament URL in a browser
-                //Go to => https://stackoverflow.com/questions/43149055/how-do-i-open-a-web-browser-url-from-my-flutter-code
+                //Open the tournament URL in a browser                
+                _launchUrl(tournamentUrl);
               },
               child: const Text('Go to start.gg'),
             ),
