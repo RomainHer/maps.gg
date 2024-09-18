@@ -82,7 +82,7 @@ class MarkerLayerTournaments extends StatelessWidget {
           return Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: Colors.blue,
+              color: Colors.black,
             ),
             child: Center(
               child: Text(
