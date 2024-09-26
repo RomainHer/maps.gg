@@ -7,11 +7,13 @@ import 'package:maps_gg/marker_tournament.dart';
 class MarkerLayerTournaments extends StatelessWidget {
   final List<dynamic>? tournamentsData;
   final PopupController popupController;
+  final Function updateTournamentInfoState;
 
   const MarkerLayerTournaments({
     super.key,
     required this.tournamentsData,
     required this.popupController,
+    required this.updateTournamentInfoState,
   });
 
   List<Marker> getListMarkers() {
@@ -34,6 +36,7 @@ class MarkerLayerTournaments extends StatelessWidget {
               tournamentVenueAddress: tournament['venueAddress'] ?? '',
               tournamentUrl: tournament['url'] ?? '',
               tournamentNumAttendees: tournament['numAttendees'] ?? 0,
+              updateTournamentInfoState: updateTournamentInfoState,
             ),
           ),
         );

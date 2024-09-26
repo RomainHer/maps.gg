@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:maps_gg/tournament_info_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 String capitalizeFirstLetterOfEachWord(String input) {
@@ -21,31 +22,15 @@ class TournamentInfo extends StatelessWidget {
   const TournamentInfo(
     {
       super.key, 
-      required this.tournamentName, 
-      required this.tournamentDate, 
-      required this.tournamentUrlImage, 
-      required this.tournamentEvents, 
-      required this.tournamentVenueAddress,
-      required this.tournamentVenueLat,
-      required this.tournamentVenueLng,
-      required this.tournamentUrl, 
-      required this.tournamentNumAttendees
+      required this.tournamentInfoState
     }
   );
 
-  final String tournamentName;
-  final int tournamentDate;
-  final String tournamentUrlImage;
-  final List<dynamic> tournamentEvents;
-  final String tournamentVenueAddress;
-  final double tournamentVenueLat;
-  final double tournamentVenueLng;
-  final String tournamentUrl;
-  final int tournamentNumAttendees;
+  final TournamentInfoState tournamentInfoState;
 
   getNumberDaysBeforeTournament() {
-    var daysBefore = getDifferenceInDays(DateTime.now(), DateTime.fromMillisecondsSinceEpoch(tournamentDate*1000));
-    var hoursAfterNextMidnight = getDifferenceInHours(DateTime.fromMillisecondsSinceEpoch(tournamentDate * 1000),getNextMidnight(DateTime.now()));
+    var daysBefore = getDifferenceInDays(DateTime.now(), DateTime.fromMillisecondsSinceEpoch((tournamentInfoState.tournamentDate ?? 0)*1000));
+    var hoursAfterNextMidnight = getDifferenceInHours(DateTime.fromMillisecondsSinceEpoch((tournamentInfoState.tournamentDate ?? 0)*1000),getNextMidnight(DateTime.now()));
     var extraDays = hoursAfterNextMidnight > 0 ? 1 : 0;
     if(hoursAfterNextMidnight < 0) {
       return "Aujourd'hui";
@@ -82,7 +67,7 @@ class TournamentInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var tournamentDateTime = DateTime.fromMillisecondsSinceEpoch(tournamentDate * 1000);
+    var tournamentDateTime = DateTime.fromMillisecondsSinceEpoch((tournamentInfoState.tournamentDate ?? 0) * 1000);
 
     return Container(
         width: double.infinity,
@@ -101,7 +86,7 @@ class TournamentInfo extends StatelessWidget {
                   clipBehavior: Clip.antiAlias,
                   elevation: 10,
                   child: Image.network(
-                    tournamentUrlImage, 
+                    tournamentInfoState.tournamentUrlImage ?? '', 
                     width: 70, 
                     height: 70,
                     loadingBuilder: (context, child, loadingProgress) => loadingProgress == null ? child : const SizedBox(height: 70, width: 70, child: CircularProgressIndicator()),
@@ -112,7 +97,7 @@ class TournamentInfo extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(tournamentName),
+                      Text(tournamentInfoState.tournamentName ?? 'no-name'),
                       Text("${capitalizeFirstLetterOfEachWord(DateFormat.yMMMMEEEEd('fr').format(tournamentDateTime))} à ${tournamentDateTime.hour}h${tournamentDateTime.minute == 0 ? '' : tournamentDateTime.minute}"),
                       Text(getNumberDaysBeforeTournament()),
                     ],
@@ -120,7 +105,7 @@ class TournamentInfo extends StatelessWidget {
                 )
               ],
             ),
-            Text(tournamentVenueAddress), //TODO: copy tournament venue address to clipboard when clicked
+            Text(tournamentInfoState.tournamentVenueAddress ?? 'no-adress'), //TODO: copy tournament venue address to clipboard when clicked
             Row(
               children: [
                 TextButton(
@@ -130,7 +115,7 @@ class TournamentInfo extends StatelessWidget {
                   onPressed: () {
                     //Open the address in a maps app
                     //https://www.google.com/maps/search/?api=1&query=$tournamentVenueAddress
-                    _launchUrl("https://www.google.com/maps/search/?api=1&query=$tournamentVenueAddress");
+                    _launchUrl("https://www.google.com/maps/search/?api=1&query=${tournamentInfoState.tournamentVenueAddress}");
                   },
                   child: const Text('On Google Maps'),
                 ),
@@ -142,7 +127,7 @@ class TournamentInfo extends StatelessWidget {
                     //Open the address in a waze app
                     //https://www.waze.com/ul?ll=$lat,$lng&navigate=yes
                     //https://waze.com/ul?q=$tournamentVenueAddress
-                    _launchUrl("https://www.waze.com/ul?ll=$tournamentVenueLat,$tournamentVenueLng&navigate=yes");
+                    _launchUrl("https://www.waze.com/ul?ll=${tournamentInfoState.tournamentVenueLat},${tournamentInfoState.tournamentVenueLng}&navigate=yes");
                   },
                   child: const Text('On Waze'),
                 ),
@@ -154,11 +139,11 @@ class TournamentInfo extends StatelessWidget {
               ),
               onPressed: () {
                 //Open the tournament URL in a browser                
-                _launchUrl(tournamentUrl);
+                _launchUrl(tournamentInfoState.tournamentUrl ?? '');
               },
               child: const Text('Go to start.gg'),
             ),
-            Text("$tournamentNumAttendees participants"),
+            Text("${tournamentInfoState.tournamentNumAttendees} participants"),
           ],
         ),
     );

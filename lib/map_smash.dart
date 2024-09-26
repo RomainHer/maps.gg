@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
+//import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
-import 'package:latlong2/latlong.dart';
+//import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:graphql/client.dart';
-import 'package:maps_gg/marker_layer_tournament.dart';
-import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
-
+//import 'package:maps_gg/marker_layer_tournament.dart';
+//import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
+//import 'package:maps_gg/tournament_info.dart';
+//import 'package:maps_gg/tournament_info_state.dart';
+import 'package:maps_gg/custom_map.dart';
 
 Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
   final httpLink = HttpLink(
     'https://api.start.gg/gql/alpha',
   );
   final authLink = AuthLink(
-    getToken: () async => 'Bearer d5d8a776d10a680ffa26d2893243b31a',//auther token 7896090b713048a15a1df5eacdc2d260
+    getToken: () async =>
+        'Bearer d5d8a776d10a680ffa26d2893243b31a', //auther token 7896090b713048a15a1df5eacdc2d260
   );
   Link link = authLink.concat(httpLink);
   final GraphQLClient client = GraphQLClient(
@@ -194,6 +197,13 @@ class MapSmash extends StatefulWidget {
 }
 
 class _MapSmashState extends State<MapSmash> {
+  /*TournamentInfoState tournamentInfoState = TournamentInfoState.empty();
+
+  void updateTournamentInfoState(TournamentInfoState tournamentInfoState) {
+    setState(() {
+      this.tournamentInfoState = tournamentInfoState;
+    });
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -211,50 +221,74 @@ class _MapSmashState extends State<MapSmash> {
                     future: _requestApi(
                         snapshot.data!.latitude, snapshot.data!.longitude),
                     builder: (context, snapshot2) {
-                      if (snapshot.connectionState == ConnectionState.done) {
+                      if (snapshot.connectionState == ConnectionState.done &&
+                          snapshot2.connectionState == ConnectionState.done) {
                         /*_requestApi(snapshot.data!.latitude, snapshot.data!.longitude);*/
-
                         return PopupScope(
                           popupController: widget._popupController,
-                          child: FlutterMap(
-                            options: MapOptions(
-                              initialCenter: LatLng(
-                                  snapshot.data!.latitude,
-                                  snapshot
-                                      .data!.longitude), // Coordonnées de Paris
-                              initialZoom: 8.0,
-                              maxZoom: 18.0,
-                              interactionOptions: const InteractionOptions(flags: InteractiveFlag.all & ~InteractiveFlag.rotate),
-                              onTap: (_, __) => widget._popupController
-                                  .hideAllPopups(),
-                            ),
-                            children: [
-                              TileLayer(
-                                tileProvider: CancellableNetworkTileProvider(),
-                                urlTemplate:
-                                    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                                subdomains: const ['a', 'b', 'c'],
-                              ),
-                              MarkerLayerTournaments(
-                                tournamentsData: snapshot2.data,
-                                popupController: widget._popupController,
-                              ),
-                              MarkerLayer(
-                                markers: [
-                                  Marker(
-                                    width: 80.0,
-                                    height: 80.0,
-                                    point: LatLng(snapshot.data!.latitude,
-                                        snapshot.data!.longitude),
-                                    child: const Icon(
-                                      Icons.location_pin,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
+                          child: CustomMap(
+                            location: snapshot.data!,
+                            tournaments: snapshot2.data!,
+                            popupController: widget._popupController,
                           ),
+                          /*Stack(
+                            alignment: Alignment.bottomCenter,
+                            children: [
+                              FlutterMap(
+                                options: MapOptions(
+                                  initialCenter: LatLng(
+                                      snapshot.data!.latitude,
+                                      snapshot.data!
+                                          .longitude), // Coordonnées de Paris
+                                  initialZoom: 8.0,
+                                  maxZoom: 18.0,
+                                  interactionOptions: const InteractionOptions(
+                                      flags: InteractiveFlag.all &
+                                          ~InteractiveFlag.rotate),
+                                  onTap: (_, __) =>
+                                      widget._popupController.hideAllPopups(),
+                                ),
+                                children: [
+                                  TileLayer(
+                                    tileProvider:
+                                        CancellableNetworkTileProvider(),
+                                    urlTemplate:
+                                        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                    subdomains: const ['a', 'b', 'c'],
+                                  ),
+                                  MarkerLayerTournaments(
+                                    updateTournamentInfoState:
+                                        updateTournamentInfoState,
+                                    tournamentsData: snapshot2.data,
+                                    popupController: widget._popupController,
+                                  ),
+                                  MarkerLayer(
+                                    markers: [
+                                      Marker(
+                                        width: 80.0,
+                                        height: 80.0,
+                                        point: LatLng(snapshot.data!.latitude,
+                                            snapshot.data!.longitude),
+                                        child: const Icon(
+                                          Icons.location_pin,
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                              Card(
+                                child: Visibility(
+                                  visible:
+                                      tournamentInfoState.isTournamentSelected,
+                                  child: TournamentInfo(
+                                    tournamentInfoState: tournamentInfoState,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),*/
                         );
                       } else {
                         return const CircularProgressIndicator();

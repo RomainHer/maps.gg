@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:maps_gg/tournament_info.dart';
+import 'package:maps_gg/tournament_info_state.dart';
 
 class MarkerContentTournament extends StatefulWidget {
   final int tournamentId;
@@ -12,6 +12,7 @@ class MarkerContentTournament extends StatefulWidget {
   final double tournamentVenueLng;
   final String tournamentUrl;
   final int tournamentNumAttendees;
+  final Function updateTournamentInfoState;
 
   const MarkerContentTournament({
     super.key,
@@ -25,6 +26,7 @@ class MarkerContentTournament extends StatefulWidget {
     required this.tournamentVenueLng,
     required this.tournamentUrl,
     required this.tournamentNumAttendees,
+    required this.updateTournamentInfoState,
   });
 
   @override
@@ -43,7 +45,7 @@ class _MarkerContentTournamentState extends State<MarkerContentTournament> {
             Expanded(
               child: InkWell(
                 onTap: () => {
-                  showModalBottomSheet<void>(
+                  /*showModalBottomSheet<void>(
                     context: context,
                     showDragHandle: true,
                     builder: (BuildContext context) {
@@ -59,6 +61,20 @@ class _MarkerContentTournamentState extends State<MarkerContentTournament> {
                         tournamentNumAttendees: widget.tournamentNumAttendees
                       );
                     },
+                  )*/
+                  widget.updateTournamentInfoState(
+                    TournamentInfoState(
+                      true,
+                      widget.tournamentName,
+                      widget.tournamentDate,
+                      widget.tournamentUrlImage,
+                      widget.tournamentEvents,
+                      widget.tournamentVenueAddress,
+                      widget.tournamentVenueLat,
+                      widget.tournamentVenueLng,
+                      widget.tournamentUrl,
+                      widget.tournamentNumAttendees,
+                    ),
                   )
                 },
                 child: Column(
