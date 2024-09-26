@@ -75,6 +75,8 @@ class _CustomMapState extends State<CustomMap> {
           ],
         ),
         Card(
+          margin: const EdgeInsets.all(20),
+          elevation: 20,
           child: Visibility(
             visible: tournamentInfoState.isTournamentSelected,
             child: TournamentInfo(

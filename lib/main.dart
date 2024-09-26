@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'map_smash.dart';
 
@@ -26,6 +27,9 @@ class MapGGApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primarySwatch: Colors.blue,
+        textTheme: GoogleFonts.heeboTextTheme(
+          Theme.of(context).textTheme,
+        ),
       ),
       home: MapSmash(),
     );
