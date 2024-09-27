@@ -131,68 +131,100 @@ class _TournamentInfoState extends State<TournamentInfo> {
                 ),
               ),
               Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.place,
-                            color: Color(0xFF3F7FFD),
-                          ),
-                          Text(
-                            widget.tournamentInfoState.tournamentVenueAddress ??
-                                'no-venue-name',
-                            style: const TextStyle(
-                              fontSize: 9,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.place,
-                            color: Color(0xFF3F7FFD),
-                          ),
-                          Column(
-                            children: [
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.place,
+                          color: Color(0xFF3F7FFD),
+                          size: 20,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            for (var i in (widget.tournamentInfoState
+                                        .tournamentVenueAddress ??
+                                    "")
+                                .split(","))
                               Text(
-                                "${capitalizeFirstLetterOfEachWord(DateFormat.yMMMMEEEEd('fr').format(tournamentDateTime))} à ${tournamentDateTime.hour}h${tournamentDateTime.minute == 0 ? '' : tournamentDateTime.minute}",
+                                i.toString(),
                                 style: const TextStyle(
-                                  fontSize: 9,
+                                  fontSize: 12,
                                 ),
+                              )
+                          ],
+                        )
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.calendar_today,
+                          color: Color(0xFF3F7FFD),
+                          size: 20,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              capitalizeFirstLetterOfEachWord(
+                                  DateFormat.yMMMMEEEEd('fr')
+                                      .format(tournamentDateTime)),
+                              style: const TextStyle(
+                                fontSize: 12,
                               ),
-                              Text(
-                                widget.getNumberDaysBeforeTournament(),
-                                style: const TextStyle(
-                                  fontSize: 9,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.place,
-                            color: Color(0xFF3F7FFD),
-                          ),
-                          Text(
-                            "${widget.tournamentInfoState.tournamentNumAttendees} participants",
-                            style: const TextStyle(
-                              fontSize: 9,
                             ),
+                            Text(
+                              "(${widget.getNumberDaysBeforeTournament()})",
+                              style: const TextStyle(
+                                fontSize: 12,
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.schedule,
+                          color: Color(0xFF3F7FFD),
+                          size: 20,
+                        ),
+                        Text(
+                          "A ${tournamentDateTime.hour}h${tournamentDateTime.minute == 0 ? '' : tournamentDateTime.minute}",
+                          style: const TextStyle(
+                            fontSize: 12,
                           ),
-                        ],
-                      ),
-                    ],
-                  ))
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.group,
+                          color: Color(0xFF3F7FFD),
+                          size: 20,
+                        ),
+                        Text(
+                          "${widget.tournamentInfoState.tournamentNumAttendees} participants",
+                          style: const TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
-          Text(widget.tournamentInfoState.tournamentVenueAddress ??
+          /*Text(widget.tournamentInfoState.tournamentVenueAddress ??
               'no-adress'), //TODO: copy tournament venue address to clipboard when clicked
           Row(children: [
             TextButton(
@@ -232,7 +264,7 @@ class _TournamentInfoState extends State<TournamentInfo> {
             child: const Text('Go to start.gg'),
           ),
           Text(
-              "${widget.tournamentInfoState.tournamentNumAttendees} participants"),
+              "${widget.tournamentInfoState.tournamentNumAttendees} participants"),*/
         ],
       ),
     );
