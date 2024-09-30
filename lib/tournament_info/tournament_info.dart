@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maps_gg/tournament_info/item_list_info.dart';
+import 'package:maps_gg/tournament_info/itinary_bottom_sheet.dart';
 import 'package:maps_gg/tournament_info/tournament_info_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -87,7 +88,7 @@ class _TournamentInfoState extends State<TournamentInfo> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Container(
-            padding: EdgeInsets.only(bottom: 15),
+            padding: const EdgeInsets.only(bottom: 15),
             child: Row(
               children: [
                 Text(
@@ -181,7 +182,8 @@ class _TournamentInfoState extends State<TournamentInfo> {
               Expanded(
                 child: TextButton(
                   onPressed: () {
-                    // TODO: Implement action for first button
+                    widget._launchUrl(
+                        widget.tournamentInfoState.tournamentUrl ?? '');
                   },
                   style: TextButton.styleFrom(
                     backgroundColor: const Color(0xFF3F7FFD),
@@ -197,7 +199,13 @@ class _TournamentInfoState extends State<TournamentInfo> {
               Expanded(
                 child: TextButton(
                   onPressed: () {
-                    // TODO: Implement action for second button
+                    showModalBottomSheet<void>(
+                      context: context,
+                      showDragHandle: true,
+                      builder: (BuildContext context) {
+                        return const ItinaryBottomSheet();
+                      },
+                    );
                   },
                   style: TextButton.styleFrom(
                     backgroundColor: const Color(0xFFF1F5F9),

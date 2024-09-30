@@ -16,7 +16,7 @@ class ItemListInfo extends StatelessWidget {
     return Container(
       padding: padding,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             padding: const EdgeInsets.only(right: 5),
