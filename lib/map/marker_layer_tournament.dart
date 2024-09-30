@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:maps_gg/marker_tournament.dart';
+import 'package:maps_gg/map/marker_tournament.dart';
 
 class MarkerLayerTournaments extends StatelessWidget {
   final List<dynamic>? tournamentsData;
@@ -29,7 +29,9 @@ class MarkerLayerTournaments extends StatelessWidget {
               tournamentId: tournament['id'] ?? -1,
               tournamentName: tournament['name'] ?? '',
               tournamentDate: tournament['date'] ?? 0,
-              tournamentUrlImage: tournament['profileImage'] != null ? tournament['profileImage']['url'] : '',
+              tournamentUrlImage: tournament['profileImage'] != null
+                  ? tournament['profileImage']['url']
+                  : '',
               tournamentEvents: tournament['events'] ?? [],
               tournamentVenueLat: tournament['lat'] ?? 0,
               tournamentVenueLng: tournament['lng'] ?? 0,

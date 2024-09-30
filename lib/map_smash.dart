@@ -8,7 +8,7 @@ import 'package:graphql/client.dart';
 //import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 //import 'package:maps_gg/tournament_info.dart';
 //import 'package:maps_gg/tournament_info_state.dart';
-import 'package:maps_gg/custom_map.dart';
+import 'package:maps_gg/map/custom_map.dart';
 
 Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
   final httpLink = HttpLink(

@@ -4,9 +4,9 @@ import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_ti
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:maps_gg/marker_layer_tournament.dart';
-import 'package:maps_gg/tournament_info.dart';
-import 'package:maps_gg/tournament_info_state.dart';
+import 'package:maps_gg/map/marker_layer_tournament.dart';
+import 'package:maps_gg/tournament_info/tournament_info.dart';
+import 'package:maps_gg/tournament_info/tournament_info_state.dart';
 
 class CustomMap extends StatefulWidget {
   final Position location;

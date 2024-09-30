@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:maps_gg/tournament_info_state.dart';
+import 'package:maps_gg/tournament_info/item_list_info.dart';
+import 'package:maps_gg/tournament_info/tournament_info_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 String capitalizeFirstLetterOfEachWord(String input) {
@@ -130,96 +131,38 @@ class _TournamentInfoState extends State<TournamentInfo> {
                               child: CircularProgressIndicator()),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.place,
-                          color: Color(0xFF3F7FFD),
-                          size: 20,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            for (var i in (widget.tournamentInfoState
-                                        .tournamentVenueAddress ??
-                                    "")
-                                .split(","))
-                              Text(
-                                i.toString(),
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              )
-                          ],
-                        )
-                      ],
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.calendar_today,
-                          color: Color(0xFF3F7FFD),
-                          size: 20,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              capitalizeFirstLetterOfEachWord(
-                                  DateFormat.yMMMMEEEEd('fr')
-                                      .format(tournamentDateTime)),
-                              style: const TextStyle(
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              "(${widget.getNumberDaysBeforeTournament()})",
-                              style: const TextStyle(
-                                fontSize: 12,
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.schedule,
-                          color: Color(0xFF3F7FFD),
-                          size: 20,
-                        ),
-                        Text(
-                          "A ${tournamentDateTime.hour}h${tournamentDateTime.minute == 0 ? '' : tournamentDateTime.minute}",
-                          style: const TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.group,
-                          color: Color(0xFF3F7FFD),
-                          size: 20,
-                        ),
-                        Text(
-                          "${widget.tournamentInfoState.tournamentNumAttendees} participants",
-                          style: const TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ItemListInfo(
+                        icon: Icons.place,
+                        text:
+                            widget.tournamentInfoState.tournamentVenueAddress ??
+                                'no-address',
+                      ),
+                      ItemListInfo(
+                        padding: const EdgeInsets.only(top: 5),
+                        icon: Icons.calendar_today,
+                        text:
+                            "${capitalizeFirstLetterOfEachWord(DateFormat.yMMMMEEEEd('fr').format(tournamentDateTime))} (${widget.getNumberDaysBeforeTournament()})",
+                      ),
+                      ItemListInfo(
+                        padding: const EdgeInsets.only(top: 5),
+                        icon: Icons.schedule,
+                        text:
+                            "A ${tournamentDateTime.hour}h${tournamentDateTime.minute == 0 ? '' : tournamentDateTime.minute}",
+                      ),
+                      ItemListInfo(
+                        padding: const EdgeInsets.only(top: 5),
+                        icon: Icons.group,
+                        text:
+                            "${widget.tournamentInfoState.tournamentNumAttendees} participants",
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

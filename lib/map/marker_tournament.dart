@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:maps_gg/tournament_info_state.dart';
+import 'package:maps_gg/tournament_info/tournament_info_state.dart';
 
 class MarkerContentTournament extends StatefulWidget {
   final int tournamentId;
