@@ -30,6 +30,16 @@ class MapGGApp extends StatelessWidget {
         textTheme: GoogleFonts.heeboTextTheme(
           Theme.of(context).textTheme,
         ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            backgroundColor: const Color(0xFFF1F5F9),
+            foregroundColor: const Color(0xFF3F7FFD),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(7),
+            ),
+            textStyle: GoogleFonts.heebo(fontWeight: FontWeight.bold),
+          ),
+        ),
       ),
       home: MapSmash(),
     );

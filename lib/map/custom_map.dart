@@ -75,6 +75,7 @@ class _CustomMapState extends State<CustomMap> {
           ],
         ),
         Card(
+          color: Colors.white,
           margin: const EdgeInsets.all(20),
           elevation: 20,
           child: Visibility(

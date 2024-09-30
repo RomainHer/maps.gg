@@ -86,83 +86,127 @@ class _TournamentInfoState extends State<TournamentInfo> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Row(
-            children: [
-              Text(
-                widget.tournamentInfoState.tournamentName ?? 'no-name',
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
+          Container(
+            padding: EdgeInsets.only(bottom: 15),
+            child: Row(
+              children: [
+                Text(
+                  widget.tournamentInfoState.tournamentName ?? 'no-name',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-              const Spacer(),
-              IconButton(
-                color: Colors.black,
-                isSelected: isTournamentLiked,
-                selectedIcon: const Icon(Icons.favorite),
-                icon: const Icon(Icons.favorite_border),
-                onPressed: () {
-                  setState(() {
-                    isTournamentLiked = !isTournamentLiked;
-                  });
-                },
-              ),
-            ],
+                const Spacer(),
+                IconButton(
+                  visualDensity:
+                      const VisualDensity(horizontal: -4, vertical: -4),
+                  highlightColor: Colors.transparent,
+                  color: Colors.black,
+                  isSelected: isTournamentLiked,
+                  selectedIcon: const Icon(Icons.favorite),
+                  icon: const Icon(Icons.favorite_border),
+                  onPressed: () {
+                    setState(() {
+                      isTournamentLiked = !isTournamentLiked;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.only(bottom: 15),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Card(
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  elevation: 10,
+                  child: Image.network(
+                    widget.tournamentInfoState.tournamentUrlImage ?? '',
+                    width: 70,
+                    height: 70,
+                    loadingBuilder: (context, child, loadingProgress) =>
+                        loadingProgress == null
+                            ? child
+                            : const SizedBox(
+                                height: 70,
+                                width: 70,
+                                child: CircularProgressIndicator()),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ItemListInfo(
+                          icon: Icons.place,
+                          text: widget
+                                  .tournamentInfoState.tournamentVenueAddress ??
+                              'no-address',
+                        ),
+                        ItemListInfo(
+                          padding: const EdgeInsets.only(top: 5),
+                          icon: Icons.calendar_today,
+                          text:
+                              "${capitalizeFirstLetterOfEachWord(DateFormat.yMMMMEEEEd('fr').format(tournamentDateTime))} (${widget.getNumberDaysBeforeTournament()})",
+                        ),
+                        ItemListInfo(
+                          padding: const EdgeInsets.only(top: 5),
+                          icon: Icons.schedule,
+                          text:
+                              "A ${tournamentDateTime.hour}h${tournamentDateTime.minute == 0 ? '' : tournamentDateTime.minute}",
+                        ),
+                        ItemListInfo(
+                          padding: const EdgeInsets.only(top: 5),
+                          icon: Icons.group,
+                          text:
+                              "${widget.tournamentInfoState.tournamentNumAttendees} participants",
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Card(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                clipBehavior: Clip.antiAlias,
-                elevation: 10,
-                child: Image.network(
-                  widget.tournamentInfoState.tournamentUrlImage ?? '',
-                  width: 70,
-                  height: 70,
-                  loadingBuilder: (context, child, loadingProgress) =>
-                      loadingProgress == null
-                          ? child
-                          : const SizedBox(
-                              height: 70,
-                              width: 70,
-                              child: CircularProgressIndicator()),
+              Expanded(
+                child: TextButton(
+                  onPressed: () {
+                    // TODO: Implement action for first button
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color(0xFF3F7FFD),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                  ),
+                  child: const Text("S'inscrire/Détails"),
                 ),
               ),
+              const SizedBox(width: 10), // Add some spacing between buttons
               Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ItemListInfo(
-                        icon: Icons.place,
-                        text:
-                            widget.tournamentInfoState.tournamentVenueAddress ??
-                                'no-address',
-                      ),
-                      ItemListInfo(
-                        padding: const EdgeInsets.only(top: 5),
-                        icon: Icons.calendar_today,
-                        text:
-                            "${capitalizeFirstLetterOfEachWord(DateFormat.yMMMMEEEEd('fr').format(tournamentDateTime))} (${widget.getNumberDaysBeforeTournament()})",
-                      ),
-                      ItemListInfo(
-                        padding: const EdgeInsets.only(top: 5),
-                        icon: Icons.schedule,
-                        text:
-                            "A ${tournamentDateTime.hour}h${tournamentDateTime.minute == 0 ? '' : tournamentDateTime.minute}",
-                      ),
-                      ItemListInfo(
-                        padding: const EdgeInsets.only(top: 5),
-                        icon: Icons.group,
-                        text:
-                            "${widget.tournamentInfoState.tournamentNumAttendees} participants",
-                      ),
-                    ],
+                child: TextButton(
+                  onPressed: () {
+                    // TODO: Implement action for second button
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color(0xFFF1F5F9),
+                    foregroundColor: const Color(0xFF3F7FFD),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(7),
+                    ),
                   ),
+                  child: const Text('Itinéraire'),
                 ),
               ),
             ],
