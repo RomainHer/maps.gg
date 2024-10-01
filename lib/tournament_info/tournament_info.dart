@@ -202,8 +202,19 @@ class _TournamentInfoState extends State<TournamentInfo> {
                     showModalBottomSheet<void>(
                       context: context,
                       showDragHandle: true,
+                      backgroundColor: const Color(0xFFFAFAFA),
                       builder: (BuildContext context) {
-                        return const ItinaryBottomSheet();
+                        return ItinaryBottomSheet(
+                          tournamentVenueAddress: widget
+                                  .tournamentInfoState.tournamentVenueAddress ??
+                              "",
+                          tournamentVenueLat:
+                              widget.tournamentInfoState.tournamentVenueLat ??
+                                  0,
+                          tournamentVenueLng:
+                              widget.tournamentInfoState.tournamentVenueLng ??
+                                  0,
+                        );
                       },
                     );
                   },
