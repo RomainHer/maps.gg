@@ -208,9 +208,6 @@ class _MapSmashState extends State<MapSmash> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Maps.gg"),
-      ),
       body: Stack(
         children: [
           FutureBuilder(
