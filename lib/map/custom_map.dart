@@ -66,9 +66,26 @@ class _CustomMapState extends State<CustomMap> {
                   height: 80.0,
                   point: LatLng(
                       widget.location.latitude, widget.location.longitude),
-                  child: const Icon(
-                    Icons.location_pin,
-                    color: Colors.blue,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 20.0,
+                        height: 20.0,
+                        decoration: const BoxDecoration(
+                          color: Color(0x333F7FFD),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      Container(
+                        width: 10.0,
+                        height: 10.0,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF3F7FFD),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
