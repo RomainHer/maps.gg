@@ -39,100 +39,56 @@ class _MarkerContentTournamentState extends State<MarkerContentTournament> {
   Widget build(BuildContext context) {
     double textFactor = widget.tournamentName.length > 45 ? 0.7 : 1;
     return Container(
-        alignment: Alignment.center,
-        child: Column(
-          children: [
-            Expanded(
-              child: InkWell(
-                onTap: () => {
-                  /*showModalBottomSheet<void>(
-                    context: context,
-                    showDragHandle: true,
-                    builder: (BuildContext context) {
-                      return TournamentInfo(
-                        tournamentName: widget.tournamentName, 
-                        tournamentDate: widget.tournamentDate, 
-                        tournamentUrlImage: widget.tournamentUrlImage,
-                        tournamentEvents: widget.tournamentEvents,
-                        tournamentVenueAddress: widget.tournamentVenueAddress,
-                        tournamentVenueLat: widget.tournamentVenueLat,
-                        tournamentVenueLng: widget.tournamentVenueLng,
-                        tournamentUrl: widget.tournamentUrl,
-                        tournamentNumAttendees: widget.tournamentNumAttendees
-                      );
-                    },
-                  )*/
-                  widget.updateTournamentInfoState(
-                    TournamentInfoState(
-                      true,
+      alignment: Alignment.center,
+      child: Column(
+        children: [
+          Expanded(
+            child: InkWell(
+              onTap: () => {
+                widget.updateTournamentInfoState(
+                  TournamentInfoState(
+                    true,
+                    widget.tournamentName,
+                    widget.tournamentDate,
+                    widget.tournamentUrlImage,
+                    widget.tournamentEvents,
+                    widget.tournamentVenueAddress,
+                    widget.tournamentVenueLat,
+                    widget.tournamentVenueLng,
+                    widget.tournamentUrl,
+                    widget.tournamentNumAttendees,
+                  ),
+                )
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
                       widget.tournamentName,
-                      widget.tournamentDate,
-                      widget.tournamentUrlImage,
-                      widget.tournamentEvents,
-                      widget.tournamentVenueAddress,
-                      widget.tournamentVenueLat,
-                      widget.tournamentVenueLng,
-                      widget.tournamentUrl,
-                      widget.tournamentNumAttendees,
-                    ),
-                  )
-                },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        widget.tournamentName,
-                        overflow: TextOverflow.ellipsis,
-                        textScaler: TextScaler.linear(textFactor),
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
+                      overflow: TextOverflow.ellipsis,
+                      textScaler: TextScaler.linear(textFactor),
+                      style: const TextStyle(
+                        color: Colors.white,
                       ),
                     ),
-                    const Icon(
-                      Icons.location_pin,
-                      color: Colors.red,
-                    ),
-                  ],
-                ),
+                  ),
+                  const Icon(
+                    Icons.location_pin,
+                    color: Colors.red,
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 70, width: 140),
-          ],
-        )
-
-        /*Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  widget.tournamentName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
           ),
-          const Icon(
-            Icons.location_pin,
-            color: Colors.red,
-          ),
+          const SizedBox(height: 70, width: 140),
         ],
-      ),*/
-        );
+      ),
+    );
   }
 }

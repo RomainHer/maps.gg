@@ -44,9 +44,6 @@ class MarkerLayerTournaments extends StatelessWidget {
         );
       }
     }
-
-    /*debugPrint("marker_layer_test");
-    debugPrint(coordonates.toString());*/
     return markers;
   }
 

@@ -230,47 +230,6 @@ class _TournamentInfoState extends State<TournamentInfo> {
               ),
             ],
           ),
-          /*Text(widget.tournamentInfoState.tournamentVenueAddress ??
-              'no-adress'), //TODO: copy tournament venue address to clipboard when clicked
-          Row(children: [
-            TextButton(
-              style: ButtonStyle(
-                foregroundColor: WidgetStateProperty.all<Color>(Colors.blue),
-              ),
-              onPressed: () {
-                //Open the address in a maps app
-                //https://www.google.com/maps/search/?api=1&query=$tournamentVenueAddress
-                widget._launchUrl(
-                    "https://www.google.com/maps/search/?api=1&query=${widget.tournamentInfoState.tournamentVenueAddress}");
-              },
-              child: const Text('On Google Maps'),
-            ),
-            TextButton(
-              style: ButtonStyle(
-                foregroundColor: WidgetStateProperty.all<Color>(Colors.blue),
-              ),
-              onPressed: () {
-                //Open the address in a waze app
-                //https://www.waze.com/ul?ll=$lat,$lng&navigate=yes
-                //https://waze.com/ul?q=$tournamentVenueAddress
-                widget._launchUrl(
-                    "https://www.waze.com/ul?ll=${widget.tournamentInfoState.tournamentVenueLat},${widget.tournamentInfoState.tournamentVenueLng}&navigate=yes");
-              },
-              child: const Text('On Waze'),
-            ),
-          ]),
-          TextButton(
-            style: ButtonStyle(
-              foregroundColor: WidgetStateProperty.all<Color>(Colors.blue),
-            ),
-            onPressed: () {
-              //Open the tournament URL in a browser
-              widget._launchUrl(widget.tournamentInfoState.tournamentUrl ?? '');
-            },
-            child: const Text('Go to start.gg'),
-          ),
-          Text(
-              "${widget.tournamentInfoState.tournamentNumAttendees} participants"),*/
         ],
       ),
     );
