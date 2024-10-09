@@ -32,6 +32,14 @@ class _CustomMapState extends State<CustomMap> {
     });
   }
 
+  void mapEventHandler(MapEvent event) {
+    if (event is MapEventMoveStart) {
+      setState(() {
+        tournamentInfoState.isTournamentSelected = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -45,7 +53,8 @@ class _CustomMapState extends State<CustomMap> {
             maxZoom: 18.0,
             interactionOptions: const InteractionOptions(
                 flags: InteractiveFlag.all & ~InteractiveFlag.rotate),
-            onTap: (_, __) => widget.popupController.hideAllPopups(),
+            //onTap: (_, __) => widget.popupController.hideAllPopups(),
+            onMapEvent: (evt) => mapEventHandler(evt),
           ),
           children: [
             TileLayer(

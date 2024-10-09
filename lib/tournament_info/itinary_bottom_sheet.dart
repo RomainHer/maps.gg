@@ -49,7 +49,7 @@ class ItinaryBottomSheet extends StatelessWidget {
                   ),
                   padding: const EdgeInsets.all(5),
                   child: Image.asset(
-                    "google_maps_logo.png",
+                    "assets/google_maps_logo.png",
                     height: 40,
                     width: 40,
                   ),
@@ -81,7 +81,7 @@ class ItinaryBottomSheet extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(5),
                   child: Image.asset(
-                    "waze_logo.png",
+                    "assets/waze_logo.png",
                     height: 50,
                     width: 50,
                   ),
