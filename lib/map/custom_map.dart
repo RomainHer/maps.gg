@@ -26,6 +26,10 @@ class CustomMap extends StatefulWidget {
 class _CustomMapState extends State<CustomMap> {
   TournamentInfoState tournamentInfoState = TournamentInfoState.empty();
 
+  int getSelectedTournamentId() {
+    return tournamentInfoState.tournamentId ?? 0;
+  }
+
   void updateTournamentInfoState(TournamentInfoState tournamentInfoState) {
     setState(() {
       this.tournamentInfoState = tournamentInfoState;
@@ -35,7 +39,7 @@ class _CustomMapState extends State<CustomMap> {
   void mapEventHandler(MapEvent event) {
     if (event is MapEventMoveStart) {
       setState(() {
-        tournamentInfoState.isTournamentSelected = false;
+        tournamentInfoState = TournamentInfoState.empty();
       });
     }
   }
@@ -64,6 +68,7 @@ class _CustomMapState extends State<CustomMap> {
               subdomains: const ['a', 'b', 'c'],
             ),
             MarkerLayerTournaments(
+              getSelectedTournamentId: getSelectedTournamentId,
               updateTournamentInfoState: updateTournamentInfoState,
               tournamentsData: widget.tournaments,
               popupController: widget.popupController,

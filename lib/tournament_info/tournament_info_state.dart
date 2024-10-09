@@ -1,5 +1,6 @@
 class TournamentInfoState {
   bool isTournamentSelected = false;
+  int? tournamentId;
   String? tournamentName;
   int? tournamentDate;
   String? tournamentUrlImage;
@@ -12,6 +13,7 @@ class TournamentInfoState {
 
   TournamentInfoState(
       this.isTournamentSelected,
+      this.tournamentId,
       this.tournamentName,
       this.tournamentDate,
       this.tournamentUrlImage,

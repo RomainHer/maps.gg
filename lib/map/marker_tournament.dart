@@ -13,6 +13,7 @@ class MarkerContentTournament extends StatefulWidget {
   final String tournamentUrl;
   final int tournamentNumAttendees;
   final Function updateTournamentInfoState;
+  final Function getSelectedTournamentId;
 
   const MarkerContentTournament({
     super.key,
@@ -27,6 +28,7 @@ class MarkerContentTournament extends StatefulWidget {
     required this.tournamentUrl,
     required this.tournamentNumAttendees,
     required this.updateTournamentInfoState,
+    required this.getSelectedTournamentId,
   });
 
   @override
@@ -37,52 +39,108 @@ class MarkerContentTournament extends StatefulWidget {
 class _MarkerContentTournamentState extends State<MarkerContentTournament> {
   @override
   Widget build(BuildContext context) {
-    double textFactor = widget.tournamentName.length > 45 ? 0.7 : 1;
     return Container(
       alignment: Alignment.center,
       child: Column(
         children: [
-          Expanded(
+          SizedBox(
+            height: 70,
+            width: 140,
             child: InkWell(
               onTap: () => {
-                widget.updateTournamentInfoState(
-                  TournamentInfoState(
-                    true,
-                    widget.tournamentName,
-                    widget.tournamentDate,
-                    widget.tournamentUrlImage,
-                    widget.tournamentEvents,
-                    widget.tournamentVenueAddress,
-                    widget.tournamentVenueLat,
-                    widget.tournamentVenueLng,
-                    widget.tournamentUrl,
-                    widget.tournamentNumAttendees,
-                  ),
-                )
+                if (widget.tournamentId != widget.getSelectedTournamentId())
+                  {
+                    widget.updateTournamentInfoState(
+                      TournamentInfoState(
+                        true,
+                        widget.tournamentId,
+                        widget.tournamentName,
+                        widget.tournamentDate,
+                        widget.tournamentUrlImage,
+                        widget.tournamentEvents,
+                        widget.tournamentVenueAddress,
+                        widget.tournamentVenueLat,
+                        widget.tournamentVenueLng,
+                        widget.tournamentUrl,
+                        widget.tournamentNumAttendees,
+                      ),
+                    )
+                  }
+                else
+                  {
+                    widget
+                        .updateTournamentInfoState(TournamentInfoState.empty())
+                  }
               },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      widget.tournamentName,
-                      overflow: TextOverflow.ellipsis,
-                      textScaler: TextScaler.linear(textFactor),
-                      style: const TextStyle(
-                        color: Colors.white,
+              child: Container(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: widget.tournamentId ==
+                                  widget.getSelectedTournamentId()
+                              ? Color(0xFF3F7FFD)
+                              : Colors.white,
+                          width: 3,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(2),
+                        child: Image.network(
+                          widget.tournamentUrlImage,
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                            height: 50,
+                            width: 50,
+                            color: Color(0xFFD8D8D8),
+                          ),
+                          loadingBuilder: (_, child, loadingProgress) =>
+                              loadingProgress == null
+                                  ? child
+                                  : const SizedBox(
+                                      height: 50,
+                                      width: 50,
+                                      child: CircularProgressIndicator()),
+                        ),
                       ),
                     ),
-                  ),
-                  const Icon(
-                    Icons.location_pin,
-                    color: Colors.red,
-                  ),
-                ],
+                    Positioned(
+                      bottom: -10,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Positioned(
+                            top: 4,
+                            child: Container(
+                              width: 7,
+                              height: 7,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.location_pin,
+                            size: 20,
+                            color: widget.tournamentId ==
+                                    widget.getSelectedTournamentId()
+                                ? Color(0xFF3F7FFD)
+                                : Color(0xFF51BF51),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

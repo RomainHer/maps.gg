@@ -8,12 +8,14 @@ class MarkerLayerTournaments extends StatelessWidget {
   final List<dynamic>? tournamentsData;
   final PopupController popupController;
   final Function updateTournamentInfoState;
+  final Function getSelectedTournamentId;
 
   const MarkerLayerTournaments({
     super.key,
     required this.tournamentsData,
     required this.popupController,
     required this.updateTournamentInfoState,
+    required this.getSelectedTournamentId,
   });
 
   List<Marker> getListMarkers() {
@@ -39,6 +41,7 @@ class MarkerLayerTournaments extends StatelessWidget {
               tournamentUrl: tournament['url'] ?? '',
               tournamentNumAttendees: tournament['numAttendees'] ?? 0,
               updateTournamentInfoState: updateTournamentInfoState,
+              getSelectedTournamentId: getSelectedTournamentId,
             ),
           ),
         );

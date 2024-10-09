@@ -91,14 +91,16 @@ class _TournamentInfoState extends State<TournamentInfo> {
             padding: const EdgeInsets.only(bottom: 15),
             child: Row(
               children: [
-                Text(
-                  widget.tournamentInfoState.tournamentName ?? 'no-name',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
+                Expanded(
+                  child: Text(
+                    widget.tournamentInfoState.tournamentName ?? 'no-name',
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
-                const Spacer(),
                 IconButton(
                   visualDensity:
                       const VisualDensity(horizontal: -4, vertical: -4),
@@ -131,6 +133,11 @@ class _TournamentInfoState extends State<TournamentInfo> {
                     widget.tournamentInfoState.tournamentUrlImage ?? '',
                     width: 70,
                     height: 70,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      height: 70,
+                      width: 70,
+                      color: Color(0xFFD8D8D8),
+                    ),
                     loadingBuilder: (context, child, loadingProgress) =>
                         loadingProgress == null
                             ? child
