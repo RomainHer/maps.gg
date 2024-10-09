@@ -4,19 +4,33 @@ import 'package:geolocator/geolocator.dart';
 import 'package:graphql/client.dart';
 import 'package:maps_gg/map/custom_map.dart';
 
+Future<Map<String, dynamic>> _getLocationAndTournaments() async {
+  try {
+    Position position = await _determinePosition();
+    List<dynamic> tournaments =
+        await _requestApi(position.latitude, position.longitude);
+    return {
+      'position': position,
+      'tournaments': tournaments,
+    };
+  } catch (e) {
+    return Future.error(e);
+  }
+}
+
 Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
   final httpLink = HttpLink(
     'https://api.start.gg/gql/alpha',
   );
   final authLink = AuthLink(
-    getToken: () async =>
-        'Bearer d5d8a776d10a680ffa26d2893243b31a', //auther token 7896090b713048a15a1df5eacdc2d260
+    getToken: () async => 'Bearer d5d8a776d10a680ffa26d2893243b31a',
   );
   Link link = authLink.concat(httpLink);
   final GraphQLClient client = GraphQLClient(
     cache: GraphQLCache(),
     link: link,
   );
+
   const String readTournamentsAroud = r'''
     query SocalTournaments($perPage: Int, $coordinates: String!, $radius: String!, $timestampNow: Timestamp) {
       tournaments(query: {
@@ -70,8 +84,6 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
   const int perPage = 500;
   String coordinates = "$latitude,$longitude";
   const String radius = "200mi";
-  //const int timestampNowtest = 1680699455;
-
   DateTime datetimeNow = DateTime.now();
   double tmp = datetimeNow.millisecondsSinceEpoch / 1000;
   int timestampNow = tmp.round();
@@ -85,9 +97,10 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
       'timestampNow': timestampNow
     },
   );
-  final QueryResult result = await client.query(options);
 
+  final QueryResult result = await client.query(options);
   List<dynamic> dataTournaments = [];
+
   if (result.hasException) {
     debugPrint(result.exception.toString());
   } else {
@@ -134,7 +147,7 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
       dataTournaments.add(tournamentDetail);
     }
   }
-  //debugPrint(coordinatesTournaments.toString());
+
   return dataTournaments;
 }
 
@@ -142,12 +155,8 @@ Future<Position> _determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;
 
-  // Test if location services are enabled.
   serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
-    // Location services are not enabled don't continue
-    // accessing the position and request users of the
-    // App to enable the location services.
     return Future.error('Location services are disabled.');
   }
 
@@ -155,23 +164,15 @@ Future<Position> _determinePosition() async {
   if (permission == LocationPermission.denied) {
     permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied) {
-      // Permissions are denied, next time you could try
-      // requesting permissions again (this is also where
-      // Android's shouldShowRequestPermissionRationale
-      // returned true. According to Android guidelines
-      // your App should show an explanatory UI now.
       return Future.error('Location permissions are denied');
     }
   }
 
   if (permission == LocationPermission.deniedForever) {
-    // Permissions are denied forever, handle appropriately.
     return Future.error(
         'Location permissions are permanently denied, we cannot request permissions.');
   }
 
-  // When we reach here, permissions are granted and we can
-  // continue accessing the position of the device.
   return await Geolocator.getCurrentPosition();
 }
 
@@ -190,30 +191,59 @@ class _MapSmashState extends State<MapSmash> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-        future: _determinePosition(),
+        future: _getLocationAndTournaments(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return FutureBuilder(
-                future: _requestApi(
-                    snapshot.data!.latitude, snapshot.data!.longitude),
-                builder: (context, snapshot2) {
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      snapshot2.connectionState == ConnectionState.done) {
-                    return PopupScope(
-                      popupController: widget._popupController,
-                      child: CustomMap(
-                        location: snapshot.data!,
-                        tournaments: snapshot2.data!,
-                        popupController: widget._popupController,
-                      ),
-                    );
-                  } else {
-                    return const CircularProgressIndicator();
-                  }
-                });
-          } else {
-            return const CircularProgressIndicator();
+            if (snapshot.hasData) {
+              var data = snapshot.data as Map<String, dynamic>;
+              return PopupScope(
+                popupController: widget._popupController,
+                child: CustomMap(
+                  location: data['position'],
+                  tournaments: data['tournaments'],
+                  popupController: widget._popupController,
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
           }
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/pikachu.gif",
+                      height: 50,
+                      width: 50,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(
+                          left: 12.5, right: 12.5, top: 25),
+                      child: Image.asset(
+                        "assets/kirby.gif",
+                        height: 25,
+                        width: 25,
+                      ),
+                    ),
+                    Image.asset(
+                      "assets/mario.gif",
+                      height: 50,
+                      width: 50,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  child: const LinearProgressIndicator(),
+                )
+              ],
+            ),
+          );
         },
       ),
     );
