@@ -189,36 +189,32 @@ class _MapSmashState extends State<MapSmash> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          FutureBuilder(
-            future: _determinePosition(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return FutureBuilder(
-                    future: _requestApi(
-                        snapshot.data!.latitude, snapshot.data!.longitude),
-                    builder: (context, snapshot2) {
-                      if (snapshot.connectionState == ConnectionState.done &&
-                          snapshot2.connectionState == ConnectionState.done) {
-                        return PopupScope(
-                          popupController: widget._popupController,
-                          child: CustomMap(
-                            location: snapshot.data!,
-                            tournaments: snapshot2.data!,
-                            popupController: widget._popupController,
-                          ),
-                        );
-                      } else {
-                        return const CircularProgressIndicator();
-                      }
-                    });
-              } else {
-                return const CircularProgressIndicator();
-              }
-            },
-          ),
-        ],
+      body: FutureBuilder(
+        future: _determinePosition(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return FutureBuilder(
+                future: _requestApi(
+                    snapshot.data!.latitude, snapshot.data!.longitude),
+                builder: (context, snapshot2) {
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot2.connectionState == ConnectionState.done) {
+                    return PopupScope(
+                      popupController: widget._popupController,
+                      child: CustomMap(
+                        location: snapshot.data!,
+                        tournaments: snapshot2.data!,
+                        popupController: widget._popupController,
+                      ),
+                    );
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                });
+          } else {
+            return const CircularProgressIndicator();
+          }
+        },
       ),
     );
   }
