@@ -58,7 +58,7 @@ class MarkerLayerTournaments extends StatelessWidget {
         spiderfyCircleRadius: 80,
         spiderfySpiralDistanceMultiplier: 2,
         circleSpiralSwitchover: 12,
-        maxClusterRadius: 150,
+        maxClusterRadius: 130,
         rotate: true,
         size: const Size(50, 50),
         alignment: Alignment.center,
