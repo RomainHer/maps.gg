@@ -58,9 +58,9 @@ class MarkerLayerTournaments extends StatelessWidget {
         spiderfyCircleRadius: 80,
         spiderfySpiralDistanceMultiplier: 2,
         circleSpiralSwitchover: 12,
-        maxClusterRadius: 120,
+        maxClusterRadius: 150,
         rotate: true,
-        size: const Size(40, 40),
+        size: const Size(50, 50),
         alignment: Alignment.center,
         padding: const EdgeInsets.all(50),
         maxZoom: 15,
@@ -69,7 +69,7 @@ class MarkerLayerTournaments extends StatelessWidget {
             borderColor: Colors.blueAccent,
             color: Colors.black12,
             borderStrokeWidth: 3),
-        popupOptions: PopupOptions(
+        /*popupOptions: PopupOptions(
             popupSnap: PopupSnap.markerTop,
             popupController: popupController,
             popupBuilder: (_, marker) => Container(
@@ -82,19 +82,30 @@ class MarkerLayerTournaments extends StatelessWidget {
                       'Container popup for marker',
                     ),
                   ),
-                )),
+                )),*/
         builder: (context, markers) {
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.black,
-            ),
-            child: Center(
-              child: Text(
-                markers.length.toString(),
-                style: const TextStyle(color: Colors.white),
+          return Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Color(0x3351BF51),
+                  shape: BoxShape.circle,
+                ),
               ),
-            ),
+              Container(
+                margin: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Color(0xFF51BF51),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    markers.length.toString(),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
           );
         },
       ),
