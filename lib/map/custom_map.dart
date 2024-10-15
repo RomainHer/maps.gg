@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:maps_gg/map/marker_layer_tournament.dart';
 import 'package:maps_gg/tournament_info/tournament_info.dart';
@@ -23,11 +25,23 @@ class CustomMap extends StatefulWidget {
   State<CustomMap> createState() => _CustomMapState();
 }
 
-class _CustomMapState extends State<CustomMap> {
+class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
   TournamentInfoState tournamentInfoState = TournamentInfoState.empty();
+  //final MapController _mapController = MapController();
+  late final _animatedMapController = AnimatedMapController(vsync: this);
+  final double _initialZoom = 9.0;
+  final double _maxZoom = 18.0;
 
   int getSelectedTournamentId() {
     return tournamentInfoState.tournamentId ?? 0;
+  }
+
+  Future<void> _centerMapOnUser() async {
+    _animatedMapController.centerOnPoint(
+      LatLng(widget.location.latitude, widget.location.longitude),
+      duration: Duration(milliseconds: 500),
+      zoom: _initialZoom,
+    );
   }
 
   void updateTournamentInfoState(TournamentInfoState tournamentInfoState) {
@@ -47,14 +61,14 @@ class _CustomMapState extends State<CustomMap> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: Alignment.bottomCenter,
       children: [
         FlutterMap(
+          mapController: _animatedMapController.mapController,
           options: MapOptions(
             initialCenter: LatLng(widget.location.latitude,
                 widget.location.longitude), // Coordonnées de Paris
-            initialZoom: 8.0,
-            maxZoom: 18.0,
+            initialZoom: _initialZoom,
+            maxZoom: _maxZoom,
             interactionOptions: const InteractionOptions(
                 flags: InteractiveFlag.all & ~InteractiveFlag.rotate),
             //onTap: (_, __) => widget.popupController.hideAllPopups(),
@@ -106,14 +120,77 @@ class _CustomMapState extends State<CustomMap> {
             )
           ],
         ),
-        Card(
-          color: Colors.white,
-          margin: const EdgeInsets.all(20),
-          elevation: 20,
-          child: Visibility(
-            visible: tournamentInfoState.isTournamentSelected,
-            child: TournamentInfo(
-              tournamentInfoState: tournamentInfoState,
+        Positioned(
+          top: MediaQuery.of(context).padding.top + 10,
+          left: 10,
+          right: 10,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  // Add your onTap functionality here
+                },
+                child: Card(
+                  color: Colors.white,
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      'Paramètres d\'affichage',
+                      style: GoogleFonts.heebo(),
+                    ),
+                  ),
+                ),
+              ),
+              Card(
+                elevation: 10,
+                color: Colors.white,
+                shape: CircleBorder(),
+                child: SizedBox(
+                  //width: 25,
+                  //height: 25,
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.favorite,
+                    ),
+                    //padding: EdgeInsets.zero,
+                    //iconSize: 10,
+                  ),
+                ),
+              ),
+              Card(
+                elevation: 10,
+                color: Colors.white,
+                shape: CircleBorder(),
+                child: IconButton(
+                  onPressed: () {
+                    _centerMapOnUser();
+                  },
+                  icon: const Icon(
+                    Icons.my_location,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          bottom: 20,
+          left: 20,
+          right: 20,
+          child: Card(
+            color: Colors.white,
+            elevation: 20,
+            child: Visibility(
+              visible: tournamentInfoState.isTournamentSelected,
+              child: TournamentInfo(
+                tournamentInfoState: tournamentInfoState,
+              ),
             ),
           ),
         ),

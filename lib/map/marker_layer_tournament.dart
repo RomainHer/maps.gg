@@ -66,23 +66,10 @@ class MarkerLayerTournaments extends StatelessWidget {
         maxZoom: 15,
         markers: markers,
         polygonOptions: const PolygonOptions(
-            borderColor: Colors.blueAccent,
-            color: Colors.black12,
-            borderStrokeWidth: 3),
-        /*popupOptions: PopupOptions(
-            popupSnap: PopupSnap.markerTop,
-            popupController: popupController,
-            popupBuilder: (_, marker) => Container(
-                  width: 200,
-                  height: 100,
-                  color: Colors.white,
-                  child: GestureDetector(
-                    onTap: () => debugPrint('Popup tap!'),
-                    child: const Text(
-                      'Container popup for marker',
-                    ),
-                  ),
-                )),*/
+          borderColor: Colors.blueAccent,
+          color: Colors.black12,
+          borderStrokeWidth: 3,
+        ),
         builder: (context, markers) {
           return Stack(
             children: [
