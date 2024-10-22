@@ -11,15 +11,15 @@ import 'package:maps_gg/tournament_info/tournament_info.dart';
 import 'package:maps_gg/tournament_info/tournament_info_state.dart';
 
 class CustomMap extends StatefulWidget {
-  final Position location;
-  final List<dynamic> tournaments;
-  final PopupController popupController;
-
   const CustomMap(
       {super.key,
       required this.location,
       required this.tournaments,
       required this.popupController});
+
+  final Position location;
+  final PopupController popupController;
+  final List<dynamic> tournaments;
 
   @override
   State<CustomMap> createState() => _CustomMapState();
@@ -27,21 +27,15 @@ class CustomMap extends StatefulWidget {
 
 class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
   TournamentInfoState tournamentInfoState = TournamentInfoState.empty();
+
   //final MapController _mapController = MapController();
   late final _animatedMapController = AnimatedMapController(vsync: this);
+
   final double _initialZoom = 9.0;
   final double _maxZoom = 18.0;
 
   int getSelectedTournamentId() {
     return tournamentInfoState.tournamentId ?? 0;
-  }
-
-  Future<void> _centerMapOnUser() async {
-    _animatedMapController.centerOnPoint(
-      LatLng(widget.location.latitude, widget.location.longitude),
-      duration: Duration(milliseconds: 500),
-      zoom: _initialZoom,
-    );
   }
 
   void updateTournamentInfoState(TournamentInfoState tournamentInfoState) {
@@ -56,6 +50,14 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
         tournamentInfoState = TournamentInfoState.empty();
       });
     }
+  }
+
+  Future<void> _centerMapOnUser() async {
+    _animatedMapController.centerOnPoint(
+      LatLng(widget.location.latitude, widget.location.longitude),
+      duration: Duration(milliseconds: 500),
+      zoom: _initialZoom,
+    );
   }
 
   @override

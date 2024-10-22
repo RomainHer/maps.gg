@@ -177,10 +177,12 @@ Future<Position> _determinePosition() async {
 }
 
 class MapSmash extends StatefulWidget {
+  MapSmash({super.key});
+
   final latitude = 48.729024;
   final longitude = -3.463714;
+
   final PopupController _popupController = PopupController();
-  MapSmash({super.key});
 
   @override
   State<MapSmash> createState() => _MapSmashState();

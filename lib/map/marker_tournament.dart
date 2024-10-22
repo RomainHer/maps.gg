@@ -2,19 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:maps_gg/tournament_info/tournament_info_state.dart';
 
 class MarkerContentTournament extends StatefulWidget {
-  final int tournamentId;
-  final String tournamentName;
-  final int tournamentDate;
-  final String tournamentUrlImage;
-  final List<dynamic> tournamentEvents;
-  final String tournamentVenueAddress;
-  final double tournamentVenueLat;
-  final double tournamentVenueLng;
-  final String tournamentUrl;
-  final int tournamentNumAttendees;
-  final Function updateTournamentInfoState;
-  final Function getSelectedTournamentId;
-
   const MarkerContentTournament({
     super.key,
     required this.tournamentId,
@@ -30,6 +17,19 @@ class MarkerContentTournament extends StatefulWidget {
     required this.updateTournamentInfoState,
     required this.getSelectedTournamentId,
   });
+
+  final Function getSelectedTournamentId;
+  final int tournamentDate;
+  final List<dynamic> tournamentEvents;
+  final int tournamentId;
+  final String tournamentName;
+  final int tournamentNumAttendees;
+  final String tournamentUrl;
+  final String tournamentUrlImage;
+  final String tournamentVenueAddress;
+  final double tournamentVenueLat;
+  final double tournamentVenueLng;
+  final Function updateTournamentInfoState;
 
   @override
   State<MarkerContentTournament> createState() =>

@@ -8,8 +8,8 @@ class ItemListInfo extends StatelessWidget {
       this.padding = const EdgeInsets.all(0)});
 
   final IconData icon;
-  final String text;
   final EdgeInsetsGeometry padding;
+  final String text;
 
   @override
   Widget build(BuildContext context) {

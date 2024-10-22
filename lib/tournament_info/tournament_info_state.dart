@@ -1,16 +1,4 @@
 class TournamentInfoState {
-  bool isTournamentSelected = false;
-  int? tournamentId;
-  String? tournamentName;
-  int? tournamentDate;
-  String? tournamentUrlImage;
-  List<dynamic>? tournamentEvents;
-  String? tournamentVenueAddress;
-  double? tournamentVenueLat;
-  double? tournamentVenueLng;
-  String? tournamentUrl;
-  int? tournamentNumAttendees;
-
   TournamentInfoState(
       this.isTournamentSelected,
       this.tournamentId,
@@ -25,4 +13,16 @@ class TournamentInfoState {
       this.tournamentNumAttendees);
 
   TournamentInfoState.empty();
+
+  bool isTournamentSelected = false;
+  int? tournamentDate;
+  List<dynamic>? tournamentEvents;
+  int? tournamentId;
+  String? tournamentName;
+  int? tournamentNumAttendees;
+  String? tournamentUrl;
+  String? tournamentUrlImage;
+  String? tournamentVenueAddress;
+  double? tournamentVenueLat;
+  double? tournamentVenueLng;
 }

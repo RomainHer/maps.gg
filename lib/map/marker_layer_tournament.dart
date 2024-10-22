@@ -5,11 +5,6 @@ import 'package:latlong2/latlong.dart';
 import 'package:maps_gg/map/marker_tournament.dart';
 
 class MarkerLayerTournaments extends StatelessWidget {
-  final List<dynamic>? tournamentsData;
-  final PopupController popupController;
-  final Function updateTournamentInfoState;
-  final Function getSelectedTournamentId;
-
   const MarkerLayerTournaments({
     super.key,
     required this.tournamentsData,
@@ -17,6 +12,11 @@ class MarkerLayerTournaments extends StatelessWidget {
     required this.updateTournamentInfoState,
     required this.getSelectedTournamentId,
   });
+
+  final Function getSelectedTournamentId;
+  final PopupController popupController;
+  final List<dynamic>? tournamentsData;
+  final Function updateTournamentInfoState;
 
   List<Marker> getListMarkers() {
     List<Marker> markers = [];

@@ -25,6 +25,9 @@ class TournamentInfo extends StatefulWidget {
 
   final TournamentInfoState tournamentInfoState;
 
+  @override
+  State<TournamentInfo> createState() => _TournamentInfoState();
+
   getNumberDaysBeforeTournament() {
     var daysBefore = getDifferenceInDays(
         DateTime.now(),
@@ -67,9 +70,6 @@ class TournamentInfo extends StatefulWidget {
       throw Exception('Could not launch $url');
     }
   }
-
-  @override
-  State<TournamentInfo> createState() => _TournamentInfoState();
 }
 
 class _TournamentInfoState extends State<TournamentInfo> {
