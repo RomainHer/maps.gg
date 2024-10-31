@@ -52,18 +52,14 @@ jobs:
 
         #6 Building APK
       - name: Build APK
-        env:
-          API_TOKEN: ${{ secrets.START_GG_API_TOKEN }}
         run: |
-          echo "API_TOKEN=$API_TOKEN" > .env 
+          echo "API_TOKEN=${{ secrets.START_GG_API_TOKEN }}" > .env 
           flutter build apk --release
 
         #7 Building App Bundle (aab)
       - name: Build appBundle
-        env:
-          API_TOKEN: ${{ secrets.START_GG_API_TOKEN }}
         run: |
-          echo "API_TOKEN=$API_TOKEN" > .env 
+          echo "API_TOKEN=${{ secrets.START_GG_API_TOKEN }}" > .env 
           flutter build appbundle
 
         #8 Build IPA ( IOS Build )
