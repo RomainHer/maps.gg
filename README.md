@@ -86,7 +86,7 @@ To clone and run the project locally:
 
 ## Screenshots
 
-(Replace link_to_image.png with the path to an image in your repository or add a screenshot in the assets folder to display it here.)
+![Screenshot 1](Screenshot1.jpg)
 
 ## Contributions
 
