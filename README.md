@@ -60,13 +60,28 @@ To clone and run the project locally:
     flutter pub get
     ```
 
-4. Check if you have all the necessary tools
+4. Get your own API token from start.gg
+
+    1. Go to **[start.gg](https://start.gg)**
+    2. Create an **account**
+    3. Go to **Developer Settings** > **Personal Access Tokens** to create your token
+
+5. Put your token in a .env file
+
+    1. Copy the **.env.exemple** file and rename it **.env**
+    2. Copy your token for **START_GG_API_TOKEN**
+
+        ```env
+        START_GG_API_TOKEN=put_your_token_here
+        ```
+
+6. Check if you have all the necessary tools
 
     ```bash
     flutter doctor
     ```
 
-5. Check if you have any devices or emulators available
+7. Check if you have any devices or emulators available
 
     ```bash
     flutter devices
@@ -76,7 +91,7 @@ To clone and run the project locally:
     flutter emulators
     ```
 
-6. Run the app on a simulator or physical device:
+8. Run the app on a simulator or physical device:
 
     ```bash
     flutter run
