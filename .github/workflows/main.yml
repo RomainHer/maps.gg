@@ -31,13 +31,27 @@ jobs:
           version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
           echo "VERSION=$version" >> $GITHUB_ENV
 
-      #3 Create next version
       - name: Create next version
         id: create_next_version
         if: env.VERSION == ${{ steps.get_latest_release.outputs.release }}
         run: |
-          version=$(echo ${{ steps.extract_version.outputs.VERSION }} | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
-          echo "VERSION=$version" >> $GITHUB_ENV
+          version=${{ steps.extract_version.outputs.VERSION }}
+
+          # Vérifie si le suffixe existe (ex: "-alpha")
+          suffix=""
+          if [[ "$version" == *"-"* ]]; then
+            suffix="-$(echo $version | cut -d '-' -f 2)"
+            version=$(echo $version | cut -d '-' -f 1)
+          fi
+
+          # Incrémentation du dernier chiffre de version (ex: "v1.2.3" devient "v1.2.4")
+          new_version=$(echo "$version" | awk -F. -v OFS=. '{$NF += 1 ; print}')
+
+          # Ajoute à nouveau le suffixe s'il y en avait un
+          new_version="${new_version}${suffix}"
+
+          # Définir la nouvelle version dans $GITHUB_ENV
+          echo "VERSION=$new_version" >> $GITHUB_ENV
 
       #4 echo version
       - name: echo version
