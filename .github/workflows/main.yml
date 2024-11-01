@@ -81,6 +81,8 @@ jobs:
               add_alpha_suffix=$([[ -z "$latest_suffix" && "$latest_X" -eq 0 ]])
           fi
 
+          echo $add_alpha_suffix
+
           # Ajouter "-alpha" si nécessaire
           if [[ "$add_alpha_suffix" == true ]]; then
               new_version="${new_version}-alpha"
