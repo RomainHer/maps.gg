@@ -34,7 +34,7 @@ jobs:
       #4 Increment Version
       - name: Increment version
         run: |
-          version="v1.2.3-suffix"  # ou charge la version actuelle depuis un fichier ou tag
+          version="${{ env.VERSION }}"  # ou charge la version actuelle depuis un fichier ou tag
           if [[ $version =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?$ ]]; then
               X="${BASH_REMATCH[1]}"
               Y="${BASH_REMATCH[2]}"
