@@ -50,6 +50,8 @@ jobs:
           # Ajoute à nouveau le suffixe s'il y en avait un
           new_version="${new_version}${suffix}"
 
+          echo $new_version
+
           # Définir la nouvelle version dans $GITHUB_ENV
           echo "VERSION=$new_version" >> $GITHUB_ENV
 
