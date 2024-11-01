@@ -31,33 +31,33 @@ jobs:
           version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
           echo "VERSION=$version" >> $GITHUB_ENV
 
-      - name: Create next version
-        id: create_next_version
-        if: env.VERSION == ${{ steps.get_latest_release.outputs.release }}
+      #4 Increment Version
+      - name: Increment version
         run: |
-          version=${{ steps.extract_version.outputs.VERSION }}
-
-          # Vérifie si le suffixe existe (ex: "-alpha")
-          suffix=""
-          if [[ "$version" == *"-"* ]]; then
-            suffix="-$(echo $version | cut -d '-' -f 2)"
-            version=$(echo $version | cut -d '-' -f 1)
+          version="v1.2.3-suffix"  # ou charge la version actuelle depuis un fichier ou tag
+          if [[ $version =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?$ ]]; then
+              X="${BASH_REMATCH[1]}"
+              Y="${BASH_REMATCH[2]}"
+              Z="${BASH_REMATCH[3]}"
+              suffix="${BASH_REMATCH[4]}"
+              Z=$((Z + 1))
+              if [ -z "$suffix" ]; then
+                  new_version="v${X}.${Y}.${Z}"
+              else
+                  new_version="v${X}.${Y}.${Z}${suffix}"
+              fi
+              echo "Nouvelle version: $new_version"
+              echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
+          else
+              echo "Format de version invalide"
+              exit 1
           fi
 
-          # Incrémentation du dernier chiffre de version (ex: "v1.2.3" devient "v1.2.4")
-          new_version=$(echo "$version" | awk -F. -v OFS=. '{$NF += 1 ; print}')
-
-          # Ajoute à nouveau le suffixe s'il y en avait un
-          new_version="${new_version}${suffix}"
-
-          echo $new_version
-
-          # Définir la nouvelle version dans $GITHUB_ENV
-          echo "VERSION=$new_version" >> $GITHUB_ENV
-
-      #4 echo version
+      #5 echo version
       - name: echo version
-        run: echo ${{ env.VERSION }}
+        run: |
+          echo ${{ env.VERSION }}
+          echo ${{ env.NEW_VERSION }}
 
       #   #2 Setup Java
       # - name: Set Up Java
