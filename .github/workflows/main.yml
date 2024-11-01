@@ -154,13 +154,6 @@ jobs:
             build/app/outputs/bundle/release/app-release.aab
             # build/ios_build.tar.gz
 
-        #12 Extract Version
-      - name: Extract version from pubspec.yaml
-        id: extract_version
-        run: |
-          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
-          echo "VERSION=$version" >> $GITHUB_ENV
-
         #13 Create Release
       - name: Create Release
         uses: ncipollo/release-action@v1
