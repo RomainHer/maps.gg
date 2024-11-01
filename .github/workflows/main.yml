@@ -38,6 +38,9 @@ jobs:
           latest_version="${{ steps.get_latest_release.outputs.tag }}"
           extracted_version="${{ env.VERSION }}"
 
+          echo "Dernière version: $latest_version"
+          echo "Version extraite: $extracted_version"
+
           # Extraire X, Y, Z et suffix des deux versions
           if [[ $latest_version =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?$ ]]; then
               latest_X="${BASH_REMATCH[1]}"
