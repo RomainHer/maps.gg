@@ -34,24 +34,49 @@ jobs:
       #4 Increment Version
       - name: Increment version
         run: |
-          version="${{ env.VERSION }}"  # ou charge la version actuelle depuis un fichier ou tag
-          if [[ $version =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?$ ]]; then
-              X="${BASH_REMATCH[1]}"
-              Y="${BASH_REMATCH[2]}"
-              Z="${BASH_REMATCH[3]}"
-              suffix="${BASH_REMATCH[4]}"
-              Z=$((Z + 1))
-              if [ -z "$suffix" ]; then
-                  new_version="v${X}.${Y}.${Z}"
-              else
-                  new_version="v${X}.${Y}.${Z}${suffix}"
-              fi
-              echo "Nouvelle version: $new_version"
-              echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
+          # Extraire la dernière version publiée et la version du fichier pubspec.yaml
+          latest_version="${{ steps.get_latest_release.outputs.release }}"
+          extracted_version="${{ env.VERSION }}"
+
+          # Extraire X, Y, Z et suffix des deux versions
+          if [[ $latest_version =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?$ ]]; then
+              latest_X="${BASH_REMATCH[1]}"
+              latest_Y="${BASH_REMATCH[2]}"
+              latest_Z="${BASH_REMATCH[3]}"
+              latest_suffix="${BASH_REMATCH[4]}"
           else
-              echo "Format de version invalide"
+              echo "Format de la dernière version publiée invalide: $latest_version"
               exit 1
           fi
+
+          if [[ $extracted_version =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?$ ]]; then
+              extracted_X="${BASH_REMATCH[1]}"
+              extracted_Y="${BASH_REMATCH[2]}"
+              extracted_Z="${BASH_REMATCH[3]}"
+              extracted_suffix="${BASH_REMATCH[4]}"
+          else
+              echo "Format de la version extraite invalide: $extracted_version"
+              exit 1
+          fi
+
+          # Comparaison des parties de version
+          if (( extracted_X > latest_X )) || 
+             (( extracted_X == latest_X && extracted_Y > latest_Y )) || 
+             (( extracted_X == latest_X && extracted_Y == latest_Y && extracted_Z > latest_Z )); then
+              # Utiliser la version extraite si elle est plus grande
+              new_version="$extracted_version"
+          elif (( extracted_X == latest_X && extracted_Y == latest_Y && extracted_Z == latest_Z )); then
+              # Incrémenter Z de la version extraite si elle est égale à la dernière version
+              new_Z=$((extracted_Z + 1))
+              new_version="v${extracted_X}.${extracted_Y}.${new_Z}${extracted_suffix}"
+          else
+              # Sinon, incrémenter la dernière version
+              new_Z=$((latest_Z + 1))
+              new_version="v${latest_X}.${latest_Y}.${new_Z}${latest_suffix}"
+          fi
+
+          echo "Nouvelle version: $new_version"
+          echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
 
       #5 echo version
       - name: echo version
