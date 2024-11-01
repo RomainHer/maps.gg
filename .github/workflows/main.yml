@@ -29,7 +29,7 @@ jobs:
         id: extract_version
         run: |
           version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
-          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "VERSION=v$version" >> $GITHUB_ENV
 
       #4 Increment Version
       - name: Increment version
