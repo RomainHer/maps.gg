@@ -35,7 +35,7 @@ jobs:
       - name: Increment version
         run: |
           # Extraire la dernière version publiée et la version du fichier pubspec.yaml
-          latest_version="${{ steps.get_latest_release.outputs.tag }}"
+          latest_version="${{ steps.get_latest_release.outputs.release }}"
           extracted_version="${{ env.VERSION }}"
 
           echo "Dernière version: $latest_version"
