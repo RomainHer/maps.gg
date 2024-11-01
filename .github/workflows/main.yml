@@ -68,17 +68,17 @@ jobs:
              (( extracted_X == latest_X && extracted_Y == latest_Y && extracted_Z > latest_Z )); then
               # Utiliser la version extraite si elle est plus grande
               new_version="$extracted_version"
-              add_alpha_suffix=[[ "$extracted_suffix" == "" && "$extracted_X" -eq 0 ]]
+              add_alpha_suffix=$([[ -z "$extracted_suffix" && "$extracted_X" -eq 0 ]])
           elif (( extracted_X == latest_X && extracted_Y == latest_Y && extracted_Z == latest_Z )); then
               # Incrémenter Z de la version extraite si elle est égale à la dernière version
               new_Z=$((extracted_Z + 1))
               new_version="v${extracted_X}.${extracted_Y}.${new_Z}${extracted_suffix}"
-              add_alpha_suffix=[[ "$extracted_suffix" == "" && "$extracted_X" -eq 0 ]]
+              add_alpha_suffix=$([[ -z "$extracted_suffix" && "$extracted_X" -eq 0 ]])
           else
               # Sinon, incrémenter la dernière version
               new_Z=$((latest_Z + 1))
               new_version="v${latest_X}.${latest_Y}.${new_Z}${latest_suffix}"
-              add_alpha_suffix=[[ "$latest_suffix" == "" && "$latest_X" -eq 0 ]]
+              add_alpha_suffix=$([[ -z "$latest_suffix" && "$latest_X" -eq 0 ]])
           fi
 
           # Ajouter "-alpha" si nécessaire
