@@ -39,8 +39,6 @@ jobs:
           latest_version="${{ steps.get_latest_release.outputs.release }}"
           extracted_version="${{ steps.extract_version.outputs.VERSION }}"
 
-          echo $extracted_version
-
           new_version=""
 
           # Extraire X, Y, Z et suffix des deux versions
@@ -135,12 +133,9 @@ jobs:
     name: Build & Release
     runs-on: macos-latest
     needs: [get_version]
-    # if: ${{ needs.get_version.outputs.version != '' }}
+    if: ${{ needs.get_version.outputs.version != '' }}
 
     steps:
-      - name: echo version
-        run: echo ${{ needs.get_version.outputs.version }}
-
       #1 Checkout Repository
       - name: Checkout Repository
         uses: actions/checkout@v4
