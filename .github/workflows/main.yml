@@ -140,6 +140,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Update version in pubspec.yaml
+        id: update_version
+        uses: wow-actions/update-file@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          path: pubspec.yaml
+          content: "version: ${{ needs.get_version.outputs.version }}\n"
+          commit_message: "chore: update version in pubspec.yaml to ${{ needs.get_version.outputs.version }} [skip ci]"
+          opening_comment: "# [START AUTO UPDATE]"
+          closing_comment: "# [END AUTO UPDATE]"
+          warning_comment: "# Please keep comment here to allow auto-update"
+
         #5 Setup Java
       - name: Set Up Java
         uses: actions/setup-java@v4
@@ -206,15 +218,3 @@ jobs:
           artifacts: "build/app/outputs/flutter-apk/app-release.apk,build/app/outputs/bundle/release/app-release.aab,build/ios_build.tar.gz"
           tag: ${{ needs.get_version.outputs.version }}
           token: ${{ secrets.TOKEN }}
-
-      - name: Update version in pubspec.yaml
-        id: update_version
-        uses: wow-actions/update-file@v1
-        with:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-          path: pubspec.yaml
-          content: "version: ${{ needs.get_version.outputs.version }}\n"
-          commit_message: "chore: update version in pubspec.yaml to ${{ needs.get_version.outputs.version }} [skip ci]"
-          opening_comment: "# [START AUTO UPDATE]\n"
-          closing_comment: "# [END AUTO UPDATE]\n"
-          warning_comment: "# Please keep comment here to allow auto-update\n"
