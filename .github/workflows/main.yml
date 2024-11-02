@@ -6,16 +6,17 @@ on:
       - dev
 
 jobs:
-  build:
-    name: Build & Release
-    runs-on: macos-latest
+  get_version:
+    name: Get Version
+    runs-on: ubuntu-latest
 
+    outputs:
+      version: ${{ steps.increment_version.outputs.NEW_VERSION }}
     steps:
-      #1 Checkout Repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      #2 Get Latest Release
+        #2 Get Latest Release
       - name: Get Latest Release
         id: get_latest_release
         uses: pozetroninc/github-action-get-latest-release@v0.8.0
@@ -28,17 +29,17 @@ jobs:
         id: extract_version
         run: |
           version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
-          echo "VERSION=v$version" >> $GITHUB_ENV
+          echo "VERSION=v$version" >> $GITHUB_OUTPUT
 
       #4 Increment Version
       - name: Increment version
+        id: increment_version
         run: |
           # Extraire la dernière version publiée et la version du fichier pubspec.yaml
           latest_version="${{ steps.get_latest_release.outputs.release }}"
-          extracted_version="${{ env.VERSION }}"
+          extracted_version="${{ steps.extract_version.outputs.VERSION }}"
 
-          echo "Dernière version: $latest_version"
-          echo "Version extraite: $extracted_version"
+          new_version=""
 
           # Extraire X, Y, Z et suffix des deux versions
           if [[ $latest_version =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?$ ]]; then
@@ -66,34 +67,84 @@ jobs:
               add_alpha_suffix=true
           fi
 
-          # Comparaison des parties de version
-          if (( extracted_X > latest_X )) || 
-             (( extracted_X == latest_X && extracted_Y > latest_Y )) || 
-             (( extracted_X == latest_X && extracted_Y == latest_Y && extracted_Z > latest_Z )); then
-              # Utiliser la version extraite si elle est plus grande
-              new_version="$extracted_version"
-          elif (( extracted_X == latest_X && extracted_Y == latest_Y && extracted_Z == latest_Z )); then
-              # Incrémenter Z de la version extraite si elle est égale à la dernière version
-              new_Z=$((extracted_Z + 1))
-              new_version="v${extracted_X}.${extracted_Y}.${new_Z}${extracted_suffix}"
-          else
-              # Sinon, incrémenter la dernière version
-              new_Z=$((latest_Z + 1))
-              new_version="v${latest_X}.${latest_Y}.${new_Z}${latest_suffix}"
-              if [[ -z "$latest_suffix" ]] && [ "$latest_X" -eq 0 ]; then
-                add_alpha_suffix=true
-              fi          
+          new_latest_X = $latest_X
+          new_latest_Y = $latest_Y
+          new_latest_Z = $latest_Z
+          new_latest_suffix = $latest_suffix
+          new_extracted_X = $extracted_X
+          new_extracted_Y = $extracted_Y
+          new_extracted_Z = $extracted_Z
+          new_extracted_suffix = $extracted_suffix
+
+          is_new_version = false
+
+          if [[ ${{ github.event.head_commit.message }} == fix* ]]; then
+              new_latest_Z = $latest_Z+1
+              new_extracted_Z = $extracted_Z+1
+              is_new_version = true
           fi
 
-          echo "$add_alpha_suffix"
+          if [[ ${{ github.event.head_commit.message }} == feat* ]]; then
+              new_latest_Y = $latest_Y+1
+              new_extracted_Y = $extracted_Y+1
+              is_new_version = true
+          fi
 
-          # Ajouter "-alpha" si nécessaire
-          if [[ "$add_alpha_suffix" == true ]]; then
-              new_version="${new_version}-alpha"
+          tr_commit = $(echo ${{ github.event.head_commit.message }} | tr ":")
+          start_commit = ${tr_commit[0]}
+
+          if [[ $start_commit == *"!"* ]] || [[ ${{ github.event.head_commit.message }} == *"BREAKING CHANGE" ]]; then
+              new_latest_Y = $latest_X+1
+              new_extracted_Y = $extracted_X+1
+              new_extracted_suffix = ""
+              new_latest_suffix = ""
+              is_new_version = true
+          fi
+
+          if [ "$is_new_version" == true ]; then
+
+            # Comparaison des parties de version
+            if (( extracted_X > latest_X )) || 
+                (( extracted_X == latest_X && extracted_Y > latest_Y )) || 
+                (( extracted_X == latest_X && extracted_Y == latest_Y && extracted_Z > latest_Z )); then
+                # Utiliser la version extraite si elle est plus grande
+                new_version="$extracted_version"
+            elif (( extracted_X == latest_X && extracted_Y == latest_Y && extracted_Z == latest_Z )); then
+                # Incrémenter Z de la version extraite si elle est égale à la dernière version
+                new_Z=$((extracted_Z + 1))
+                new_version="v${extracted_X}.${extracted_Y}.${new_Z}${extracted_suffix}"
+            else
+                # Sinon, incrémenter la dernière version
+                new_Z=$((latest_Z + 1))
+                new_version="v${latest_X}.${latest_Y}.${new_Z}${latest_suffix}"
+                if [[ -z "$latest_suffix" ]] && [ "$latest_X" -eq 0 ]; then
+                  add_alpha_suffix=true
+                fi          
+            fi
+
+            echo "$add_alpha_suffix"
+
+            # Ajouter "-alpha" si nécessaire
+            if [[ "$add_alpha_suffix" == true ]]; then
+                new_version="${new_version}-alpha"
+            fi
+
           fi
 
           echo "Nouvelle version: $new_version"
-          echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
+          echo "NEW_VERSION=" >> $GIHUB_OUTPUT
+          # echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
+
+  build:
+    name: Build & Release
+    runs-on: macos-latest
+    needs: get_version
+    if: ${{ needs.get_version.outputs.version != '' }}
+
+    steps:
+      #1 Checkout Repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
         #5 Setup Java
       - name: Set Up Java
@@ -159,5 +210,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/app/outputs/flutter-apk/app-release.apk,build/app/outputs/bundle/release/app-release.aab,build/ios_build.tar.gz"
-          tag: ${{ env.VERSION }}
+          tag: ${{ needs.get_version.outputs.version }}
           token: ${{ secrets.TOKEN }}
