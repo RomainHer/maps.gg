@@ -135,11 +135,11 @@ jobs:
     name: Build & Release
     runs-on: macos-latest
     needs: [get_version]
-    # if: ${{ needs.get_version.outputs.NEW_VERSION != '' }}
+    # if: ${{ needs.get_version.outputs.version != '' }}
 
     steps:
       - name: echo version
-        run: echo ${{ needs.get_version.outputs.NEW_VERSION }}
+        run: echo ${{ needs.get_version.outputs.version }}
 
       #1 Checkout Repository
       - name: Checkout Repository
