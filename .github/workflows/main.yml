@@ -137,8 +137,8 @@ jobs:
   build:
     name: Build & Release
     runs-on: macos-latest
-    needs: get_version
-    if: ${{ needs.get_version.outputs.version != '' }}
+    needs: [get_version]
+    if: ${{ needs.get_version.outputs.NEW_VERSION != '' }}
 
     steps:
       #1 Checkout Repository
