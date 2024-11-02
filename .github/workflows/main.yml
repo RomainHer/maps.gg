@@ -67,38 +67,38 @@ jobs:
               add_alpha_suffix=true
           fi
 
-          new_latest_X = $latest_X
-          new_latest_Y = $latest_Y
-          new_latest_Z = $latest_Z
-          new_latest_suffix = $latest_suffix
-          new_extracted_X = $extracted_X
-          new_extracted_Y = $extracted_Y
-          new_extracted_Z = $extracted_Z
-          new_extracted_suffix = $extracted_suffix
+          new_latest_X=$latest_X
+          new_latest_Y=$latest_Y
+          new_latest_Z=$latest_Z
+          new_latest_suffix=$latest_suffix
+          new_extracted_X=$extracted_X
+          new_extracted_Y=$extracted_Y
+          new_extracted_Z=$extracted_Z
+          new_extracted_suffix=$extracted_suffix
 
-          is_new_version = false
+          is_new_version=false
 
           if [[ ${{ github.event.head_commit.message }} == fix* ]]; then
-              new_latest_Z = $latest_Z+1
-              new_extracted_Z = $extracted_Z+1
-              is_new_version = true
+              new_latest_Z=$latest_Z+1
+              new_extracted_Z=$extracted_Z+1
+              is_new_version=true
           fi
 
           if [[ ${{ github.event.head_commit.message }} == feat* ]]; then
-              new_latest_Y = $latest_Y+1
-              new_extracted_Y = $extracted_Y+1
-              is_new_version = true
+              new_latest_Y=$latest_Y+1
+              new_extracted_Y=$extracted_Y+1
+              is_new_version=true
           fi
 
-          tr_commit = $(echo ${{ github.event.head_commit.message }} | tr ":")
-          start_commit = ${tr_commit[0]}
+          tr_commit=$(echo ${{ github.event.head_commit.message }} | tr ":")
+          start_commit=${tr_commit[0]}
 
           if [[ $start_commit == *"!"* ]] || [[ ${{ github.event.head_commit.message }} == *"BREAKING CHANGE" ]]; then
-              new_latest_Y = $latest_X+1
-              new_extracted_Y = $extracted_X+1
-              new_extracted_suffix = ""
-              new_latest_suffix = ""
-              is_new_version = true
+              new_latest_Y=$latest_X+1
+              new_extracted_Y=$extracted_X+1
+              new_extracted_suffix=""
+              new_latest_suffix=""
+              is_new_version=true
           fi
 
           if [ "$is_new_version" == true ]; then
