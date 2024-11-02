@@ -132,8 +132,8 @@ jobs:
           fi
 
           echo "Nouvelle version: $new_version"
-          echo "NEW_VERSION=" >> $GIHUB_OUTPUT
-          # echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
+          echo "NEW_VERSION=" >> $env:GITHUB_OUTPUT
+          # echo "NEW_VERSION=$new_version" >> $env:GITHUB_OUTPUT
 
   build:
     name: Build & Release
