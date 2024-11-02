@@ -129,7 +129,7 @@ jobs:
           fi
 
           echo "Nouvelle version: $new_version"
-          echo "NEW_VERSION=$new_version" >> $env:GITHUB_OUTPUT
+          "NEW_VERSION=$new_version" >> $env:GITHUB_OUTPUT
 
   build:
     name: Build & Release
@@ -139,9 +139,7 @@ jobs:
 
     steps:
       - name: echo version
-        run: |
-          echo ${{ needs.get_version.outputs.NEW_VERSION }}
-          echo ${{ needs.get_version.outputs.version }}
+        run: echo ${{ needs.get_version.outputs.NEW_VERSION }}
 
       #1 Checkout Repository
       - name: Checkout Repository
