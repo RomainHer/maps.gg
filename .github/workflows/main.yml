@@ -39,7 +39,7 @@ jobs:
           latest_version="${{ steps.get_latest_release.outputs.release }}"
           extracted_version="${{ steps.extract_version.outputs.VERSION }}"
 
-          echo extracted_version
+          echo $extracted_version
 
           new_version=""
 
@@ -121,8 +121,6 @@ jobs:
                 fi          
             fi
 
-            echo "$add_alpha_suffix"
-
             # Ajouter "-alpha" si nécessaire
             if [[ "$add_alpha_suffix" == true ]]; then
                 new_version="${new_version}-alpha"
@@ -131,7 +129,7 @@ jobs:
           fi
 
           echo "Nouvelle version: $new_version"
-          "NEW_VERSION=$new_version" >> $env:GITHUB_OUTPUT
+          echo "NEW_VERSION=$new_version" >> "$GITHUB_OUTPUT"
 
   build:
     name: Build & Release
