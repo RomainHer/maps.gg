@@ -110,13 +110,11 @@ jobs:
                 # Utiliser la version extraite si elle est plus grande
                 new_version="$extracted_version"
             elif (( extracted_X == latest_X && extracted_Y == latest_Y && extracted_Z == latest_Z )); then
-                # Incrémenter Z de la version extraite si elle est égale à la dernière version
-                new_Z=$((extracted_Z + 1))
-                new_version="v${extracted_X}.${extracted_Y}.${new_Z}${extracted_suffix}"
+                new_version="v${new_extracted_X}.${new_extracted_Y}.${new_extracted_Z}${new_extracted_suffix}"
             else
                 # Sinon, incrémenter la dernière version
                 new_Z=$((latest_Z + 1))
-                new_version="v${latest_X}.${latest_Y}.${new_Z}${latest_suffix}"
+                new_version="v${new_latest_X}.${new_latest_Y}.${new_latest_Z}${new_latest_suffix}"
                 if [[ -z "$latest_suffix" ]] && [ "$latest_X" -eq 0 ]; then
                   add_alpha_suffix=true
                 fi          
@@ -138,7 +136,7 @@ jobs:
     name: Build & Release
     runs-on: macos-latest
     needs: [get_version]
-    if: ${{ needs.get_version.outputs.NEW_VERSION != '' }}
+    # if: ${{ needs.get_version.outputs.NEW_VERSION != '' }}
 
     steps:
       #1 Checkout Repository
