@@ -159,7 +159,7 @@ jobs:
           valueFile: "pubspec.yaml"
           propertyPath: "version"
           value: ${{ needs.get_version.outputs.version-flutter }}
-          commitChange: false
+          branch: ${{ github.ref }}
 
         #5 Setup Java
       - name: Set Up Java
