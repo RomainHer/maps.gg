@@ -160,6 +160,7 @@ jobs:
           propertyPath: "version"
           value: ${{ needs.get_version.outputs.version-flutter }}
           branch: ${{ github.ref_name }}
+          force: true
 
         #5 Setup Java
       - name: Set Up Java
