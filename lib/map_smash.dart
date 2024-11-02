@@ -5,7 +5,8 @@ import 'package:graphql/client.dart';
 import 'package:maps_gg/map/custom_map.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-final _startGGApiToken = dotenv.env['START_GG_API_TOKEN'];
+final String _startGGApiToken = String.fromEnvironment('API_KEY',
+    defaultValue: dotenv.env['START_GG_API_TOKEN'].toString());
 
 Future<Map<String, dynamic>> _getLocationAndTournaments() async {
   try {
