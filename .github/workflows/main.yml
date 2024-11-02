@@ -79,14 +79,14 @@ jobs:
           is_new_version=false
 
           if [[ "${{ github.event.head_commit.message }}" == fix* ]]; then
-              new_latest_Z=$latest_Z+1
-              new_extracted_Z=$extracted_Z+1
+              new_latest_Z=$((latest_Z + 1))
+              new_extracted_Z=$((extracted_Z + 1))
               is_new_version=true
           fi
 
           if [[ "${{ github.event.head_commit.message }}" == feat* ]]; then
-              new_latest_Y=$latest_Y+1
-              new_extracted_Y=$extracted_Y+1
+              new_latest_Y=$((latest_Y + 1))
+              new_extracted_Y=$((extracted_Y + 1))
               is_new_version=true
           fi
 
@@ -94,8 +94,8 @@ jobs:
           start_commit=${tr_commit[0]}
 
           if [[ $start_commit == *"!"* ]] || [[ "${{ github.event.head_commit.message }}" == *"BREAKING CHANGE" ]]; then
-              new_latest_Y=$latest_X+1
-              new_extracted_Y=$extracted_X+1
+              new_latest_Y=$((latest_X + 1))
+              new_extracted_Y=$((extracted_X + 1))
               new_extracted_suffix=""
               new_latest_suffix=""
               is_new_version=true
@@ -113,7 +113,6 @@ jobs:
                 new_version="v${new_extracted_X}.${new_extracted_Y}.${new_extracted_Z}${new_extracted_suffix}"
             else
                 # Sinon, incrémenter la dernière version
-                new_Z=$((latest_Z + 1))
                 new_version="v${new_latest_X}.${new_latest_Y}.${new_latest_Z}${new_latest_suffix}"
                 if [[ -z "$latest_suffix" ]] && [ "$latest_X" -eq 0 ]; then
                   add_alpha_suffix=true
@@ -139,6 +138,11 @@ jobs:
     # if: ${{ needs.get_version.outputs.NEW_VERSION != '' }}
 
     steps:
+      - name: echo version
+        run: |
+          echo ${{ needs.get_version.outputs.NEW_VERSION }}
+          echo ${{ needs.get_version.outputs.version }}
+
       #1 Checkout Repository
       - name: Checkout Repository
         uses: actions/checkout@v4
