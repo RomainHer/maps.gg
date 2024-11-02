@@ -90,7 +90,7 @@ jobs:
               is_new_version=true
           fi
 
-          tr_commit=$(echo "${{ github.event.head_commit.message }}" | tr ":")
+          tr_commit=$(echo "${{ github.event.head_commit.message }}" | tr ":" "\n")
           start_commit=${tr_commit[0]}
 
           if [[ $start_commit == *"!"* ]] || [[ "${{ github.event.head_commit.message }}" == *"BREAKING CHANGE" ]]; then
