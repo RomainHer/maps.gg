@@ -133,7 +133,7 @@ jobs:
 
   build:
     name: Build & Release
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     needs: [get_version]
     if: needs.get_version.outputs.version != ''
 
