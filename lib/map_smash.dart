@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:graphql/client.dart';
 import 'package:maps_gg/map/custom_map.dart';
 
-final String _startGGApiToken = String.fromEnvironment('API_KEY');
+final String startGGApiToken = const String.fromEnvironment('API_KEY');
 
 Future<Map<String, dynamic>> _getLocationAndTournaments() async {
   try {
@@ -25,7 +25,7 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
     'https://api.start.gg/gql/alpha',
   );
   final authLink = AuthLink(
-    getToken: () async => 'Bearer $_startGGApiToken',
+    getToken: () async => 'Bearer $startGGApiToken',
   );
   Link link = authLink.concat(httpLink);
   final GraphQLClient client = GraphQLClient(
