@@ -148,9 +148,9 @@ jobs:
           path: pubspec.yaml
           content: "version: ${{ needs.get_version.outputs.version }}\n"
           commit_message: "chore: update version in pubspec.yaml to ${{ needs.get_version.outputs.version }} [skip ci]"
-          opening_comment: "# [START AUTO UPDATE]"
-          closing_comment: "# [END AUTO UPDATE]"
-          warning_comment: "# Please keep comment here to allow auto-update"
+          # opening_comment: "# [START AUTO UPDATE]"
+          #closing_comment: "# [END AUTO UPDATE]"
+          # warning_comment: "# Please keep comment here to allow auto-update"
 
         #5 Setup Java
       - name: Set Up Java
