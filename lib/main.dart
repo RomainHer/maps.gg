@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 import 'map_smash.dart';
 
-Future main() async {
-  await dotenv.load(fileName: ".env");
+void main() {
   initializeDateFormatting("fr", null).then((_) => runApp(const MapGGApp()));
 }
 

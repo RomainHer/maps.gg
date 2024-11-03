@@ -3,9 +3,8 @@ import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:graphql/client.dart';
 import 'package:maps_gg/map/custom_map.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-final _startGGApiToken = dotenv.env['START_GG_API_TOKEN'];
+final String startGGApiToken = const String.fromEnvironment('API_KEY');
 
 Future<Map<String, dynamic>> _getLocationAndTournaments() async {
   try {
@@ -26,7 +25,7 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
     'https://api.start.gg/gql/alpha',
   );
   final authLink = AuthLink(
-    getToken: () async => 'Bearer $_startGGApiToken',
+    getToken: () async => 'Bearer $startGGApiToken',
   );
   Link link = authLink.concat(httpLink);
   final GraphQLClient client = GraphQLClient(

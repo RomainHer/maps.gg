@@ -1,48 +1,188 @@
 name: "Build"
 
 on:
-  pull_request:
-    branches:
-      - dev
-      - test
   push:
     branches:
-      - dev
-      - test
+      - main
 
 jobs:
+  get_version:
+    name: Get Version
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.increment_version.outputs.NEW_VERSION }}
+      version-flutter: ${{ steps.increment_version.outputs.NEW_VERSION_FLUTTER }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+        #2 Get Latest Release
+      - name: Get Latest Release
+        id: get_latest_release
+        uses: pozetroninc/github-action-get-latest-release@v0.8.0
+        with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.TOKEN }}
+
+      #3 Extract Version
+      - name: Extract version from pubspec.yaml
+        id: extract_version
+        run: |
+          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
+          echo "VERSION=v$version" >> $GITHUB_OUTPUT
+
+      #4 Increment Version
+      - name: Increment version
+        id: increment_version
+        run: |
+          # Extraire la dernière version publiée et la version du fichier pubspec.yaml
+          latest_version="${{ steps.get_latest_release.outputs.release }}"
+          extracted_version="${{ steps.extract_version.outputs.VERSION }}"
+
+          new_version=""
+
+          # Extraire X, Y, Z et suffix des deux versions
+          if [[ $latest_version =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?$ ]]; then
+              latest_X="${BASH_REMATCH[1]}"
+              latest_Y="${BASH_REMATCH[2]}"
+              latest_Z="${BASH_REMATCH[3]}"
+              latest_suffix="${BASH_REMATCH[4]}"
+          else
+              echo "Format de la dernière version publiée invalide: $latest_version"
+              exit 1
+          fi
+
+          if [[ $extracted_version =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)(-.+)?$ ]]; then
+              extracted_X="${BASH_REMATCH[1]}"
+              extracted_Y="${BASH_REMATCH[2]}"
+              extracted_Z="${BASH_REMATCH[3]}"
+              extracted_suffix="${BASH_REMATCH[4]}"
+          else
+              echo "Format de la version extraite invalide: $extracted_version"
+              exit 1
+          fi
+
+          add_alpha_suffix=false
+          if [[ -z "$extracted_suffix" ]] && [ "$extracted_X" -eq 0 ]; then
+              add_alpha_suffix=true
+          fi
+
+          new_latest_X=$latest_X
+          new_latest_Y=$latest_Y
+          new_latest_Z=$latest_Z
+          new_latest_suffix=$latest_suffix
+          new_extracted_X=$extracted_X
+          new_extracted_Y=$extracted_Y
+          new_extracted_Z=$extracted_Z
+          new_extracted_suffix=$extracted_suffix
+
+          is_new_version=false
+
+          if [[ "${{ github.event.head_commit.message }}" == fix* ]]; then
+              new_latest_Z=$((latest_Z + 1))
+              new_extracted_Z=$((extracted_Z + 1))
+              is_new_version=true
+          fi
+
+          if [[ "${{ github.event.head_commit.message }}" == feat* ]]; then
+              new_latest_Y=$((latest_Y + 1))
+              new_extracted_Y=$((extracted_Y + 1))
+              is_new_version=true
+          fi
+
+          tr_commit=$(echo "${{ github.event.head_commit.message }}" | tr ":" "\n")
+          start_commit=${tr_commit[0]}
+
+          if [[ $start_commit == *"!"* ]] || [[ "${{ github.event.head_commit.message }}" == *"BREAKING CHANGE" ]]; then
+              new_latest_Y=$((latest_X + 1))
+              new_extracted_Y=$((extracted_X + 1))
+              new_extracted_suffix=""
+              new_latest_suffix=""
+              is_new_version=true
+          fi
+
+          if [ "$is_new_version" == true ]; then
+
+            # Comparaison des parties de version
+            if (( extracted_X > latest_X )) || 
+                (( extracted_X == latest_X && extracted_Y > latest_Y )) || 
+                (( extracted_X == latest_X && extracted_Y == latest_Y && extracted_Z > latest_Z )); then
+                # Utiliser la version extraite si elle est plus grande
+                new_version="$extracted_version"
+            elif (( extracted_X == latest_X && extracted_Y == latest_Y && extracted_Z == latest_Z )); then
+                new_version="v${new_extracted_X}.${new_extracted_Y}.${new_extracted_Z}${new_extracted_suffix}"
+            else
+                # Sinon, incrémenter la dernière version
+                new_version="v${new_latest_X}.${new_latest_Y}.${new_latest_Z}${new_latest_suffix}"
+                if [[ -z "$latest_suffix" ]] && [ "$latest_X" -eq 0 ]; then
+                  add_alpha_suffix=true
+                fi          
+            fi
+
+            # Ajouter "-alpha" si nécessaire
+            if [[ "$add_alpha_suffix" == true ]]; then
+                new_version="${new_version}-alpha"
+            fi
+
+          fi
+
+          echo "Nouvelle version: $new_version"
+          echo "NEW_VERSION=$new_version" >> "$GITHUB_OUTPUT"
+          echo "NEW_VERSION_FLUTTER=${new_version:1}" >> "$GITHUB_OUTPUT"
+
   build:
     name: Build & Release
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
+    needs: [get_version]
+    if: needs.get_version.outputs.version != ''
 
     steps:
       #1 Checkout Repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-        #2 Setup Java
+      # - name: Update version in pubspec.yaml
+      #   id: update_version
+      #   uses: wow-actions/update-file@v1
+      #   with:
+      #     GITHUB_TOKEN: ${{ secrets.TOKEN }}
+      #     path: pubspec.yaml
+      #     content: "version: ${{ needs.get_version.outputs.version }}\n"
+      #     commit_message: "chore: update version in pubspec.yaml to ${{ needs.get_version.outputs.version }} [skip ci]"
+      #     # opening_comment: "# [START AUTO UPDATE]"
+      #     #closing_comment: "# [END AUTO UPDATE]"
+      #     # warning_comment: "# Please keep comment here to allow auto-update"
+      - name: Update values.yaml
+        uses: fjogeleit/yaml-update-action@v0.15.0
+        with:
+          valueFile: "pubspec.yaml"
+          propertyPath: "version"
+          value: ${{ needs.get_version.outputs.version-flutter }}
+          commitChange: false
+
+        #5 Setup Java
       - name: Set Up Java
         uses: actions/setup-java@v4
         with:
           distribution: "oracle"
           java-version: "17"
 
-        #3 Setup Flutter
+        #6 Setup Flutter
       - name: Set Up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.24.3"
           channel: "stable"
 
-        #4 Install Dependencies
+        #7 Install Dependencies
       - name: Install Dependencies
         run: flutter pub get
 
-        #5 Setup Keystore
+        #8 Setup Keystore
       - name: Decode Keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/keystore.jks
-
       - name: Create key.properties
         run: |
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
@@ -50,30 +190,24 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=keystore.jks" >> android/key.properties
 
-        #6 Building APK
+      #9 Building APK
       - name: Build APK
-        env:
-          API_TOKEN: ${{ secrets.START_GG_API_TOKEN }}
         run: |
-          echo "API_TOKEN=$API_TOKEN" > .env 
-          flutter build apk --release
+          flutter build apk --dart-define=API_KEY=${{ secrets.START_GG_API_TOKEN }} --release
 
-        #7 Building App Bundle (aab)
+        #10 Building App Bundle (aab)
       - name: Build appBundle
-        env:
-          API_TOKEN: ${{ secrets.START_GG_API_TOKEN }}
         run: |
-          echo "API_TOKEN=$API_TOKEN" > .env 
-          flutter build appbundle
+          flutter build appbundle --dart-define=API_KEY=${{ secrets.START_GG_API_TOKEN }}
 
-        #8 Build IPA ( IOS Build )
+        # Build IPA ( IOS Build )
       # - name: Build IPA
       #  run: flutter build ipa --no-codesign
       # - name: Compress Archives and IPAs
       #   run: |
       #     cd build
       #     tar -czf ios_build.tar.gz ios
-      #9 Upload Artifacts
+      #11 Upload Artifacts
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -81,37 +215,13 @@ jobs:
           path: |
             build/app/outputs/flutter-apk/app-release.apk
             build/app/outputs/bundle/release/app-release.aab
-          # build/ios_build.tar.gz
-
-        #10 Extract Version
-      - name: Extract version from pubspec.yaml
-        id: extract_version
-        run: |
-          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
-          echo "VERSION=$version" >> $GITHUB_ENV
-
-        #11 Check if Tag Exists
-      - name: Check if Tag Exists
-        id: check_tag
-        run: |
-          if git rev-parse "v${{ env.VERSION }}" >/dev/null 2>&1; then
-            echo "TAG_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "TAG_EXISTS=false" >> $GITHUB_ENV
-          fi
-
-        #12 Modify Tag if it Exists
-      - name: Modify Tag
-        if: env.TAG_EXISTS == 'true'
-        id: modify_tag
-        run: |
-          new_version="${{ env.VERSION }}-build-${{ github.run_number }}"
-          echo "VERSION=$new_version" >> $GITHUB_ENV
+            # build/ios_build.tar.gz
 
         #13 Create Release
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/app/outputs/flutter-apk/app-release.apk,build/app/outputs/bundle/release/app-release.aab,build/ios_build.tar.gz"
-          tag: v${{ env.VERSION }}
+          artifacts: "build/app/outputs/flutter-apk/app-release.apk,build/app/outputs/bundle/release/app-release.aab"
+          # artifacts: "build/app/outputs/flutter-apk/app-release.apk,build/app/outputs/bundle/release/app-release.aab,build/ios_build.tar.gz"
+          tag: ${{ needs.get_version.outputs.version }}
           token: ${{ secrets.TOKEN }}
