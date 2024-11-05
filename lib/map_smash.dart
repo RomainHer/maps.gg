@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:graphql/client.dart';
+import 'package:maps_gg/class/event.dart';
 import 'package:maps_gg/map/custom_map.dart';
-import 'package:maps_gg/videogame.dart';
+import 'package:maps_gg/class/videogame.dart';
 
 final String startGGApiToken = const String.fromEnvironment('API_KEY');
 
@@ -140,33 +141,34 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
         }
       }
 
-      var eventsData = [];
+      var eventsData = <Event>[];
       for (var event in tournament['events']) {
-        eventsData.add({
-          'name': event['name'],
-          'image': event['videogame']['images'][0]['url'],
-          'gameName': event['videogame']['name'],
-          'gameDisplayName': event['videogame']['displayName'],
-          'competitionTier': event['competitionTier'],
-          'numEntrants': event['numEntrants'],
-        });
+        eventsData.add(Event(
+          name: event['name'],
+          competitionTier: event['competitionTier'],
+          numEntrants: event['numEntrants'],
+          videoGame: VideoGame(
+            id: event['videogame']['id'],
+            displayName: "",
+            name: "",
+            imageUrl: "",
+          ),
+        ));
         dataVideoGames.add(VideoGame(
           id: event['videogame']['id'],
           displayName: event['videogame']['displayName'],
           name: event['videogame']['name'],
+          imageUrl: event['videogame']['images'][0]['url'],
         ));
       }
+
       tournamentDetail['events'] = eventsData;
 
       dataTournaments.add(tournamentDetail);
     }
   }
 
-  for (var element in dataVideoGames) {
-    debugPrint(element.toString());
-  }
-
-  debugPrint(dataVideoGames.toList().toString());
+  //return dataVideoGames;
   return dataTournaments;
 }
 

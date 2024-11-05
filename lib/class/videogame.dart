@@ -2,11 +2,13 @@ class VideoGame {
   int id;
   String displayName;
   String name;
+  String imageUrl;
 
   VideoGame({
     required this.id,
     required this.displayName,
     required this.name,
+    required this.imageUrl,
   });
 
   @override

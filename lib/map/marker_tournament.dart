@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maps_gg/class/event.dart';
 import 'package:maps_gg/tournament_info/tournament_info_state.dart';
 
 class MarkerContentTournament extends StatefulWidget {
@@ -20,7 +21,7 @@ class MarkerContentTournament extends StatefulWidget {
 
   final Function getSelectedTournamentId;
   final int tournamentDate;
-  final List<dynamic> tournamentEvents;
+  final List<Event> tournamentEvents;
   final int tournamentId;
   final String tournamentName;
   final int tournamentNumAttendees;

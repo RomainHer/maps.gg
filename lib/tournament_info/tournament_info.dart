@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:maps_gg/class/event.dart';
 import 'package:maps_gg/tournament_info/item_list_info.dart';
 import 'package:maps_gg/tournament_info/itinary_bottom_sheet.dart';
 import 'package:maps_gg/tournament_info/tournament_info_state.dart';
@@ -183,6 +184,55 @@ class _TournamentInfoState extends State<TournamentInfo> {
                 ),
               ],
             ),
+          ),
+          Column(
+            children: [
+              if (widget.tournamentInfoState.tournamentEvents != null)
+                for (Event event
+                    in widget.tournamentInfoState.tournamentEvents!)
+                  Container(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Row(
+                        children: [
+                          Image.network(
+                            event.videoGame.imageUrl,
+                            width: 40,
+                            height: 40,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                              height: 40,
+                              width: 40,
+                              color: Color(0xFFD8D8D8),
+                            ),
+                            loadingBuilder: (context, child, loadingProgress) =>
+                                loadingProgress == null
+                                    ? child
+                                    : const SizedBox(
+                                        height: 70,
+                                        width: 70,
+                                        child: CircularProgressIndicator()),
+                          ),
+                          Column(
+                            children: [
+                              Text(
+                                event.name,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Text(
+                                "${event.numEntrants} inscrits",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      )),
+            ],
           ),
           Row(
             children: [
