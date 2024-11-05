@@ -3,6 +3,7 @@ import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:graphql/client.dart';
 import 'package:maps_gg/map/custom_map.dart';
+import 'package:maps_gg/videogame.dart';
 
 final String startGGApiToken = const String.fromEnvironment('API_KEY');
 
@@ -63,6 +64,9 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
             competitionTier
             numEntrants
             videogame {
+              id
+              displayName
+              name          
               images (type: "primary") {
                 url
                 ratio
@@ -102,6 +106,7 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
 
   final QueryResult result = await client.query(options);
   List<dynamic> dataTournaments = [];
+  Set<VideoGame> dataVideoGames = {};
 
   if (result.hasException) {
     debugPrint(result.exception.toString());
@@ -140,9 +145,16 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
         eventsData.add({
           'name': event['name'],
           'image': event['videogame']['images'][0]['url'],
+          'gameName': event['videogame']['name'],
+          'gameDisplayName': event['videogame']['displayName'],
           'competitionTier': event['competitionTier'],
           'numEntrants': event['numEntrants'],
         });
+        dataVideoGames.add(VideoGame(
+          id: event['videogame']['id'],
+          displayName: event['videogame']['displayName'],
+          name: event['videogame']['name'],
+        ));
       }
       tournamentDetail['events'] = eventsData;
 
@@ -150,6 +162,11 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
     }
   }
 
+  for (var element in dataVideoGames) {
+    debugPrint(element.toString());
+  }
+
+  debugPrint(dataVideoGames.toList().toString());
   return dataTournaments;
 }
 
