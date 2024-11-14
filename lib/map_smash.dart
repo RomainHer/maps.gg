@@ -90,10 +90,12 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
 
   const int perPage = 500;
   String coordinates = "$latitude,$longitude";
+  debugPrint(coordinates);
   const String radius = "200mi";
   DateTime datetimeNow = DateTime.now();
   double tmp = datetimeNow.millisecondsSinceEpoch / 1000;
   int timestampNow = tmp.round();
+  debugPrint(timestampNow.toString());
 
   final QueryOptions options = QueryOptions(
     document: gql(readTournamentsAroud),
@@ -141,17 +143,21 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
         }
       }
 
+      /*debugPrint(
+          "num entrants : ${tournament['events'][0]["numEntrants"].toString()}");*/
+
       var eventsData = <Event>[];
       for (var event in tournament['events']) {
         eventsData.add(Event(
           name: event['name'],
           competitionTier: event['competitionTier'],
-          numEntrants: event['numEntrants'],
+          numEntrants:
+              (event['numEntrants'] != null) ? event['numEntrants'] : 0,
           videoGame: VideoGame(
             id: event['videogame']['id'],
-            displayName: "",
-            name: "",
-            imageUrl: "",
+            displayName: event['videogame']['displayName'],
+            name: event['videogame']['name'],
+            imageUrl: event['videogame']['images'][0]['url'],
           ),
         ));
         dataVideoGames.add(VideoGame(

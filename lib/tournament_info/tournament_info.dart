@@ -194,25 +194,37 @@ class _TournamentInfoState extends State<TournamentInfo> {
                       padding: const EdgeInsets.only(bottom: 10),
                       child: Row(
                         children: [
-                          Image.network(
-                            event.videoGame.imageUrl,
-                            width: 40,
-                            height: 40,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                              height: 40,
-                              width: 40,
-                              color: Color(0xFFD8D8D8),
+                          Card(
+                            shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
                             ),
-                            loadingBuilder: (context, child, loadingProgress) =>
-                                loadingProgress == null
-                                    ? child
-                                    : const SizedBox(
-                                        height: 70,
-                                        width: 70,
-                                        child: CircularProgressIndicator()),
+                            clipBehavior: Clip.antiAlias,
+                            elevation: 4,
+                            child: Image.network(
+                              widget.tournamentInfoState.tournamentUrlImage ??
+                                  '',
+                              width: 40,
+                              height: 40,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                height: 40,
+                                width: 40,
+                                color: Color(0xFFD8D8D8),
+                              ),
+                              loadingBuilder: (context, child,
+                                      loadingProgress) =>
+                                  loadingProgress == null
+                                      ? child
+                                      : const SizedBox(
+                                          height: 40,
+                                          width: 40,
+                                          child: CircularProgressIndicator()),
+                            ),
                           ),
+                          const SizedBox(width: 10),
                           Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 event.name,
@@ -234,6 +246,7 @@ class _TournamentInfoState extends State<TournamentInfo> {
                       )),
             ],
           ),
+          const SizedBox(height: 10),
           Row(
             children: [
               Expanded(
