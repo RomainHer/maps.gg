@@ -185,66 +185,87 @@ class _TournamentInfoState extends State<TournamentInfo> {
               ],
             ),
           ),
-          Column(
-            children: [
-              if (widget.tournamentInfoState.tournamentEvents != null)
-                for (Event event
-                    in widget.tournamentInfoState.tournamentEvents!)
-                  Container(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Row(
-                        children: [
-                          Card(
-                            shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5)),
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            elevation: 4,
-                            child: Image.network(
-                              widget.tournamentInfoState.tournamentUrlImage ??
-                                  '',
-                              width: 40,
-                              height: 40,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Container(
-                                height: 40,
-                                width: 40,
-                                color: Color(0xFFD8D8D8),
+          Container(
+            padding: EdgeInsets.only(bottom: 10),
+            child: Text(
+              "Events : ",
+              style: const TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ),
+          Container(
+            constraints: const BoxConstraints(
+              maxHeight: 200, // Hauteur maximale pour votre Column
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  if (widget.tournamentInfoState.tournamentEvents != null)
+                    for (Event event
+                        in widget.tournamentInfoState.tournamentEvents!)
+                      Container(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          children: [
+                            Card(
+                              shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5)),
                               ),
-                              loadingBuilder: (context, child,
-                                      loadingProgress) =>
-                                  loadingProgress == null
-                                      ? child
-                                      : const SizedBox(
-                                          height: 40,
-                                          width: 40,
-                                          child: CircularProgressIndicator()),
+                              clipBehavior: Clip.antiAlias,
+                              elevation: 4,
+                              child: Image.network(
+                                event.videoGame.imageUrl,
+                                height: 50,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                  height: 50,
+                                  width: 50 * event.videoGame.imageRatio,
+                                  color: Color(0xFFD8D8D8),
+                                ),
+                                loadingBuilder: (context, child,
+                                        loadingProgress) =>
+                                    loadingProgress == null
+                                        ? child
+                                        : const SizedBox(
+                                            height: 50,
+                                            width: 50,
+                                            child: CircularProgressIndicator()),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                event.name,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black,
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      event.name,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    Text(
+                                      "${event.numEntrants} inscrits",
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Text(
-                                "${event.numEntrants} inscrits",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )),
-            ],
+                            ),
+                          ],
+                        ),
+                      ),
+                ],
+              ),
+            ),
           ),
           const SizedBox(height: 10),
           Row(

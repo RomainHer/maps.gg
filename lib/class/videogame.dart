@@ -3,12 +3,14 @@ class VideoGame {
   String displayName;
   String name;
   String imageUrl;
+  double imageRatio;
 
   VideoGame({
     required this.id,
     required this.displayName,
     required this.name,
     required this.imageUrl,
+    required this.imageRatio,
   });
 
   @override

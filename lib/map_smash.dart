@@ -158,6 +158,7 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
             displayName: event['videogame']['displayName'],
             name: event['videogame']['name'],
             imageUrl: event['videogame']['images'][0]['url'],
+            imageRatio: event['videogame']['images'][0]['ratio'].toDouble(),
           ),
         ));
         dataVideoGames.add(VideoGame(
@@ -165,6 +166,7 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
           displayName: event['videogame']['displayName'],
           name: event['videogame']['name'],
           imageUrl: event['videogame']['images'][0]['url'],
+          imageRatio: event['videogame']['images'][0]['ratio'].toDouble(),
         ));
       }
 
