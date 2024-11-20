@@ -129,60 +129,43 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Expanded(
-                  child: TextField(
-                textAlignVertical: TextAlignVertical.top,
-                decoration: InputDecoration(
-                  disabledBorder: InputBorder.none,
-                  hintText: 'Search',
-                  border: InputBorder.none,
-                  isDense: true,
-                  contentPadding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                ),
-                style: TextStyle(
-                  fontSize: 13,
-                ),
-              )
-
-                  /*SizedBox(
-                  height: 50,
-                  child: Card(
-                    elevation: 10,
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100.0),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            textAlignVertical: TextAlignVertical.top,
-                            decoration: InputDecoration(
-                              disabledBorder: InputBorder.none,
-                              hintText: 'Search',
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.only(left: 20),
-                            ),
-                            style: TextStyle(
-                              fontSize: 13,
-                            ),
+                child: Card(
+                  elevation: 10,
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100.0),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          textAlignVertical: TextAlignVertical.top,
+                          decoration: InputDecoration(
+                            disabledBorder: InputBorder.none,
+                            hintText: 'Search',
+                            border: OutlineInputBorder(
+                                gapPadding: 0, borderSide: BorderSide.none),
+                            contentPadding: const EdgeInsets.only(left: 20),
+                            isDense: true,
+                          ),
+                          style: TextStyle(
+                            fontSize: 14,
                           ),
                         ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.search),
-                        ),
-                      ],
-                    ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.search),
+                      ),
+                    ],
                   ),
-                ),*/
-                  ),
+                ),
+              ),
               Card(
                 elevation: 10,
                 color: Colors.white,
                 shape: CircleBorder(),
                 child: SizedBox(
-                  //width: 25,
-                  //height: 25,
                   child: IconButton(
                     onPressed: () {},
                     icon: const Icon(
