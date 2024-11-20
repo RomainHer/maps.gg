@@ -11,18 +11,22 @@ final String startGGApiToken = const String.fromEnvironment('API_KEY');
 Future<Map<String, dynamic>> _getLocationAndTournaments() async {
   try {
     Position position = await _determinePosition();
-    List<dynamic> tournaments =
+    List<dynamic> tournaments;
+    Map<VideoGame, int> videoGames;
+    (tournaments, videoGames) =
         await _requestApi(position.latitude, position.longitude);
     return {
       'position': position,
       'tournaments': tournaments,
+      'videoGames': videoGames
     };
   } catch (e) {
     return Future.error(e);
   }
 }
 
-Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
+Future<(List, Map<VideoGame, int>)> _requestApi(
+    double latitude, double longitude) async {
   final httpLink = HttpLink(
     'https://api.start.gg/gql/alpha',
   );
@@ -109,7 +113,7 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
 
   final QueryResult result = await client.query(options);
   List<dynamic> dataTournaments = [];
-  Set<VideoGame> dataVideoGames = {};
+  Map<VideoGame, int> dataVideoGames = {};
 
   if (result.hasException) {
     debugPrint(result.exception.toString());
@@ -161,13 +165,20 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
             imageRatio: event['videogame']['images'][0]['ratio'].toDouble(),
           ),
         ));
-        dataVideoGames.add(VideoGame(
+        VideoGame newVideoGame = VideoGame(
           id: event['videogame']['id'],
           displayName: event['videogame']['displayName'],
           name: event['videogame']['name'],
           imageUrl: event['videogame']['images'][0]['url'],
           imageRatio: event['videogame']['images'][0]['ratio'].toDouble(),
-        ));
+        );
+        if (dataVideoGames.containsKey(newVideoGame)) {
+          dataVideoGames[newVideoGame] =
+              (dataVideoGames[newVideoGame] ?? 0) + 1;
+        } else {
+          dataVideoGames[newVideoGame] = 1;
+        }
+        ;
       }
 
       tournamentDetail['events'] = eventsData;
@@ -177,7 +188,7 @@ Future<List<dynamic>> _requestApi(double latitude, double longitude) async {
   }
 
   //return dataVideoGames;
-  return dataTournaments;
+  return (dataTournaments, dataVideoGames);
 }
 
 Future<Position> _determinePosition() async {
@@ -232,6 +243,7 @@ class _MapSmashState extends State<MapSmash> {
                 child: CustomMap(
                   location: data['position'],
                   tournaments: data['tournaments'],
+                  videoGames: data['videoGames'],
                   popupController: widget._popupController,
                 ),
               );

@@ -5,6 +5,8 @@ import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_ti
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:maps_gg/class/videogame.dart';
+import 'package:maps_gg/map/filter_bottom_sheet.dart';
 import 'package:maps_gg/map/marker_layer_tournament.dart';
 import 'package:maps_gg/tournament_info/tournament_info.dart';
 import 'package:maps_gg/tournament_info/tournament_info_state.dart';
@@ -14,11 +16,13 @@ class CustomMap extends StatefulWidget {
       {super.key,
       required this.location,
       required this.tournaments,
-      required this.popupController});
+      required this.popupController,
+      required this.videoGames});
 
   final Position location;
   final PopupController popupController;
   final List<dynamic> tournaments;
+  final Map<VideoGame, int> videoGames;
 
   @override
   State<CustomMap> createState() => _CustomMapState();
@@ -181,7 +185,18 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                 color: Colors.white,
                 shape: CircleBorder(),
                 child: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      showDragHandle: true,
+                      backgroundColor: const Color(0xFFFAFAFA),
+                      builder: (BuildContext context) {
+                        return FilterBottomSheet(
+                          videoGames: widget.videoGames,
+                        );
+                      },
+                    );
+                  },
                   icon: const Icon(
                     Icons.filter_alt,
                   ),
