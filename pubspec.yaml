@@ -49,6 +49,8 @@ dependencies:
   google_fonts: ^6.2.1
   localstorage: ^5.0.0
   flutter_map_animations: ^0.7.1
+  firebase_core: ^3.8.0
+  firebase_analytics: ^11.3.5
 
 dev_dependencies:
   flutter_test:

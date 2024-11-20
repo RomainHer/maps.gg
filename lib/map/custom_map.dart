@@ -4,7 +4,6 @@ import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:maps_gg/map/marker_layer_tournament.dart';
 import 'package:maps_gg/tournament_info/tournament_info.dart';
@@ -129,25 +128,54 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              GestureDetector(
-                onTap: () {
-                  // Add your onTap functionality here
-                },
-                child: Card(
-                  color: Colors.white,
-                  elevation: 10,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      'Paramètres d\'affichage',
-                      style: GoogleFonts.heebo(),
+              Expanded(
+                  child: TextField(
+                textAlignVertical: TextAlignVertical.top,
+                decoration: InputDecoration(
+                  disabledBorder: InputBorder.none,
+                  hintText: 'Search',
+                  border: InputBorder.none,
+                  isDense: true,
+                  contentPadding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                ),
+                style: TextStyle(
+                  fontSize: 13,
+                ),
+              )
+
+                  /*SizedBox(
+                  height: 50,
+                  child: Card(
+                    elevation: 10,
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100.0),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            textAlignVertical: TextAlignVertical.top,
+                            decoration: InputDecoration(
+                              disabledBorder: InputBorder.none,
+                              hintText: 'Search',
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.only(left: 20),
+                            ),
+                            style: TextStyle(
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.search),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ),
+                ),*/
+                  ),
               Card(
                 elevation: 10,
                 color: Colors.white,
@@ -162,6 +190,17 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                     ),
                     //padding: EdgeInsets.zero,
                     //iconSize: 10,
+                  ),
+                ),
+              ),
+              Card(
+                elevation: 10,
+                color: Colors.white,
+                shape: CircleBorder(),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.filter_alt,
                   ),
                 ),
               ),
