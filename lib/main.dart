@@ -8,19 +8,19 @@ import 'package:maps_gg/firebase_options.dart';
 import 'map_smash.dart';
 
 void main() async {
-  //if(!kDebugMode) {
-  WidgetsFlutterBinding.ensureInitialized();
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
-  } catch (e) {
-    debugPrint('Error initializing Firebase: $e');
+  if (!kDebugMode) {
+    WidgetsFlutterBinding.ensureInitialized();
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+    } catch (e) {
+      debugPrint('Error initializing Firebase: $e');
+    }
+  } else {
+    debugPrint('Firebase not initialized in debug mode');
   }
-  //} else {
-  //  debugPrint('Firebase not initialized in debug mode');
-  //}
   initializeDateFormatting("fr", null).then((_) => runApp(const MapGGApp()));
 }
 

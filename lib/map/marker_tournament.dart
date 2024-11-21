@@ -1,4 +1,5 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:maps_gg/class/event.dart';
 import 'package:maps_gg/tournament_info/tournament_info_state.dart';
@@ -69,12 +70,16 @@ class _MarkerContentTournamentState extends State<MarkerContentTournament> {
                 } else {
                   widget.updateTournamentInfoState(TournamentInfoState.empty());
                 }
-                await FirebaseAnalytics.instance.logEvent(
-                    name: 'tournament_selected',
-                    parameters: <String, Object>{
-                      'tournament_id': widget.tournamentId,
-                      'tournament_name': widget.tournamentName,
-                    });
+                if (!kDebugMode) {
+                  await FirebaseAnalytics.instance.logEvent(
+                      name: 'tournament_selected',
+                      parameters: <String, Object>{
+                        'tournament_id': widget.tournamentId,
+                        'tournament_name': widget.tournamentName,
+                      });
+                } else {
+                  debugPrint('Analytics not logged in debug mode');
+                }
               },
               child: Container(
                 padding: const EdgeInsets.only(bottom: 10),

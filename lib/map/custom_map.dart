@@ -193,6 +193,8 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                       builder: (BuildContext context) {
                         return FilterBottomSheet(
                           videoGames: widget.videoGames,
+                          distanceRange: 200.0,
+                          measureUnit: "km",
                         );
                       },
                     );
