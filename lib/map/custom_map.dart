@@ -195,6 +195,8 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                           videoGames: widget.videoGames,
                           distanceRange: 200.0,
                           measureUnit: "km",
+                          selectedDateRange: null,
+                          selectedVideoGames: [],
                         );
                       },
                     );
