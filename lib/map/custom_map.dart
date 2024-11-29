@@ -6,7 +6,7 @@ import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:maps_gg/class/videogame.dart';
-import 'package:maps_gg/map/filter_bottom_sheet.dart';
+import 'package:maps_gg/filters/filter_bottom_sheet.dart';
 import 'package:maps_gg/map/marker_layer_tournament.dart';
 import 'package:maps_gg/tournament_info/tournament_info.dart';
 import 'package:maps_gg/tournament_info/tournament_info_state.dart';
