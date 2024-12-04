@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:maps_gg/filters/filter_element.dart';
 import 'package:maps_gg/filters/filter_state.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
@@ -7,9 +8,14 @@ import 'package:maps_gg/class/videogame.dart';
 class FilterBottomSheet extends StatefulWidget {
   final Map<VideoGame, int> videoGames;
   final FilterState filterState;
+  final Function(FilterState) onFilterStateChange;
 
-  const FilterBottomSheet(
-      {super.key, required this.videoGames, required this.filterState});
+  const FilterBottomSheet({
+    super.key,
+    required this.videoGames,
+    required this.filterState,
+    required this.onFilterStateChange,
+  });
 
   @override
   State<FilterBottomSheet> createState() => _FilterBottomSheetState();
@@ -47,6 +53,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     if (pickedRange != null) {
       setState(() {
         filterState.selectedDateRange = pickedRange;
+        widget.onFilterStateChange(filterState);
       });
     }
   }
@@ -104,8 +111,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   ),
                   Slider(
                     value: filterState.distance,
-                    onChanged: (value) =>
-                        setState(() => filterState.distance = value),
+                    onChanged: (value) => setState(() {
+                      filterState.distance = value;
+                      widget.onFilterStateChange(filterState);
+                    }),
                     min: 0,
                     max: filterState.measureUnit == "km" ? 300 : 200,
                     divisions: 30,
@@ -129,6 +138,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     onConfirm: (values) {
                       setState(() {
                         filterState.selectedVideoGames = values;
+                        widget.onFilterStateChange(filterState);
                       });
                     },
                   ),
@@ -143,7 +153,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     children: [
                       Text(
                         filterState.selectedDateRange != null
-                            ? "Du ${filterState.selectedDateRange!.start.day}/${filterState.selectedDateRange!.start.month}/${filterState.selectedDateRange!.start.year} au ${filterState.selectedDateRange!.end.day}/${filterState.selectedDateRange!.end.month}/${filterState.selectedDateRange!.end.year}"
+                            ? "Du ${DateFormat('dd/MM/yy').format(filterState.selectedDateRange!.start)} au ${DateFormat('dd/MM/yy').format(filterState.selectedDateRange!.end)}"
                             : "Sélectionnez une plage de dates",
                         style: TextStyle(fontSize: 16),
                       ),
@@ -175,6 +185,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     onChanged: (values) {
                       setState(() {
                         filterState.selectedRangeParticpants = values;
+                        widget.onFilterStateChange(filterState);
                       });
                     },
                   ),

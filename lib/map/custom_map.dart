@@ -4,6 +4,7 @@ import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:maps_gg/class/videogame.dart';
 import 'package:maps_gg/filters/filter_bottom_sheet.dart';
@@ -43,6 +44,12 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
     return tournamentInfoState.tournamentId ?? 0;
   }
 
+  void updateFilterState(FilterState filterState) {
+    setState(() {
+      this.filterState = filterState;
+    });
+  }
+
   void updateTournamentInfoState(TournamentInfoState tournamentInfoState) {
     setState(() {
       this.tournamentInfoState = tournamentInfoState;
@@ -55,6 +62,15 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
         tournamentInfoState = TournamentInfoState.empty();
       });
     }
+  }
+
+  int _indexToPower(int index) => (1 << index); // équivalent à 2^index
+
+  String _getLabel(double index) {
+    if (index == 0) {
+      return "0";
+    }
+    return _indexToPower(index.toInt()).toString();
   }
 
   Future<void> _centerMapOnUser() async {
@@ -131,93 +147,221 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
           top: MediaQuery.of(context).padding.top + 10,
           left: 10,
           right: 10,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Card(
-                  elevation: 10,
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100.0),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          textAlignVertical: TextAlignVertical.top,
-                          decoration: InputDecoration(
-                            disabledBorder: InputBorder.none,
-                            hintText: 'Search',
-                            border: OutlineInputBorder(
-                                gapPadding: 0, borderSide: BorderSide.none),
-                            contentPadding: const EdgeInsets.only(left: 20),
-                            isDense: true,
-                          ),
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
-                        ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Card(
+                      elevation: 10,
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100.0),
                       ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.search),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              textAlignVertical: TextAlignVertical.top,
+                              decoration: InputDecoration(
+                                disabledBorder: InputBorder.none,
+                                hintText: 'Search',
+                                border: OutlineInputBorder(
+                                    gapPadding: 0, borderSide: BorderSide.none),
+                                contentPadding: const EdgeInsets.only(left: 20),
+                                isDense: true,
+                              ),
+                              style: TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.search),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              Card(
-                elevation: 10,
-                color: Colors.white,
-                shape: CircleBorder(),
-                child: SizedBox(
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.favorite,
                     ),
-                    //padding: EdgeInsets.zero,
-                    //iconSize: 10,
                   ),
-                ),
-              ),
-              Card(
-                elevation: 10,
-                color: Colors.white,
-                shape: CircleBorder(),
-                child: IconButton(
-                  onPressed: () {
-                    showModalBottomSheet<void>(
-                      context: context,
-                      showDragHandle: true,
-                      backgroundColor: const Color(0xFFFAFAFA),
-                      builder: (BuildContext context) {
-                        return FilterBottomSheet(
-                          videoGames: widget.videoGames,
-                          filterState: filterState,
+                  Card(
+                    elevation: 10,
+                    color: Colors.white,
+                    shape: CircleBorder(),
+                    child: SizedBox(
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.favorite,
+                        ),
+                        //padding: EdgeInsets.zero,
+                        //iconSize: 10,
+                      ),
+                    ),
+                  ),
+                  Card(
+                    elevation: 10,
+                    color: Colors.white,
+                    shape: CircleBorder(),
+                    child: IconButton(
+                      onPressed: () {
+                        showModalBottomSheet<void>(
+                          context: context,
+                          showDragHandle: true,
+                          backgroundColor: const Color(0xFFFAFAFA),
+                          builder: (BuildContext context) {
+                            return FilterBottomSheet(
+                              videoGames: widget.videoGames,
+                              filterState: filterState,
+                              onFilterStateChange: updateFilterState,
+                            );
+                          },
                         );
                       },
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.filter_alt,
+                      icon: const Icon(
+                        Icons.filter_alt,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              Card(
-                elevation: 10,
-                color: Colors.white,
-                shape: CircleBorder(),
-                child: IconButton(
-                  onPressed: () {
-                    _centerMapOnUser();
-                  },
-                  icon: const Icon(
-                    Icons.my_location,
+                  Card(
+                    elevation: 10,
+                    color: Colors.white,
+                    shape: CircleBorder(),
+                    child: IconButton(
+                      onPressed: () {
+                        _centerMapOnUser();
+                      },
+                      icon: const Icon(
+                        Icons.my_location,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
+              Wrap(
+                children: [
+                  if (filterState.isDistanceChanged())
+                    Card(
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100.0),
+                      ),
+                      color: Color(0xFF51BF51),
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                                'distance : ${filterState.distance.toStringAsFixed(0)} ${filterState.measureUnit}'),
+                            GestureDetector(
+                              onTap: () => {
+                                setState(() {
+                                  filterState.distance = 200;
+                                  filterState.measureUnit = "km";
+                                })
+                              },
+                              child: Icon(
+                                Icons.close,
+                                size: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  if (filterState.isVideoGamesChanged())
+                    Card(
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100.0),
+                      ),
+                      color: Color(0xFF51BF51),
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                                'Jeux vidéos : (${filterState.selectedVideoGames.length})'),
+                            GestureDetector(
+                              onTap: () => {
+                                setState(() {
+                                  filterState.selectedVideoGames = [];
+                                })
+                              },
+                              child: Icon(
+                                Icons.close,
+                                size: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  if (filterState.isDateRangeChanged())
+                    Card(
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100.0),
+                      ),
+                      color: Color(0xFF51BF51),
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                                '${DateFormat('dd/MM/yy').format(filterState.selectedDateRange!.start)} - ${DateFormat('dd/MM/yy').format(filterState.selectedDateRange!.end)}'),
+                            GestureDetector(
+                              onTap: () => {
+                                setState(() {
+                                  filterState.selectedDateRange = null;
+                                })
+                              },
+                              child: Icon(
+                                Icons.close,
+                                size: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  if (filterState.isRangeParticipantsChanged())
+                    Card(
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100.0),
+                      ),
+                      color: Color(0xFF51BF51),
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                                'inscrits : ${_getLabel(filterState.selectedRangeParticpants.start)} - ${_getLabel(filterState.selectedRangeParticpants.end)}'),
+                            GestureDetector(
+                              onTap: () => {
+                                setState(() {
+                                  filterState.selectedRangeParticpants =
+                                      const RangeValues(0, 12);
+                                })
+                              },
+                              child: Icon(
+                                Icons.close,
+                                size: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              )
             ],
           ),
         ),

@@ -40,7 +40,7 @@ class FilterState {
   }
 
   bool isRangeParticipantsChanged() {
-    return selectedRangeParticpants.start != 0 &&
+    return selectedRangeParticpants.start != 0 ||
         selectedRangeParticpants.end != 12;
   }
 }
