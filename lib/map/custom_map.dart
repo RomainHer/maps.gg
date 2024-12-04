@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:maps_gg/class/videogame.dart';
 import 'package:maps_gg/filters/filter_bottom_sheet.dart';
+import 'package:maps_gg/filters/filter_state.dart';
 import 'package:maps_gg/map/marker_layer_tournament.dart';
 import 'package:maps_gg/tournament_info/tournament_info.dart';
 import 'package:maps_gg/tournament_info/tournament_info_state.dart';
@@ -30,6 +31,7 @@ class CustomMap extends StatefulWidget {
 
 class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
   TournamentInfoState tournamentInfoState = TournamentInfoState.empty();
+  FilterState filterState = FilterState.empty();
 
   //final MapController _mapController = MapController();
   late final _animatedMapController = AnimatedMapController(vsync: this);
@@ -193,10 +195,7 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                       builder: (BuildContext context) {
                         return FilterBottomSheet(
                           videoGames: widget.videoGames,
-                          distanceRange: 200.0,
-                          measureUnit: "km",
-                          selectedDateRange: null,
-                          selectedVideoGames: [],
+                          filterState: filterState,
                         );
                       },
                     );

@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 class FilterElement extends StatelessWidget {
   final String title;
   final List<Widget> children;
+  final bool initiallyExpanded;
 
-  const FilterElement({super.key, this.children = const [], this.title = ""});
+  const FilterElement(
+      {super.key,
+      this.children = const [],
+      this.title = "",
+      this.initiallyExpanded = false});
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +17,7 @@ class FilterElement extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ExpansionTile(
+          initiallyExpanded: initiallyExpanded,
           expandedAlignment: Alignment.topLeft,
           expandedCrossAxisAlignment: CrossAxisAlignment.start,
           childrenPadding: EdgeInsets.all(10),

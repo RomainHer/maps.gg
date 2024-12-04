@@ -39,8 +39,8 @@ Future<(List, Map<VideoGame, int>)> _requestApi(
     link: link,
   );
 
-  const String readTournamentsAroud = r'''
-    query SocalTournaments($perPage: Int, $coordinates: String!, $radius: String!, $timestampNow: Timestamp) {
+  const String readTournamentsAround = r'''
+    query localTournaments($perPage: Int, $coordinates: String!, $radius: String!, $timestampNow: Timestamp) {
       tournaments(query: {
         perPage: $perPage
         filter: {
@@ -102,7 +102,7 @@ Future<(List, Map<VideoGame, int>)> _requestApi(
   debugPrint(timestampNow.toString());
 
   final QueryOptions options = QueryOptions(
-    document: gql(readTournamentsAroud),
+    document: gql(readTournamentsAround),
     variables: <String, dynamic>{
       'perPage': perPage,
       'coordinates': coordinates,

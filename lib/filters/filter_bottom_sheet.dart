@@ -1,44 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:maps_gg/filters/filter_element.dart';
+import 'package:maps_gg/filters/filter_state.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:maps_gg/class/videogame.dart';
 
 class FilterBottomSheet extends StatefulWidget {
   final Map<VideoGame, int> videoGames;
-  final double distanceRange;
-  final String measureUnit;
-  final DateTimeRange? selectedDateRange;
-  final List<VideoGame> selectedVideoGames;
-  final RangeValues rangeParticpants;
+  final FilterState filterState;
 
   const FilterBottomSheet(
-      {super.key,
-      required this.videoGames,
-      required this.distanceRange,
-      required this.measureUnit,
-      this.selectedDateRange,
-      this.selectedVideoGames = const [],
-      this.rangeParticpants = const RangeValues(0, 12)});
+      {super.key, required this.videoGames, required this.filterState});
 
   @override
   State<FilterBottomSheet> createState() => _FilterBottomSheetState();
 }
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
-  late List<VideoGame> selectedVideoGames;
-  late double distance;
-  late String measureUnit;
-  DateTimeRange? selectedDateRange;
-  late RangeValues rangeParticpants;
+  late FilterState filterState;
 
   @override
   void initState() {
     super.initState();
-    distance = widget.distanceRange;
-    measureUnit = widget.measureUnit;
-    selectedDateRange = widget.selectedDateRange;
-    selectedVideoGames = widget.selectedVideoGames;
-    rangeParticpants = widget.rangeParticpants;
+    filterState = widget.filterState;
   }
 
   // Convertit un index en puissance de 2
@@ -55,7 +38,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   Future<void> _selectDateRange(BuildContext context) async {
     final DateTimeRange? pickedRange = await showDateRangePicker(
       context: context,
-      initialDateRange: selectedDateRange,
+      initialDateRange: filterState.selectedDateRange,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
       helpText: 'Sélectionnez une plage de dates',
@@ -63,7 +46,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
     if (pickedRange != null) {
       setState(() {
-        selectedDateRange = pickedRange;
+        filterState.selectedDateRange = pickedRange;
       });
     }
   }
@@ -79,6 +62,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               FilterElement(
+                initiallyExpanded: filterState.isDistanceChanged(),
                 title: "Paramètre géographique",
                 children: [
                   Row(
@@ -87,12 +71,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       Container(
                         padding: EdgeInsets.only(right: 10),
                         child: Text(
-                          distance.toStringAsFixed(0),
+                          filterState.distance.toStringAsFixed(0),
                           style: TextStyle(fontSize: 16),
                         ),
                       ),
                       DropdownButton(
-                        value: measureUnit,
+                        value: filterState.measureUnit,
                         items: [
                           DropdownMenuItem(
                             value: "km",
@@ -105,23 +89,32 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         ],
                         onChanged: (String? value) {
                           setState(() {
-                            measureUnit = value!;
+                            filterState.measureUnit = value!;
+                            if (value == "mi") {
+                              filterState.distance =
+                                  filterState.distance * 0.621371;
+                            } else {
+                              filterState.distance =
+                                  filterState.distance * 1.60934;
+                            }
                           });
                         },
                       ),
                     ],
                   ),
                   Slider(
-                    value: distance,
-                    onChanged: (value) => setState(() => distance = value),
+                    value: filterState.distance,
+                    onChanged: (value) =>
+                        setState(() => filterState.distance = value),
                     min: 0,
-                    max: 300,
+                    max: filterState.measureUnit == "km" ? 300 : 200,
                     divisions: 30,
-                    label: distance.toStringAsFixed(0),
+                    label: filterState.distance.toStringAsFixed(0),
                   ),
                 ],
               ),
               FilterElement(
+                initiallyExpanded: filterState.isVideoGamesChanged(),
                 title: "Jeux vidéos",
                 children: [
                   MultiSelectDialogField(
@@ -130,26 +123,27 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                             videoGame,
                             "${videoGame.displayName} (${widget.videoGames[videoGame]})"))
                         .toList(),
-                    initialValue: selectedVideoGames,
+                    initialValue: filterState.selectedVideoGames,
                     title: Text("Jeux Vidéos"),
                     buttonText: Text("Sélectionner des jeux"),
                     onConfirm: (values) {
                       setState(() {
-                        selectedVideoGames = values;
+                        filterState.selectedVideoGames = values;
                       });
                     },
                   ),
                 ],
               ),
               FilterElement(
+                initiallyExpanded: filterState.isDateRangeChanged(),
                 title: "Dates des événements",
                 children: [
                   Wrap(
                     alignment: WrapAlignment.spaceBetween,
                     children: [
                       Text(
-                        selectedDateRange != null
-                            ? "Du ${selectedDateRange!.start.day}/${selectedDateRange!.start.month}/${selectedDateRange!.start.year} au ${selectedDateRange!.end.day}/${selectedDateRange!.end.month}/${selectedDateRange!.end.year}"
+                        filterState.selectedDateRange != null
+                            ? "Du ${filterState.selectedDateRange!.start.day}/${filterState.selectedDateRange!.start.month}/${filterState.selectedDateRange!.start.year} au ${filterState.selectedDateRange!.end.day}/${filterState.selectedDateRange!.end.month}/${filterState.selectedDateRange!.end.year}"
                             : "Sélectionnez une plage de dates",
                         style: TextStyle(fontSize: 16),
                       ),
@@ -162,24 +156,25 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 ],
               ),
               FilterElement(
+                initiallyExpanded: filterState.isRangeParticipantsChanged(),
                 title: "Nombre d'inscrits",
                 children: [
                   Text(
-                    "Entre ${_getLabel(rangeParticpants.start)} et ${_getLabel(rangeParticpants.end)} inscrits",
+                    "Entre ${_getLabel(filterState.selectedRangeParticpants.start)} et ${_getLabel(filterState.selectedRangeParticpants.end)} inscrits",
                     style: TextStyle(fontSize: 16),
                   ),
                   RangeSlider(
-                    values: rangeParticpants,
+                    values: filterState.selectedRangeParticpants,
                     min: 0, // Correspond à 2^0
                     max: 12, // Correspond à 2^10
                     divisions: 10,
                     labels: RangeLabels(
-                      _getLabel(rangeParticpants.start),
-                      _getLabel(rangeParticpants.end),
+                      _getLabel(filterState.selectedRangeParticpants.start),
+                      _getLabel(filterState.selectedRangeParticpants.end),
                     ),
                     onChanged: (values) {
                       setState(() {
-                        rangeParticpants = values;
+                        filterState.selectedRangeParticpants = values;
                       });
                     },
                   ),
