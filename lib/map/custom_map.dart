@@ -33,6 +33,7 @@ class CustomMap extends StatefulWidget {
 class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
   TournamentInfoState tournamentInfoState = TournamentInfoState.empty();
   FilterState filterState = FilterState.empty();
+  late List<dynamic> filteredTournaments;
 
   //final MapController _mapController = MapController();
   late final _animatedMapController = AnimatedMapController(vsync: this);
@@ -44,10 +45,78 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
     return tournamentInfoState.tournamentId ?? 0;
   }
 
+  bool tournamentFilter(dynamic tournament) {
+    if (filterState.isDistanceChanged()) {
+      if (filterState.measureUnit == 'km') {
+        if (tournament['distanceKm'] > filterState.distance) {
+          return false;
+        }
+      } else {
+        if (tournament['distanceMi'] > filterState.distance) {
+          return false;
+        }
+      }
+    }
+
+    if (filterState.isVideoGamesChanged()) {
+      final List<VideoGame> tournamentVideoGames = tournament['videoGames'];
+      final List<VideoGame> selectedVideoGames = filterState.selectedVideoGames;
+      if (selectedVideoGames.isNotEmpty) {
+        if (!tournamentVideoGames
+            .any((element) => selectedVideoGames.contains(element))) {
+          return false;
+        }
+      }
+    }
+
+    if (filterState.isDateRangeChanged()) {
+      final DateTimeRange? selectedDateRange = filterState.selectedDateRange;
+      final DateTime tournamentDate =
+          DateTime.fromMillisecondsSinceEpoch(tournament['date'] * 1000);
+
+      if (selectedDateRange != null) {
+        /*debugPrint(
+            "${(tournamentDate.isBefore(selectedDateRange.start) || tournamentDate.isAfter(selectedDateRange.end))} - tournamentDate: $tournamentDate - selectedDateRange: $selectedDateRange");*/
+        debugPrint("--------------------");
+        debugPrint(selectedDateRange.start.toString());
+        debugPrint(selectedDateRange.end.toString());
+        debugPrint(tournament["date"].toString());
+        debugPrint(DateFormat("dd/MM/yyyy").format(tournamentDate));
+
+        if (tournamentDate.isBefore(selectedDateRange.start) ||
+            tournamentDate
+                .isAfter(selectedDateRange.end.add(Duration(days: 1)))) {
+          return false;
+        }
+      }
+    }
+
+    if (filterState.isRangeParticipantsChanged()) {
+      final RangeValues selectedRangeParticpants =
+          filterState.selectedRangeParticpants;
+      final int tournamentParticipants = tournament['numAttendees'];
+      if (tournamentParticipants <=
+              _indexToPower(selectedRangeParticpants.start.toInt()) ||
+          tournamentParticipants >=
+              _indexToPower(selectedRangeParticpants.end.toInt())) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   void updateFilterState(FilterState filterState) {
     setState(() {
       this.filterState = filterState;
+      updateFilteredTournaments();
     });
+  }
+
+  void updateFilteredTournaments() {
+    filteredTournaments = widget.tournaments
+        .where((tournament) => tournamentFilter(tournament))
+        .toList();
   }
 
   void updateTournamentInfoState(TournamentInfoState tournamentInfoState) {
@@ -82,6 +151,13 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
   }
 
   @override
+  @override
+  void initState() {
+    super.initState();
+    filteredTournaments = widget.tournaments;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
@@ -107,7 +183,7 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
             MarkerLayerTournaments(
               getSelectedTournamentId: getSelectedTournamentId,
               updateTournamentInfoState: updateTournamentInfoState,
-              tournamentsData: widget.tournaments,
+              tournamentsData: filteredTournaments,
               popupController: widget.popupController,
             ),
             MarkerLayer(
@@ -261,6 +337,7 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                                 setState(() {
                                   filterState.distance = 200;
                                   filterState.measureUnit = "km";
+                                  updateFilteredTournaments();
                                 })
                               },
                               child: Icon(
@@ -290,6 +367,7 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                               onTap: () => {
                                 setState(() {
                                   filterState.selectedVideoGames = [];
+                                  updateFilteredTournaments();
                                 })
                               },
                               child: Icon(
@@ -319,6 +397,7 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                               onTap: () => {
                                 setState(() {
                                   filterState.selectedDateRange = null;
+                                  updateFilteredTournaments();
                                 })
                               },
                               child: Icon(
@@ -349,6 +428,37 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                                 setState(() {
                                   filterState.selectedRangeParticpants =
                                       const RangeValues(0, 12);
+                                  updateFilteredTournaments();
+                                })
+                              },
+                              child: Icon(
+                                Icons.close,
+                                size: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  if (!filterState.isEmpty())
+                    Card(
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100.0),
+                      ),
+                      color: Color(0xFF3F7FFD),
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                                'Tournois filtrés (${filteredTournaments.length})'),
+                            GestureDetector(
+                              onTap: () => {
+                                setState(() {
+                                  filterState = FilterState.empty();
+                                  filteredTournaments = widget.tournaments;
                                 })
                               },
                               child: Icon(

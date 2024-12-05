@@ -119,11 +119,20 @@ Future<(List, Map<VideoGame, int>)> _requestApi(
     debugPrint(result.exception.toString());
   } else {
     for (var tournament in result.data!['tournaments']['nodes']) {
+      double distanceInMeters = Geolocator.distanceBetween(
+        latitude,
+        longitude,
+        tournament['lat'],
+        tournament['lng'],
+      );
+
       var tournamentDetail = {
         'id': tournament['id'],
         'name': tournament['name'],
         'lat': tournament['lat'],
         'lng': tournament['lng'],
+        'distanceKm': distanceInMeters / 1000,
+        'distanceMi': distanceInMeters / 1609.344,
         'date': tournament['startAt'],
         'registrationEnd': tournament['registrationClosesAt'],
         'numAttendees': tournament['numAttendees'],
@@ -151,6 +160,7 @@ Future<(List, Map<VideoGame, int>)> _requestApi(
           "num entrants : ${tournament['events'][0]["numEntrants"].toString()}");*/
 
       var eventsData = <Event>[];
+      var videoGamesData = <VideoGame>[];
       for (var event in tournament['events']) {
         eventsData.add(Event(
           name: event['name'],
@@ -165,6 +175,21 @@ Future<(List, Map<VideoGame, int>)> _requestApi(
             imageRatio: event['videogame']['images'][0]['ratio'].toDouble(),
           ),
         ));
+        if (!videoGamesData.contains(VideoGame(
+          id: event['videogame']['id'],
+          displayName: event['videogame']['displayName'],
+          name: event['videogame']['name'],
+          imageUrl: event['videogame']['images'][0]['url'],
+          imageRatio: event['videogame']['images'][0]['ratio'].toDouble(),
+        ))) {
+          videoGamesData.add(VideoGame(
+            id: event['videogame']['id'],
+            displayName: event['videogame']['displayName'],
+            name: event['videogame']['name'],
+            imageUrl: event['videogame']['images'][0]['url'],
+            imageRatio: event['videogame']['images'][0]['ratio'].toDouble(),
+          ));
+        }
         VideoGame newVideoGame = VideoGame(
           id: event['videogame']['id'],
           displayName: event['videogame']['displayName'],
@@ -178,10 +203,10 @@ Future<(List, Map<VideoGame, int>)> _requestApi(
         } else {
           dataVideoGames[newVideoGame] = 1;
         }
-        ;
       }
 
       tournamentDetail['events'] = eventsData;
+      tournamentDetail['videoGames'] = videoGamesData;
 
       dataTournaments.add(tournamentDetail);
     }
