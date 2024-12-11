@@ -22,9 +22,14 @@ String capitalizeFirstLetterOfEachWord(String input) {
 }
 
 class TournamentInfo extends StatefulWidget {
-  const TournamentInfo({super.key, required this.tournamentInfoState});
+  const TournamentInfo({
+    super.key,
+    required this.tournamentInfoState,
+    required this.updateTournamentInfoState,
+  });
 
   final TournamentInfoState tournamentInfoState;
+  final Function updateTournamentInfoState;
 
   @override
   State<TournamentInfo> createState() => _TournamentInfoState();
@@ -102,9 +107,13 @@ class _TournamentInfoState extends State<TournamentInfo> {
                     ),
                   ),
                 ),
-                IconButton(
-                  visualDensity:
-                      const VisualDensity(horizontal: -4, vertical: -4),
+                //Like button (not use for now)
+                /*IconButton(
+                  visualDensity: const VisualDensity(
+                    horizontal: -4,
+                    vertical: -4,
+                  ),
+                  hoverColor: Colors.white,
                   highlightColor: Colors.transparent,
                   color: Colors.black,
                   isSelected: isTournamentLiked,
@@ -114,6 +123,18 @@ class _TournamentInfoState extends State<TournamentInfo> {
                     setState(() {
                       isTournamentLiked = !isTournamentLiked;
                     });
+                  },
+                ),*/
+                IconButton(
+                  hoverColor: Colors.white,
+                  highlightColor: Colors.transparent,
+                  visualDensity:
+                      const VisualDensity(horizontal: -4, vertical: -4),
+                  color: Colors.black,
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    widget
+                        .updateTournamentInfoState(TournamentInfoState.empty());
                   },
                 ),
               ],

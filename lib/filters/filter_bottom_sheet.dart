@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:maps_gg/filters/filter_element.dart';
 import 'package:maps_gg/filters/filter_state.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
@@ -48,6 +47,36 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
       helpText: 'Sélectionnez une plage de dates',
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            hoverColor: Color(0xFFAFC9FB),
+            colorScheme: ColorScheme.light(
+              primary: Color(0xFF3F7FFD),
+              secondary:
+                  Color(0xFFAFC9FB), // Couleur principale (boutons, en-têtes)
+              onPrimary: Colors.white, // Texte sur les boutons principaux
+              onSurface: Colors.black, // Couleur du texte dans le contenu
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                overlayColor: Color(0x50606060), // Couleur au survol
+              ),
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                overlayColor: Color(0x50606060),
+              ),
+            ),
+            outlinedButtonTheme: OutlinedButtonThemeData(
+              style: OutlinedButton.styleFrom(
+                overlayColor: Color(0x50606060), // Couleur au survol
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (pickedRange != null) {
@@ -63,6 +92,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       context: context,
       builder: (ctx) {
         return MultiSelectDialog(
+          title: Text("Choisir les jeux"),
+          listType: MultiSelectListType.CHIP,
+          selectedColor: Color(0xFF898989),
+          selectedItemsTextStyle: TextStyle(color: Colors.black),
           items: widget.videoGames.keys
               .map((videoGame) =>
                   MultiSelectItem(videoGame, videoGame.displayName))
@@ -162,42 +195,84 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       color: Color(0xFF979797),
                     ),
                   ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.only(right: 10),
-                        child: Text(
-                          filterState.distance.toStringAsFixed(0),
-                          style: TextStyle(fontSize: 16),
+                  Container(
+                    margin: EdgeInsets.only(top: 10),
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0x40000000),
+                          blurRadius: 4,
+                          offset: Offset(3, 3),
                         ),
+                      ],
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(15),
                       ),
-                      DropdownButton(
-                        value: filterState.measureUnit,
-                        items: [
-                          DropdownMenuItem(
-                            value: "km",
-                            child: Text("km"),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 7,
+                            horizontal: 20,
                           ),
-                          DropdownMenuItem(
-                            value: "mi",
-                            child: Text("miles"),
+                          child: Text(
+                            filterState.distance.toStringAsFixed(0),
+                            style: TextStyle(
+                              color: Color(0xFF3F7FFD),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
                           ),
-                        ],
-                        onChanged: (String? value) {
-                          setState(() {
-                            filterState.measureUnit = value!;
-                            if (value == "mi") {
-                              filterState.distance =
-                                  filterState.distance * 0.621371;
-                            } else {
-                              filterState.distance =
-                                  filterState.distance * 1.60934;
-                            }
-                          });
-                        },
-                      ),
-                    ],
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(right: 2, top: 2, bottom: 2),
+                          padding: EdgeInsets.symmetric(
+                            vertical: 7,
+                            horizontal: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFEDEDED),
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(14),
+                              bottomRight: Radius.circular(14),
+                            ),
+                          ),
+                          child: DropdownButton(
+                            isDense: true,
+                            underline: SizedBox(),
+                            value: filterState.measureUnit,
+                            items: [
+                              DropdownMenuItem(
+                                value: "km",
+                                child: Text("km"),
+                              ),
+                              DropdownMenuItem(
+                                value: "mi",
+                                child: Text("miles"),
+                              ),
+                            ],
+                            onChanged: (String? value) {
+                              setState(() {
+                                if (value! != filterState.measureUnit) {
+                                  filterState.measureUnit = value;
+                                  if (value == "mi") {
+                                    filterState.distance =
+                                        filterState.distance * 0.621371;
+                                  } else {
+                                    filterState.distance =
+                                        filterState.distance * 1.60934;
+                                  }
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   Slider(
                     activeColor: Color(0xFF666666),
@@ -234,7 +309,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 8),
                                 decoration: BoxDecoration(
-                                  color: Color(0x663F7FFD),
+                                  color: Color(0xFFAFC9FB),
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: Text(
@@ -345,7 +420,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 initiallyExpanded: filterState.isDateRangeChanged(),
                 title: "Dates des événements",
                 children: [
-                  Wrap(
+                  /*Wrap(
                     alignment: WrapAlignment.spaceBetween,
                     children: [
                       Text(
@@ -359,6 +434,48 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         child: Text("Choisir"),
                       ),
                     ],
+                  ),*/
+                  Container(
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    child: GestureDetector(
+                      onTap: () => _selectDateRange(context),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0x40000000),
+                              blurRadius: 4,
+                              offset: Offset(3, 3),
+                            ),
+                          ],
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: 10),
+                              child: Icon(Icons.calendar_month),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 7,
+                                horizontal: 10,
+                              ),
+                              child: Text(
+                                "Selectionner des dates",
+                                style: TextStyle(color: Color(0xFFA4A4A4)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),

@@ -126,7 +126,7 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
   }
 
   void mapEventHandler(MapEvent event) {
-    if (event is MapEventMoveStart) {
+    if (event is MapEventMoveStart || event is MapEventTap) {
       setState(() {
         tournamentInfoState = TournamentInfoState.empty();
       });
@@ -262,7 +262,8 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                       ),
                     ),
                   ),
-                  Card(
+                  //Like button (not use for now)
+                  /*Card(
                     elevation: 10,
                     color: Colors.white,
                     shape: CircleBorder(),
@@ -272,11 +273,9 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                         icon: const Icon(
                           Icons.favorite,
                         ),
-                        //padding: EdgeInsets.zero,
-                        //iconSize: 10,
                       ),
                     ),
-                  ),
+                  ),*/
                   Card(
                     elevation: 10,
                     color: Colors.white,
@@ -486,6 +485,7 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
               visible: tournamentInfoState.isTournamentSelected,
               child: TournamentInfo(
                 tournamentInfoState: tournamentInfoState,
+                updateTournamentInfoState: updateTournamentInfoState,
               ),
             ),
           ),
