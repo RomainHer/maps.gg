@@ -20,23 +20,18 @@ class FilterElement extends StatelessWidget {
           initiallyExpanded: initiallyExpanded,
           expandedAlignment: Alignment.topLeft,
           expandedCrossAxisAlignment: CrossAxisAlignment.start,
-          childrenPadding: EdgeInsets.all(10),
+          childrenPadding: EdgeInsets.only(bottom: 10, right: 10, left: 10),
           tilePadding: EdgeInsets.all(0),
-          shape: Border.all(style: BorderStyle.none),
           title: Row(
             children: [
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                elevation: 5,
-                color: Colors.white,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: Text(
-                    title,
-                    style: TextStyle(fontSize: 18),
-                  ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                child: Text(
+                  title,
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF666666)),
                 ),
               ),
             ],

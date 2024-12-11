@@ -58,6 +58,27 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     }
   }
 
+  void _showMultiSelect(BuildContext context) async {
+    await showDialog(
+      context: context,
+      builder: (ctx) {
+        return MultiSelectDialog(
+          items: widget.videoGames.keys
+              .map((videoGame) =>
+                  MultiSelectItem(videoGame, videoGame.displayName))
+              .toList(),
+          initialValue: filterState.selectedVideoGames,
+          onConfirm: (values) {
+            setState(() {
+              filterState.selectedVideoGames = values;
+              widget.onFilterStateChange(filterState);
+            });
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -68,10 +89,79 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Container(
+                width: double.infinity,
+                alignment: Alignment.centerLeft,
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Color(0xFF7C7C7C),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                padding: EdgeInsets.only(bottom: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Tous les filtres",
+                      style: TextStyle(
+                          fontSize: 24,
+                          color: Color(0xFF666666),
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Visibility(
+                      visible: !filterState.isEmpty(),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            filterState = FilterState.empty();
+                            widget.onFilterStateChange(filterState);
+                          });
+                        },
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(2),
+                              margin: EdgeInsets.only(right: 6),
+                              decoration: BoxDecoration(
+                                color: Color(0xFF666666),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.loop,
+                                size: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              "réinitialiser les filtres",
+                              style: TextStyle(
+                                color: Color(0xFF7C7C7C),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               FilterElement(
                 initiallyExpanded: filterState.isDistanceChanged(),
                 title: "Paramètre géographique",
                 children: [
+                  Text(
+                    "Distance à partir de la localisation de l’appareil",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Color(0xFF979797),
+                    ),
+                  ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -110,6 +200,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     ],
                   ),
                   Slider(
+                    activeColor: Color(0xFF666666),
                     value: filterState.distance,
                     onChanged: (value) => setState(() {
                       filterState.distance = value;
@@ -126,21 +217,127 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 initiallyExpanded: filterState.isVideoGamesChanged(),
                 title: "Jeux vidéos",
                 children: [
-                  MultiSelectDialogField(
-                    items: widget.videoGames.keys
-                        .map((videoGame) => MultiSelectItem<VideoGame>(
-                            videoGame,
-                            "${videoGame.displayName} (${widget.videoGames[videoGame]})"))
+                  Visibility(
+                    visible: filterState.selectedVideoGames.isNotEmpty,
+                    child: Container(
+                      padding: EdgeInsets.only(bottom: 8),
+                      width: double.infinity,
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8.0,
+                        runSpacing: 4.0,
+                        children: filterState.selectedVideoGames.map((game) {
+                          return Stack(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(top: 8, right: 8),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: Color(0x663F7FFD),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Text(
+                                  game.displayName,
+                                  style: TextStyle(
+                                    color: Color(0xFF666666),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      filterState.selectedVideoGames
+                                          .remove(game);
+                                      widget.onFilterStateChange(filterState);
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF666666),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.close,
+                                      size: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                  /*MultiSelectChipDisplay(
+                    items: filterState.selectedVideoGames
+                        .map((e) => MultiSelectItem(e, e.displayName))
                         .toList(),
-                    initialValue: filterState.selectedVideoGames,
-                    title: Text("Jeux Vidéos"),
-                    buttonText: Text("Sélectionner des jeux"),
-                    onConfirm: (values) {
+                    onTap: (value) {
                       setState(() {
-                        filterState.selectedVideoGames = values;
+                        filterState.selectedVideoGames.remove(value);
                         widget.onFilterStateChange(filterState);
                       });
                     },
+                  ),*/
+                  Container(
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    child: GestureDetector(
+                      onTap: () => _showMultiSelect(context),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0x40000000),
+                              blurRadius: 4,
+                              offset: Offset(3, 3),
+                            ),
+                          ],
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 7,
+                                horizontal: 10,
+                              ),
+                              child: Text(
+                                "Choisir un ou plusieurs jeu(x)",
+                                style: TextStyle(color: Color(0xFFA4A4A4)),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right: 2),
+                              padding: EdgeInsets.symmetric(
+                                vertical: 7,
+                                horizontal: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Color(0xFFEDEDED),
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(14),
+                                  bottomRight: Radius.circular(14),
+                                ),
+                              ),
+                              child: Icon(Icons.add, size: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -191,10 +388,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   ),
                 ],
               ),
-              FilterElement(
+              /*FilterElement(
                 title: "Taille de l'événement",
                 children: [],
-              ),
+              ),*/
             ],
           ),
         ),
