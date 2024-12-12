@@ -4,12 +4,15 @@ class FilterElement extends StatelessWidget {
   final String title;
   final List<Widget> children;
   final bool initiallyExpanded;
+  final bool maintainState;
 
-  const FilterElement(
-      {super.key,
-      this.children = const [],
-      this.title = "",
-      this.initiallyExpanded = false});
+  const FilterElement({
+    super.key,
+    this.children = const [],
+    this.title = "",
+    this.initiallyExpanded = false,
+    this.maintainState = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +20,7 @@ class FilterElement extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ExpansionTile(
+          maintainState: maintainState,
           initiallyExpanded: initiallyExpanded,
           expandedAlignment: Alignment.topLeft,
           expandedCrossAxisAlignment: CrossAxisAlignment.start,

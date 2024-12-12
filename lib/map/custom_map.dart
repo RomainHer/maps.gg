@@ -12,6 +12,7 @@ import 'package:maps_gg/filters/filter_state.dart';
 import 'package:maps_gg/map/marker_layer_tournament.dart';
 import 'package:maps_gg/tournament_info/tournament_info.dart';
 import 'package:maps_gg/tournament_info/tournament_info_state.dart';
+import 'dart:math';
 
 class CustomMap extends StatefulWidget {
   const CustomMap(
@@ -92,14 +93,26 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
     }
 
     if (filterState.isRangeParticipantsChanged()) {
-      final RangeValues selectedRangeParticpants =
-          filterState.selectedRangeParticpants;
+      final maxParticipants = filterState.maxParticipants;
+      final minParticipants = filterState.minParticipants;
       final int tournamentParticipants = tournament['numAttendees'];
-      if (tournamentParticipants <=
-              _indexToPower(selectedRangeParticpants.start.toInt()) ||
-          tournamentParticipants >=
-              _indexToPower(selectedRangeParticpants.end.toInt())) {
-        return false;
+
+      debugPrint("min : $minParticipants - max : $maxParticipants");
+      if (maxParticipants != null && minParticipants != null) {
+        int maxValue = max(maxParticipants, minParticipants);
+        int minValue = min(maxParticipants, minParticipants);
+        if (tournamentParticipants >= maxValue ||
+            tournamentParticipants <= minValue) {
+          return false;
+        }
+      } else if (maxParticipants != null) {
+        if (tournamentParticipants >= maxParticipants) {
+          return false;
+        }
+      } else if (minParticipants != null) {
+        if (tournamentParticipants <= minParticipants) {
+          return false;
+        }
       }
     }
 
@@ -131,15 +144,6 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
         tournamentInfoState = TournamentInfoState.empty();
       });
     }
-  }
-
-  int _indexToPower(int index) => (1 << index); // équivalent à 2^index
-
-  String _getLabel(double index) {
-    if (index == 0) {
-      return "0";
-    }
-    return _indexToPower(index.toInt()).toString();
   }
 
   Future<void> _centerMapOnUser() async {
@@ -420,13 +424,23 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                                'inscrits : ${_getLabel(filterState.selectedRangeParticpants.start)} - ${_getLabel(filterState.selectedRangeParticpants.end)}'),
+                            if (filterState.minParticipants != null &&
+                                filterState.maxParticipants != null)
+                              Text(
+                                  'inscrits : ${filterState.minParticipants} - ${filterState.maxParticipants}'),
+                            if (filterState.minParticipants == null &&
+                                filterState.maxParticipants != null)
+                              Text(
+                                  'inscrits : < ${filterState.maxParticipants}'),
+                            if (filterState.minParticipants != null &&
+                                filterState.maxParticipants == null)
+                              Text(
+                                  'inscrits : > ${filterState.minParticipants}'),
                             GestureDetector(
                               onTap: () => {
                                 setState(() {
-                                  filterState.selectedRangeParticpants =
-                                      const RangeValues(0, 12);
+                                  filterState.minParticipants = null;
+                                  filterState.maxParticipants = null;
                                   updateFilteredTournaments();
                                 })
                               },

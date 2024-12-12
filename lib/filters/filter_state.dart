@@ -7,24 +7,35 @@ class FilterState {
     this.measureUnit,
     this.selectedVideoGames,
     this.selectedDateRange,
-    this.selectedRangeParticpants,
+    this.minParticipants,
+    this.maxParticipants,
   );
 
-  FilterState.empty();
+  FilterState.empty() {
+    distance = 200;
+    measureUnit = 'km';
+    selectedVideoGames = [];
+    selectedDateRange = null;
+    minParticipants = null;
+    maxParticipants = null;
+  }
 
   double distance = 200;
   String measureUnit = 'km';
+  int? minParticipants;
+  int? maxParticipants;
   List<VideoGame> selectedVideoGames = [];
   DateTimeRange? selectedDateRange;
-  RangeValues selectedRangeParticpants = const RangeValues(0, 12);
+
+  //RangeValues selectedRangeParticpants = const RangeValues(0, 12);
 
   bool isEmpty() {
     return distance == 200 &&
         measureUnit == 'km' &&
         selectedVideoGames.isEmpty &&
         selectedDateRange == null &&
-        selectedRangeParticpants.start == 0 &&
-        selectedRangeParticpants.end == 12;
+        maxParticipants == null &&
+        minParticipants == null;
   }
 
   bool isDistanceChanged() {
@@ -40,7 +51,6 @@ class FilterState {
   }
 
   bool isRangeParticipantsChanged() {
-    return selectedRangeParticpants.start != 0 ||
-        selectedRangeParticpants.end != 12;
+    return minParticipants != null || maxParticipants != null;
   }
 }

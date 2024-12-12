@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:maps_gg/filters/filter_element.dart';
 import 'package:maps_gg/filters/filter_state.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
@@ -22,22 +24,62 @@ class FilterBottomSheet extends StatefulWidget {
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
   late FilterState filterState;
+  late TextEditingController _minController;
+  late TextEditingController _maxController;
 
   @override
   void initState() {
     super.initState();
     filterState = widget.filterState;
+    _minController = TextEditingController(text: "");
+    _maxController = TextEditingController(text: "");
+    if (filterState.minParticipants != null) {
+      _minController.text = filterState.minParticipants.toString();
+    }
+    if (filterState.maxParticipants != null) {
+      _maxController.text = filterState.maxParticipants.toString();
+    }
   }
 
-  // Convertit un index en puissance de 2
-  int _indexToPower(int index) => (1 << index); // équivalent à 2^index
+  @override
+  void dispose() {
+    _minController.dispose();
+    _maxController.dispose();
+    super.dispose();
+  }
 
-// Convertit une valeur en label
-  String _getLabel(double index) {
-    if (index == 0) {
-      return "0";
-    }
-    return _indexToPower(index.toInt()).toString();
+  void _validateMin(String value) {
+    int? min = int.tryParse(value);
+
+    setState(() {
+      if (min == null) {
+        _minController.text = "";
+      } else {
+        _minController.text = min.toString();
+      }
+      _minController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _minController.text.length),
+      );
+      filterState.minParticipants = min;
+      widget.onFilterStateChange(filterState);
+    });
+  }
+
+  void _validateMax(String value) {
+    int? max = int.tryParse(value);
+
+    setState(() {
+      if (max == null) {
+        _maxController.text = "";
+      } else {
+        _maxController.text = max.toString();
+      }
+      _maxController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _maxController.text.length),
+      );
+      filterState.maxParticipants = max;
+      widget.onFilterStateChange(filterState);
+    });
   }
 
   Future<void> _selectDateRange(BuildContext context) async {
@@ -150,6 +192,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         onTap: () {
                           setState(() {
                             filterState = FilterState.empty();
+                            _minController.text = "";
+                            _maxController.text = "";
                             widget.onFilterStateChange(filterState);
                           });
                         },
@@ -467,10 +511,20 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                 vertical: 7,
                                 horizontal: 10,
                               ),
-                              child: Text(
-                                "Selectionner des dates",
-                                style: TextStyle(color: Color(0xFFA4A4A4)),
-                              ),
+                              child: filterState.isDateRangeChanged()
+                                  ? Text(
+                                      "${DateFormat("dd/MM/yy").format(filterState.selectedDateRange!.start)} - ${DateFormat("dd/MM/yy").format(filterState.selectedDateRange!.end)}",
+                                      style: TextStyle(
+                                        color: Color(0xFF3F7FFD),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  : Text(
+                                      "Sélectionnez les dates",
+                                      style: TextStyle(
+                                        color: Color(0xFFA4A4A4),
+                                      ),
+                                    ),
                             ),
                           ],
                         ),
@@ -480,10 +534,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 ],
               ),
               FilterElement(
+                maintainState: true,
                 initiallyExpanded: filterState.isRangeParticipantsChanged(),
                 title: "Nombre d'inscrits",
                 children: [
-                  Text(
+                  /*Text(
                     "Entre ${_getLabel(filterState.selectedRangeParticpants.start)} et ${_getLabel(filterState.selectedRangeParticpants.end)} inscrits",
                     style: TextStyle(fontSize: 16),
                   ),
@@ -502,6 +557,83 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         widget.onFilterStateChange(filterState);
                       });
                     },
+                  ),*/
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 120,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0x40000000),
+                              blurRadius: 4,
+                              offset: Offset(3, 3),
+                            ),
+                          ],
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15),
+                          ),
+                        ),
+                        child: TextField(
+                          onChanged: _validateMin,
+                          controller: _minController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          decoration: InputDecoration(
+                            disabledBorder: InputBorder.none,
+                            hintText: 'Minimum',
+                            border: OutlineInputBorder(
+                                gapPadding: 0, borderSide: BorderSide.none),
+                            contentPadding: EdgeInsets.all(8),
+                            isDense: true,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          "&",
+                          style:
+                              TextStyle(fontSize: 20, color: Color(0xFF666666)),
+                        ),
+                      ),
+                      Container(
+                        width: 120,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0x40000000),
+                              blurRadius: 4,
+                              offset: Offset(3, 3),
+                            ),
+                          ],
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15),
+                          ),
+                        ),
+                        child: TextField(
+                          onChanged: _validateMax,
+                          controller: _maxController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          decoration: InputDecoration(
+                            disabledBorder: InputBorder.none,
+                            hintText: 'Maximum',
+                            border: OutlineInputBorder(
+                                gapPadding: 0, borderSide: BorderSide.none),
+                            contentPadding: EdgeInsets.all(8),
+                            isDense: true,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
