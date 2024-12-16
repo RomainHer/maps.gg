@@ -140,10 +140,7 @@ class _MarkerContentTournamentState extends State<MarkerContentTournament> {
                           Icon(
                             Icons.location_pin,
                             size: 20,
-                            color: widget.tournamentId ==
-                                    widget.getSelectedTournamentId()
-                                ? Color(0xFF3F7FFD)
-                                : Color(0xFF51BF51),
+                            color: Color(0xFF3F7FFD),
                           ),
                         ],
                       ),

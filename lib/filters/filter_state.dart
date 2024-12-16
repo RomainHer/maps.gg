@@ -27,8 +27,6 @@ class FilterState {
   List<VideoGame> selectedVideoGames = [];
   DateTimeRange? selectedDateRange;
 
-  //RangeValues selectedRangeParticpants = const RangeValues(0, 12);
-
   bool isEmpty() {
     return distance == 200 &&
         measureUnit == 'km' &&

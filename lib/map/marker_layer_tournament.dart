@@ -75,14 +75,14 @@ class MarkerLayerTournaments extends StatelessWidget {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: Color(0x3351BF51),
+                  color: Color(0x333F7FFD),
                   shape: BoxShape.circle,
                 ),
               ),
               Container(
                 margin: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
-                  color: Color(0xFF51BF51),
+                  color: Color(0xFF3F7FFD),
                   shape: BoxShape.circle,
                 ),
                 child: Center(

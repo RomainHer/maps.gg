@@ -95,14 +95,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             hoverColor: Color(0xFFAFC9FB),
             colorScheme: ColorScheme.light(
               primary: Color(0xFF3F7FFD),
-              secondary:
-                  Color(0xFFAFC9FB), // Couleur principale (boutons, en-têtes)
-              onPrimary: Colors.white, // Texte sur les boutons principaux
-              onSurface: Colors.black, // Couleur du texte dans le contenu
+              secondary: Color(0xFFAFC9FB),
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                overlayColor: Color(0x50606060), // Couleur au survol
+                overlayColor: Color(0x50606060),
               ),
             ),
             elevatedButtonTheme: ElevatedButtonThemeData(
@@ -112,7 +111,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             ),
             outlinedButtonTheme: OutlinedButtonThemeData(
               style: OutlinedButton.styleFrom(
-                overlayColor: Color(0x50606060), // Couleur au survol
+                overlayColor: Color(0x50606060),
               ),
             ),
           ),
@@ -394,17 +393,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       ),
                     ),
                   ),
-                  /*MultiSelectChipDisplay(
-                    items: filterState.selectedVideoGames
-                        .map((e) => MultiSelectItem(e, e.displayName))
-                        .toList(),
-                    onTap: (value) {
-                      setState(() {
-                        filterState.selectedVideoGames.remove(value);
-                        widget.onFilterStateChange(filterState);
-                      });
-                    },
-                  ),*/
                   Container(
                     width: double.infinity,
                     alignment: Alignment.center,
@@ -464,21 +452,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 initiallyExpanded: filterState.isDateRangeChanged(),
                 title: "Dates des événements",
                 children: [
-                  /*Wrap(
-                    alignment: WrapAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        filterState.selectedDateRange != null
-                            ? "Du ${DateFormat('dd/MM/yy').format(filterState.selectedDateRange!.start)} au ${DateFormat('dd/MM/yy').format(filterState.selectedDateRange!.end)}"
-                            : "Sélectionnez une plage de dates",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => _selectDateRange(context),
-                        child: Text("Choisir"),
-                      ),
-                    ],
-                  ),*/
                   Container(
                     width: double.infinity,
                     alignment: Alignment.center,
@@ -538,26 +511,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 initiallyExpanded: filterState.isRangeParticipantsChanged(),
                 title: "Nombre d'inscrits",
                 children: [
-                  /*Text(
-                    "Entre ${_getLabel(filterState.selectedRangeParticpants.start)} et ${_getLabel(filterState.selectedRangeParticpants.end)} inscrits",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  RangeSlider(
-                    values: filterState.selectedRangeParticpants,
-                    min: 0, // Correspond à 2^0
-                    max: 12, // Correspond à 2^10
-                    divisions: 10,
-                    labels: RangeLabels(
-                      _getLabel(filterState.selectedRangeParticpants.start),
-                      _getLabel(filterState.selectedRangeParticpants.end),
-                    ),
-                    onChanged: (values) {
-                      setState(() {
-                        filterState.selectedRangeParticpants = values;
-                        widget.onFilterStateChange(filterState);
-                      });
-                    },
-                  ),*/
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -586,6 +539,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           decoration: InputDecoration(
                             disabledBorder: InputBorder.none,
                             hintText: 'Minimum',
+                            hintStyle: TextStyle(color: Color(0xFFA4A4A4)),
                             border: OutlineInputBorder(
                                 gapPadding: 0, borderSide: BorderSide.none),
                             contentPadding: EdgeInsets.all(8),
@@ -626,6 +580,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           decoration: InputDecoration(
                             disabledBorder: InputBorder.none,
                             hintText: 'Maximum',
+                            hintStyle: TextStyle(color: Color(0xFFA4A4A4)),
                             border: OutlineInputBorder(
                                 gapPadding: 0, borderSide: BorderSide.none),
                             contentPadding: EdgeInsets.all(8),
