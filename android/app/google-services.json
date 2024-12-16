@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "448870242873",
+    "project_id": "mapsgg-37de8",
+    "storage_bucket": "mapsgg-37de8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448870242873:android:03e73da23cc68beec40be8",
+        "android_client_info": {
+          "package_name": "com.example.maps_gg"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBM_nAU_8rUfP38hKFgxpWcLpaSBL99mOE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

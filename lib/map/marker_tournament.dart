@@ -1,4 +1,7 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:maps_gg/class/event.dart';
 import 'package:maps_gg/tournament_info/tournament_info_state.dart';
 
 class MarkerContentTournament extends StatefulWidget {
@@ -20,7 +23,7 @@ class MarkerContentTournament extends StatefulWidget {
 
   final Function getSelectedTournamentId;
   final int tournamentDate;
-  final List<dynamic> tournamentEvents;
+  final List<Event> tournamentEvents;
   final int tournamentId;
   final String tournamentName;
   final int tournamentNumAttendees;
@@ -47,30 +50,36 @@ class _MarkerContentTournamentState extends State<MarkerContentTournament> {
             height: 70,
             width: 140,
             child: InkWell(
-              onTap: () => {
-                if (widget.tournamentId != widget.getSelectedTournamentId())
-                  {
-                    widget.updateTournamentInfoState(
-                      TournamentInfoState(
-                        true,
-                        widget.tournamentId,
-                        widget.tournamentName,
-                        widget.tournamentDate,
-                        widget.tournamentUrlImage,
-                        widget.tournamentEvents,
-                        widget.tournamentVenueAddress,
-                        widget.tournamentVenueLat,
-                        widget.tournamentVenueLng,
-                        widget.tournamentUrl,
-                        widget.tournamentNumAttendees,
-                      ),
-                    )
-                  }
-                else
-                  {
-                    widget
-                        .updateTournamentInfoState(TournamentInfoState.empty())
-                  }
+              onTap: () async {
+                if (widget.tournamentId != widget.getSelectedTournamentId()) {
+                  widget.updateTournamentInfoState(
+                    TournamentInfoState(
+                      true,
+                      widget.tournamentId,
+                      widget.tournamentName,
+                      widget.tournamentDate,
+                      widget.tournamentUrlImage,
+                      widget.tournamentEvents,
+                      widget.tournamentVenueAddress,
+                      widget.tournamentVenueLat,
+                      widget.tournamentVenueLng,
+                      widget.tournamentUrl,
+                      widget.tournamentNumAttendees,
+                    ),
+                  );
+                } else {
+                  widget.updateTournamentInfoState(TournamentInfoState.empty());
+                }
+                if (!kDebugMode) {
+                  await FirebaseAnalytics.instance.logEvent(
+                      name: 'tournament_selected',
+                      parameters: <String, Object>{
+                        'tournament_id': widget.tournamentId,
+                        'tournament_name': widget.tournamentName,
+                      });
+                } else {
+                  debugPrint('Analytics not logged in debug mode');
+                }
               },
               child: Container(
                 padding: const EdgeInsets.only(bottom: 10),
@@ -131,10 +140,7 @@ class _MarkerContentTournamentState extends State<MarkerContentTournament> {
                           Icon(
                             Icons.location_pin,
                             size: 20,
-                            color: widget.tournamentId ==
-                                    widget.getSelectedTournamentId()
-                                ? Color(0xFF3F7FFD)
-                                : Color(0xFF51BF51),
+                            color: Color(0xFF3F7FFD),
                           ),
                         ],
                       ),

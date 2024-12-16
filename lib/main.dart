@@ -1,9 +1,26 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:maps_gg/firebase_options.dart';
 import 'map_smash.dart';
 
-void main() {
+void main() async {
+  if (!kDebugMode) {
+    WidgetsFlutterBinding.ensureInitialized();
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+    } catch (e) {
+      debugPrint('Error initializing Firebase: $e');
+    }
+  } else {
+    debugPrint('Firebase not initialized in debug mode');
+  }
   initializeDateFormatting("fr", null).then((_) => runApp(const MapGGApp()));
 }
 
