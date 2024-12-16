@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:maps_gg/class/event.dart';
 import 'package:maps_gg/tournament_info/item_list_info.dart';
 import 'package:maps_gg/tournament_info/itinary_bottom_sheet.dart';
 import 'package:maps_gg/tournament_info/tournament_info_state.dart';
@@ -21,9 +22,14 @@ String capitalizeFirstLetterOfEachWord(String input) {
 }
 
 class TournamentInfo extends StatefulWidget {
-  const TournamentInfo({super.key, required this.tournamentInfoState});
+  const TournamentInfo({
+    super.key,
+    required this.tournamentInfoState,
+    required this.updateTournamentInfoState,
+  });
 
   final TournamentInfoState tournamentInfoState;
+  final Function updateTournamentInfoState;
 
   @override
   State<TournamentInfo> createState() => _TournamentInfoState();
@@ -101,9 +107,13 @@ class _TournamentInfoState extends State<TournamentInfo> {
                     ),
                   ),
                 ),
-                IconButton(
-                  visualDensity:
-                      const VisualDensity(horizontal: -4, vertical: -4),
+                //Like button (not use for now)
+                /*IconButton(
+                  visualDensity: const VisualDensity(
+                    horizontal: -4,
+                    vertical: -4,
+                  ),
+                  hoverColor: Colors.white,
                   highlightColor: Colors.transparent,
                   color: Colors.black,
                   isSelected: isTournamentLiked,
@@ -113,6 +123,18 @@ class _TournamentInfoState extends State<TournamentInfo> {
                     setState(() {
                       isTournamentLiked = !isTournamentLiked;
                     });
+                  },
+                ),*/
+                IconButton(
+                  hoverColor: Colors.white,
+                  highlightColor: Colors.transparent,
+                  visualDensity:
+                      const VisualDensity(horizontal: -4, vertical: -4),
+                  color: Colors.black,
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    widget
+                        .updateTournamentInfoState(TournamentInfoState.empty());
                   },
                 ),
               ],
@@ -184,6 +206,89 @@ class _TournamentInfoState extends State<TournamentInfo> {
               ],
             ),
           ),
+          Container(
+            padding: EdgeInsets.only(bottom: 10),
+            child: Text(
+              "Events : ",
+              style: const TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ),
+          Container(
+            constraints: const BoxConstraints(
+              maxHeight: 200, // Hauteur maximale pour votre Column
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  if (widget.tournamentInfoState.tournamentEvents != null)
+                    for (Event event
+                        in widget.tournamentInfoState.tournamentEvents!)
+                      Container(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          children: [
+                            Card(
+                              shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5)),
+                              ),
+                              clipBehavior: Clip.antiAlias,
+                              elevation: 4,
+                              child: Image.network(
+                                event.videoGame.imageUrl,
+                                height: 50,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                  height: 50,
+                                  width: 50 * event.videoGame.imageRatio,
+                                  color: Color(0xFFD8D8D8),
+                                ),
+                                loadingBuilder: (context, child,
+                                        loadingProgress) =>
+                                    loadingProgress == null
+                                        ? child
+                                        : const SizedBox(
+                                            height: 50,
+                                            width: 50,
+                                            child: CircularProgressIndicator()),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      event.name,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    Text(
+                                      "${event.numEntrants} inscrits",
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
           Row(
             children: [
               Expanded(

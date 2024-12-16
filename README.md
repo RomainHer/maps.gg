@@ -99,6 +99,20 @@ To clone and run the project locally:
 
     > **_NOTE:_** if the "Running Gradle task 'assembleDebug'..." takes too long, you can try to run `flutter clean` and then `flutter run` again. Or go to the android folder and run `./gradlew clean` and then `flutter run` again.
 
+## Build app locally
+
+1. Build APK
+
+    ```bash
+    flutter build apk --dart-define API_KEY=your_api_key_startgg
+    ```
+
+2. Install on your device
+
+    ```bash
+    flutter install
+    ```
+
 ## Screenshots
 
 ![Screenshot 1](Screenshot1.jpg)
