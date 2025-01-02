@@ -1,4 +1,4 @@
-package com.example.maps_gg
+package com.rheriteau.mapsgg
 
 import io.flutter.embedding.android.FlutterActivity
 
