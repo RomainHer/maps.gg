@@ -298,73 +298,82 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                         : RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(100.0),
                           ),
-                    child: filterState.isEmpty()
-                        ? IconButton(
-                            onPressed: () {
-                              showModalBottomSheet<void>(
-                                context: context,
-                                showDragHandle: true,
-                                backgroundColor: const Color(0xFFFAFAFA),
-                                builder: (BuildContext context) {
-                                  return FilterBottomSheet(
-                                    videoGames: widget.videoGames,
-                                    filterState: filterState,
-                                    onFilterStateChange: updateFilterState,
-                                  );
-                                },
-                              );
-                            },
-                            icon: const Icon(
-                              Icons.filter_alt,
-                            ),
-                          )
-                        : GestureDetector(
-                            onTap: () {
-                              showModalBottomSheet<void>(
-                                context: context,
-                                showDragHandle: true,
-                                backgroundColor: const Color(0xFFFAFAFA),
-                                builder: (BuildContext context) {
-                                  return FilterBottomSheet(
-                                    videoGames: widget.videoGames,
-                                    filterState: filterState,
-                                    onFilterStateChange: updateFilterState,
-                                  );
-                                },
-                              );
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(5),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF252E37),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    padding: EdgeInsets.all(5),
-                                    child: Icon(
-                                      Icons.filter_alt,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 5),
-                                    child: Text(
-                                      "${filteredTournaments.length} résultats",
-                                      style: TextStyle(
+                    child: Container(
+                      // Le Container permet d'imposer des contraintes spécifiques
+                      constraints: BoxConstraints(
+                        minHeight:
+                            50, // Hauteur minimale pour éviter les conflits
+                      ),
+                      child: filterState.isEmpty()
+                          ? IconButton(
+                              onPressed: () {
+                                showModalBottomSheet<void>(
+                                  context: context,
+                                  showDragHandle: true,
+                                  backgroundColor: const Color(0xFFFAFAFA),
+                                  builder: (BuildContext context) {
+                                    return FilterBottomSheet(
+                                      videoGames: widget.videoGames,
+                                      filterState: filterState,
+                                      onFilterStateChange: updateFilterState,
+                                    );
+                                  },
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.filter_alt,
+                              ),
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                showModalBottomSheet<void>(
+                                  context: context,
+                                  showDragHandle: true,
+                                  backgroundColor: const Color(0xFFFAFAFA),
+                                  builder: (BuildContext context) {
+                                    return FilterBottomSheet(
+                                      videoGames: widget.videoGames,
+                                      filterState: filterState,
+                                      onFilterStateChange: updateFilterState,
+                                    );
+                                  },
+                                );
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
                                         color: Color(0xFF252E37),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w900,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      padding: EdgeInsets.all(5),
+                                      child: Icon(
+                                        Icons.filter_alt,
+                                        color: Colors.white,
+                                        size: 25,
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    if (!filterState.isEmpty())
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(horizontal: 5),
+                                        child: Text(
+                                          "${filteredTournaments.length} résultats",
+                                          style: TextStyle(
+                                            color: Color(0xFF252E37),
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
+                    ),
                   ),
                   Card(
                     elevation: 10,

@@ -211,6 +211,7 @@ Future<(List<dynamic>, Map<VideoGame, int>)> _requestApi(
       }
 
       var eventsData = <Event>[];
+      var videoGamesData = <VideoGame>[];
       for (var event in tournament['events']) {
         eventsData.add(Event(
           name: event['name'],
@@ -231,6 +232,9 @@ Future<(List<dynamic>, Map<VideoGame, int>)> _requestApi(
           imageUrl: event['videogame']['images'][0]['url'],
           imageRatio: event['videogame']['images'][0]['ratio'].toDouble(),
         );
+        if (!videoGamesData.contains(newVideoGame)) {
+          videoGamesData.add(newVideoGame);
+        }
         if (dataVideoGames.containsKey(newVideoGame)) {
           dataVideoGames[newVideoGame] =
               (dataVideoGames[newVideoGame] ?? 0) + 1;
@@ -240,6 +244,7 @@ Future<(List<dynamic>, Map<VideoGame, int>)> _requestApi(
       }
 
       tournamentDetail['events'] = eventsData;
+      tournamentDetail['videoGames'] = videoGamesData;
       allTournaments.add(tournamentDetail);
     }
   }
