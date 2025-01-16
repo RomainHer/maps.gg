@@ -117,6 +117,7 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_analytics
+
       sha256: "366140abb55418ea23060b779893fa997c2d8e1974a4d1cc4d9590933b65c5fd"
       url: "https://pub.dev"
     source: hosted
