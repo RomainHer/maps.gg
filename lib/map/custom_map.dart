@@ -35,6 +35,7 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
   TournamentInfoState tournamentInfoState = TournamentInfoState.empty();
   FilterState filterState = FilterState.empty();
   late List<dynamic> filteredTournaments;
+  final TextEditingController _searchController = TextEditingController();
 
   //final MapController _mapController = MapController();
   late final _animatedMapController = AnimatedMapController(vsync: this);
@@ -47,6 +48,17 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
   }
 
   bool tournamentFilter(dynamic tournament) {
+    if (filterState.searchText.isNotEmpty) {
+      if (!tournament['name']
+              .toLowerCase()
+              .contains(filterState.searchText.toLowerCase()) &&
+          !tournament['venueAddress']
+              .toLowerCase()
+              .contains(filterState.searchText.toLowerCase())) {
+        return false;
+      }
+    }
+
     if (filterState.isDistanceChanged()) {
       if (filterState.measureUnit == 'km') {
         if (tournament['distanceKm'] > filterState.distance) {
@@ -155,6 +167,12 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
   }
 
   @override
+  void dispose() {
+    _animatedMapController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -244,6 +262,14 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                         children: [
                           Expanded(
                             child: TextField(
+                              controller: _searchController,
+                              onChanged: (value) => {
+                                if (value.isEmpty)
+                                  setState(() {
+                                    filterState.searchText = '';
+                                    updateFilteredTournaments();
+                                  })
+                              },
                               textAlignVertical: TextAlignVertical.top,
                               decoration: InputDecoration(
                                 disabledBorder: InputBorder.none,
@@ -266,7 +292,13 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                             ),
                             child: IconButton(
                               visualDensity: VisualDensity.compact,
-                              onPressed: () {},
+                              onPressed: () {
+                                setState(() {
+                                  filterState.searchText =
+                                      _searchController.text;
+                                  updateFilterState(filterState);
+                                });
+                              },
                               icon: Icon(Icons.search),
                               iconSize: 20,
                               color: Colors.white,
@@ -299,10 +331,8 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                             borderRadius: BorderRadius.circular(100.0),
                           ),
                     child: Container(
-                      // Le Container permet d'imposer des contraintes spécifiques
                       constraints: BoxConstraints(
-                        minHeight:
-                            50, // Hauteur minimale pour éviter les conflits
+                        minHeight: 50,
                       ),
                       child: filterState.isEmpty()
                           ? IconButton(
@@ -394,6 +424,51 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Wrap(
                   children: [
+                    if (filterState.isSearchTextChanged())
+                      Stack(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(top: 8, right: 8),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFAFC9FB),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Text(
+                              "\"${filterState.searchText}\"",
+                              style: TextStyle(
+                                color: Color(0xFF666666),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  filterState.searchText = '';
+                                  _searchController.clear();
+                                  updateFilteredTournaments();
+                                });
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF666666),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.close,
+                                  size: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     if (filterState.isDistanceChanged())
                       Stack(
                         children: [
