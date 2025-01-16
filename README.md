@@ -117,6 +117,11 @@ To clone and run the project locally:
 
 ![Screenshot 1](Screenshot1.jpg)
 
+## TCUs and Privacy Policies
+
+- [Terms and Conditions of Use](./TCU.md)
+- [Privacy Policy](./PrivacyPolicies.md)
+
 ## Contributions
 
 Contributions are welcome! If you'd like to contribute, please open an issue to discuss potential changes before creating a pull request.

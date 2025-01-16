@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
@@ -21,11 +23,12 @@ Future<Map<String, dynamic>> _getLocationAndTournaments() async {
       'videoGames': videoGames
     };
   } catch (e) {
+    debugPrint("Error while getting location and tournaments: $e");
     return Future.error(e);
   }
 }
 
-Future<(List, Map<VideoGame, int>)> _requestApi(
+Future<(List<dynamic>, Map<VideoGame, int>)> _requestApi(
     double latitude, double longitude) async {
   final httpLink = HttpLink(
     'https://api.start.gg/gql/alpha',
@@ -40,9 +43,10 @@ Future<(List, Map<VideoGame, int>)> _requestApi(
   );
 
   const String readTournamentsAround = r'''
-    query localTournaments($perPage: Int, $coordinates: String!, $radius: String!, $timestampNow: Timestamp) {
+    query localTournaments($perPage: Int, $page: Int, $coordinates: String!, $radius: String!, $timestampNow: Timestamp) {
       tournaments(query: {
-        perPage: $perPage
+        perPage: $perPage,
+        page: $page,
         filter: {
           location: {
             distanceFrom: $coordinates,
@@ -88,37 +92,87 @@ Future<(List, Map<VideoGame, int>)> _requestApi(
           primaryContactType
           rules
         }
+        pageInfo {
+          totalPages
+        }
       }
     }
   ''';
 
-  const int perPage = 500;
+  const int perPage = 20; // Nombre d'éléments par page
   String coordinates = "$latitude,$longitude";
   debugPrint(coordinates);
   const String radius = "200mi";
   DateTime datetimeNow = DateTime.now();
-  double tmp = datetimeNow.millisecondsSinceEpoch / 1000;
-  int timestampNow = tmp.round();
+  int timestampNow = (datetimeNow.millisecondsSinceEpoch / 1000).round();
   debugPrint(timestampNow.toString());
 
-  final QueryOptions options = QueryOptions(
+  // 1. Récupérez le nombre total de pages avec un appel initial
+  final QueryOptions initialOptions = QueryOptions(
     document: gql(readTournamentsAround),
     variables: <String, dynamic>{
       'perPage': perPage,
+      'page': 1,
       'coordinates': coordinates,
       'radius': radius,
-      'timestampNow': timestampNow
+      'timestampNow': timestampNow,
     },
   );
 
-  final QueryResult result = await client.query(options);
-  List<dynamic> dataTournaments = [];
+  final QueryResult initialResult = await client.query(initialOptions);
+  if (initialResult.hasException) {
+    debugPrint('GraphQL Exception (Initial): ${initialResult.exception}');
+    return ([], <VideoGame, int>{});
+  }
+
+  final int totalPages =
+      initialResult.data?['tournaments']['pageInfo']['totalPages'] ?? 1;
+
+  // 2. Créez une fonction pour récupérer une page spécifique
+  Future<List<dynamic>> fetchPage(int page) async {
+    final QueryOptions pageOptions = QueryOptions(
+      document: gql(readTournamentsAround),
+      variables: <String, dynamic>{
+        'perPage': perPage,
+        'page': page,
+        'coordinates': coordinates,
+        'radius': radius,
+        'timestampNow': timestampNow,
+      },
+      fetchPolicy: FetchPolicy.networkOnly,
+    );
+
+    final QueryResult pageResult = await client.query(pageOptions).timeout(
+      Duration(seconds: 15),
+      onTimeout: () {
+        throw TimeoutException(
+            "La requête pour la page $page a dépassé le délai de 15 secondes");
+      },
+    );
+
+    if (pageResult.hasException) {
+      debugPrint('GraphQL Exception (Page $page): ${pageResult.exception}');
+      return [];
+    }
+
+    return pageResult.data?['tournaments']['nodes'] ?? [];
+  }
+
+  // 3. Lancez tous les appels en parallèle
+  List<Future<List<dynamic>>> futures = List.generate(
+    totalPages,
+    (index) => fetchPage(index + 1),
+  );
+
+  // 4. Attendez les résultats
+  final List<List<dynamic>> results = await Future.wait(futures);
+
+  // 5. Combinez toutes les données
+  List<dynamic> allTournaments = [];
   Map<VideoGame, int> dataVideoGames = {};
 
-  if (result.hasException) {
-    debugPrint(result.exception.toString());
-  } else {
-    for (var tournament in result.data!['tournaments']['nodes']) {
+  for (var pageNodes in results) {
+    for (var tournament in pageNodes) {
       double distanceInMeters = Geolocator.distanceBetween(
         latitude,
         longitude,
@@ -156,17 +210,12 @@ Future<(List, Map<VideoGame, int>)> _requestApi(
         }
       }
 
-      /*debugPrint(
-          "num entrants : ${tournament['events'][0]["numEntrants"].toString()}");*/
-
       var eventsData = <Event>[];
-      var videoGamesData = <VideoGame>[];
       for (var event in tournament['events']) {
         eventsData.add(Event(
           name: event['name'],
           competitionTier: event['competitionTier'],
-          numEntrants:
-              (event['numEntrants'] != null) ? event['numEntrants'] : 0,
+          numEntrants: event['numEntrants'] ?? 0,
           videoGame: VideoGame(
             id: event['videogame']['id'],
             displayName: event['videogame']['displayName'],
@@ -175,21 +224,6 @@ Future<(List, Map<VideoGame, int>)> _requestApi(
             imageRatio: event['videogame']['images'][0]['ratio'].toDouble(),
           ),
         ));
-        if (!videoGamesData.contains(VideoGame(
-          id: event['videogame']['id'],
-          displayName: event['videogame']['displayName'],
-          name: event['videogame']['name'],
-          imageUrl: event['videogame']['images'][0]['url'],
-          imageRatio: event['videogame']['images'][0]['ratio'].toDouble(),
-        ))) {
-          videoGamesData.add(VideoGame(
-            id: event['videogame']['id'],
-            displayName: event['videogame']['displayName'],
-            name: event['videogame']['name'],
-            imageUrl: event['videogame']['images'][0]['url'],
-            imageRatio: event['videogame']['images'][0]['ratio'].toDouble(),
-          ));
-        }
         VideoGame newVideoGame = VideoGame(
           id: event['videogame']['id'],
           displayName: event['videogame']['displayName'],
@@ -206,14 +240,11 @@ Future<(List, Map<VideoGame, int>)> _requestApi(
       }
 
       tournamentDetail['events'] = eventsData;
-      tournamentDetail['videoGames'] = videoGamesData;
-
-      dataTournaments.add(tournamentDetail);
+      allTournaments.add(tournamentDetail);
     }
   }
 
-  //return dataVideoGames;
-  return (dataTournaments, dataVideoGames);
+  return (allTournaments, dataVideoGames);
 }
 
 Future<Position> _determinePosition() async {
