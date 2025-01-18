@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
@@ -166,6 +167,14 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
     );
   }
 
+  void toggleLanguage() {
+    if (context.locale == Locale('fr')) {
+      context.setLocale(Locale('en'));
+    } else {
+      context.setLocale(Locale('fr'));
+    }
+  }
+
   @override
   void dispose() {
     _animatedMapController.dispose();
@@ -273,7 +282,7 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                               textAlignVertical: TextAlignVertical.top,
                               decoration: InputDecoration(
                                 disabledBorder: InputBorder.none,
-                                hintText: 'Search',
+                                hintText: tr('search'),
                                 border: OutlineInputBorder(
                                     gapPadding: 0, borderSide: BorderSide.none),
                                 contentPadding: const EdgeInsets.only(left: 20),
@@ -322,6 +331,7 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                       ),
                     ),
                   ),*/
+                  //Filter button
                   Card(
                     elevation: 10,
                     color: Colors.white,
@@ -405,6 +415,7 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                             ),
                     ),
                   ),
+                  //Location button
                   Card(
                     elevation: 10,
                     color: Colors.white,
@@ -418,6 +429,23 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                       ),
                     ),
                   ),
+                  //Language button
+                  Card(
+                    elevation: 10,
+                    color: Colors.white,
+                    shape: const CircleBorder(),
+                    child: GestureDetector(
+                      onTap: toggleLanguage,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          context.locale == Locale('fr') ? '🇫🇷' : '🇬🇧',
+                          style: const TextStyle(
+                              fontSize: 30), // Taille du drapeau
+                        ),
+                      ),
+                    ),
+                  )
                 ],
               ),
               Padding(

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -21,7 +22,15 @@ void main() async {
   } else {
     debugPrint('Firebase not initialized in debug mode');
   }
-  initializeDateFormatting("fr", null).then((_) => runApp(const MapGGApp()));
+  await EasyLocalization.ensureInitialized();
+  initializeDateFormatting("fr", null).then(
+    (_) => runApp(EasyLocalization(
+      supportedLocales: [Locale('en'), Locale('fr')],
+      path: 'assets/translations',
+      fallbackLocale: Locale('fr'),
+      child: MapGGApp(),
+    )),
+  );
 }
 
 class MapGGApp extends StatelessWidget {
@@ -32,6 +41,9 @@ class MapGGApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Maps.gg',
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       theme: ThemeData(
         // This is the theme of your application.
         //
