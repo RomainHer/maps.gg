@@ -1,3 +1,21 @@
 {
-    "search": "Search"
+    "search": "Search",
+    "no-name": "no-name",
+    "no-address": "no-address",
+    "days-before": {
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "in-days": "In {} day",
+        "in-weeks": "In {} week",
+        "in-months": "In {} month",
+        "in-years": "In {} year"
+    },
+    "at-time": "At {}:{}",
+    "attendee": "attendee",
+    "events": "Events",
+    "registered": "attendee",
+    "signup-details": "Sign up/details",
+    "itinerary": "Itinerary",
+    "copy-address": "Copy address",
+    "address-copied": "Address copied to clipboard"
 }

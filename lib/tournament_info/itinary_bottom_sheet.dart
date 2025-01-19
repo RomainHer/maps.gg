@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -107,7 +108,7 @@ class ItinaryBottomSheet extends StatelessWidget {
             onPressed: () {
               Clipboard.setData(ClipboardData(text: tournamentVenueAddress));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Address copied to clipboard')),
+                SnackBar(content: Text('address-copied').tr()),
               );
               Navigator.pop(context);
             },
@@ -127,9 +128,9 @@ class ItinaryBottomSheet extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 const Text(
-                  'Copy Address',
+                  'copy-address',
                   style: TextStyle(color: Colors.black),
-                ),
+                ).tr(),
               ],
             ),
           ),

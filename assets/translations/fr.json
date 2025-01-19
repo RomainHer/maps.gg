@@ -1,3 +1,21 @@
 {
-    "search": "Rechercher"
+    "search": "Rechercher",
+    "no-name": "sans-nom",
+    "no-address": "sans-adresse",
+    "days-before": {
+        "today": "Aujourd'hui",
+        "tomorrow": "Demain",
+        "in-days": "Dans {} jour",
+        "in-weeks": "Dans {} semaine",
+        "in-months": "Dans {} mois",
+        "in-years": "Dans {} an"
+    },
+    "at-time": "At {}:{}",
+    "attendee": "participant",
+    "events": "Événements",
+    "registered": "inscrit",
+    "signup-details": "S'inscrire/Détails",
+    "itinerary": "Itinéraire",
+    "copy-address": "Copier l'adresse",
+    "address-copied": "Adresse copiée dans le presse-papiers"
 }
