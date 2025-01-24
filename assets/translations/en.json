@@ -5,17 +5,54 @@
     "days-before": {
         "today": "Today",
         "tomorrow": "Tomorrow",
-        "in-days": "In {} day",
-        "in-weeks": "In {} week",
-        "in-months": "In {} month",
-        "in-years": "In {} year"
+        "in-days": {
+            "zero": "Today",
+            "one": "Tomorrow",
+            "other": "In {} days"
+        },
+        "in-weeks": {
+            "zero": "This week",
+            "one": "In a week",
+            "other": "In {} weeks"
+        },
+        "in-months": {
+            "zero": "This month",
+            "one": "In a month",
+            "other": "In {} months"
+        },
+        "in-years": {
+            "zero": "This year",
+            "one": "In a year",
+            "other": "In {} years"
+        }
     },
     "at-time": "At {}:{}",
-    "attendee": "attendee",
+    "attendees": {
+        "zero": "No attendees",
+        "one": "{} attendee",
+        "other": "{} attendees"
+    },
     "events": "Events",
-    "registered": "attendee",
     "signup-details": "Sign up/details",
     "itinerary": "Itinerary",
     "copy-address": "Copy address",
-    "address-copied": "Address copied to clipboard"
+    "address-copied": "Address copied to clipboard",
+    "x-results": {
+        "zero": "No results",
+        "one": "1 result",
+        "other": "{} results"
+    },
+    "select-date-range": "Select a date range",
+    "select-games": "Select games",
+    "all-filters": "All filters",
+    "reset-filters": "reset filters",
+    "geographic-parameter": "Geographic parameter",
+    "distance-device-location": "Distance from your location",
+    "video-games": "Video games",
+    "choose-games": "Choose one or more games",
+    "tournament-dates": "Tournament dates",
+    "select-dates": "Select dates",
+    "number-of-attendees": "Number of attendees",
+    "minimum": "Minimum",
+    "maximum": "Maximum"
 }

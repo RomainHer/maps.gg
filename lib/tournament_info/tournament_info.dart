@@ -49,19 +49,13 @@ class TournamentInfo extends StatefulWidget {
     } else if (hoursAfterNextMidnight < 24) {
       return tr("days-before.tomorrow");
     } else if (daysBefore < 7) {
-      return tr("days-before.in-days", args: ['${daysBefore + extraDays}']) +
-          (daysBefore + extraDays == 1 ? '' : 's');
+      return plural("days-before.in-days", daysBefore + extraDays);
     } else if (daysBefore < 30) {
-      return tr("days-before.in-weeks", args: ['${daysBefore ~/ 7}']) +
-          (daysBefore ~/ 7 == 1 ? '' : 's');
+      return plural("days-before.in-weeks", daysBefore ~/ 7);
     } else if (daysBefore < 365) {
-      return tr("days-before.in-months", args: ['${daysBefore ~/ 30}']) +
-          ((daysBefore ~/ 30 == 1 && context.locale.countryCode != "fr")
-              ? ''
-              : 's');
+      return plural("days-before.in-months", daysBefore ~/ 30);
     } else {
-      return tr("days-before.in-years", args: ['${daysBefore ~/ 365}']) +
-          (daysBefore ~/ 365 == 1 ? '' : 's');
+      return plural("days-before.in-years", daysBefore ~/ 365);
     }
   }
 
@@ -202,8 +196,11 @@ class _TournamentInfoState extends State<TournamentInfo> {
                         ItemListInfo(
                           padding: const EdgeInsets.only(top: 5),
                           icon: Icons.group,
-                          text:
-                              "${widget.tournamentInfoState.tournamentNumAttendees} ${tr("attendee")}${widget.tournamentInfoState.tournamentNumAttendees == 1 ? '' : 's'}",
+                          text: plural(
+                              "attendees",
+                              widget.tournamentInfoState
+                                      .tournamentNumAttendees ??
+                                  0),
                         ),
                       ],
                     ),
@@ -276,13 +273,13 @@ class _TournamentInfoState extends State<TournamentInfo> {
                                       ),
                                     ),
                                     Text(
-                                      "${event.numEntrants} ${tr("attendee")}${event.numEntrants == 1 ? '' : 's'}",
+                                      "attendees",
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                         fontSize: 12,
                                         color: Colors.black,
                                       ),
-                                    ),
+                                    ).plural(event.numEntrants),
                                   ],
                                 ),
                               ),

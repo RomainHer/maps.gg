@@ -8,8 +8,9 @@ import 'package:maps_gg/firebase_options.dart';
 import 'map_smash.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   if (!kDebugMode) {
-    WidgetsFlutterBinding.ensureInitialized();
     try {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
@@ -21,7 +22,6 @@ void main() async {
   } else {
     debugPrint('Firebase not initialized in debug mode');
   }
-  await EasyLocalization.ensureInitialized();
   runApp(EasyLocalization(
     supportedLocales: [Locale('en'), Locale('fr')],
     path: 'assets/translations',

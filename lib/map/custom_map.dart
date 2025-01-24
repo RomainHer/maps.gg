@@ -5,7 +5,6 @@ import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:maps_gg/class/videogame.dart';
 import 'package:maps_gg/filters/filter_bottom_sheet.dart';
@@ -89,14 +88,6 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
           DateTime.fromMillisecondsSinceEpoch(tournament['date'] * 1000);
 
       if (selectedDateRange != null) {
-        /*debugPrint(
-            "${(tournamentDate.isBefore(selectedDateRange.start) || tournamentDate.isAfter(selectedDateRange.end))} - tournamentDate: $tournamentDate - selectedDateRange: $selectedDateRange");*/
-        debugPrint("--------------------");
-        debugPrint(selectedDateRange.start.toString());
-        debugPrint(selectedDateRange.end.toString());
-        debugPrint(tournament["date"].toString());
-        debugPrint(DateFormat("dd/MM/yyyy").format(tournamentDate));
-
         if (tournamentDate.isBefore(selectedDateRange.start) ||
             tournamentDate
                 .isAfter(selectedDateRange.end.add(Duration(days: 1)))) {
@@ -110,7 +101,6 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
       final minParticipants = filterState.minParticipants;
       final int tournamentParticipants = tournament['numAttendees'];
 
-      debugPrint("min : $minParticipants - max : $maxParticipants");
       if (maxParticipants != null && minParticipants != null) {
         int maxValue = max(maxParticipants, minParticipants);
         int minValue = min(maxParticipants, minParticipants);
@@ -401,13 +391,13 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                                         padding:
                                             EdgeInsets.symmetric(horizontal: 5),
                                         child: Text(
-                                          "${filteredTournaments.length} résultats",
+                                          "x-results",
                                           style: TextStyle(
                                             color: Color(0xFF252E37),
                                             fontSize: 12,
                                             fontWeight: FontWeight.w900,
                                           ),
-                                        ),
+                                        ).plural(filteredTournaments.length),
                                       ),
                                   ],
                                 ),

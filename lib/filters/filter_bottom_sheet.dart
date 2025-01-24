@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -88,7 +89,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       initialDateRange: filterState.selectedDateRange,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
-      helpText: 'Sélectionnez une plage de dates',
+      helpText: tr("select-date-range"),
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -133,7 +134,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       context: context,
       builder: (ctx) {
         return MultiSelectDialog(
-          title: Text("Choisir les jeux"),
+          title: Text("select-games").tr(),
           listType: MultiSelectListType.CHIP,
           selectedColor: Color(0xFF898989),
           selectedItemsTextStyle: TextStyle(color: Colors.black),
@@ -179,12 +180,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Tous les filtres",
+                      "all-filters",
                       style: TextStyle(
                           fontSize: 24,
                           color: Color(0xFF666666),
                           fontWeight: FontWeight.bold),
-                    ),
+                    ).tr(),
                     Visibility(
                       visible: !filterState.isEmpty(),
                       child: GestureDetector(
@@ -212,13 +213,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                               ),
                             ),
                             Text(
-                              "réinitialiser les filtres",
+                              "reset-filters",
                               style: TextStyle(
                                 color: Color(0xFF7C7C7C),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 17,
                               ),
-                            ),
+                            ).tr(),
                           ],
                         ),
                       ),
@@ -228,16 +229,16 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ),
               FilterElement(
                 initiallyExpanded: filterState.isDistanceChanged(),
-                title: "Paramètre géographique",
+                title: tr('geographic-parameter'),
                 children: [
                   Text(
-                    "Distance à partir de la localisation de l’appareil",
+                    "distance-device-location",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                       color: Color(0xFF979797),
                     ),
-                  ),
+                  ).tr(),
                   Container(
                     margin: EdgeInsets.only(top: 10),
                     decoration: BoxDecoration(
@@ -333,7 +334,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ),
               FilterElement(
                 initiallyExpanded: filterState.isVideoGamesChanged(),
-                title: "Jeux vidéos",
+                title: tr("video-games"),
                 children: [
                   Visibility(
                     visible: filterState.selectedVideoGames.isNotEmpty,
@@ -422,9 +423,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                 horizontal: 10,
                               ),
                               child: Text(
-                                "Choisir un ou plusieurs jeu(x)",
+                                "choose-games",
                                 style: TextStyle(color: Color(0xFFA4A4A4)),
-                              ),
+                              ).tr(),
                             ),
                             Container(
                               margin: EdgeInsets.only(right: 2),
@@ -450,7 +451,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ),
               FilterElement(
                 initiallyExpanded: filterState.isDateRangeChanged(),
-                title: "Dates des événements",
+                title: tr("tournament-dates"),
                 children: [
                   Container(
                     width: double.infinity,
@@ -486,18 +487,18 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                               ),
                               child: filterState.isDateRangeChanged()
                                   ? Text(
-                                      "${DateFormat("dd/MM/yy").format(filterState.selectedDateRange!.start)} - ${DateFormat("dd/MM/yy").format(filterState.selectedDateRange!.end)}",
+                                      "${DateFormat.yMd(context.locale.toLanguageTag()).format(filterState.selectedDateRange!.start)} - ${DateFormat.yMd(context.locale.toLanguageTag()).format(filterState.selectedDateRange!.end)}",
                                       style: TextStyle(
                                         color: Color(0xFF3F7FFD),
                                         fontWeight: FontWeight.bold,
                                       ),
                                     )
                                   : Text(
-                                      "Sélectionnez les dates",
+                                      "select-dates",
                                       style: TextStyle(
                                         color: Color(0xFFA4A4A4),
                                       ),
-                                    ),
+                                    ).tr(),
                             ),
                           ],
                         ),
@@ -509,7 +510,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               FilterElement(
                 maintainState: true,
                 initiallyExpanded: filterState.isRangeParticipantsChanged(),
-                title: "Nombre d'inscrits",
+                title: tr("number-of-attendees"),
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -538,7 +539,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           ],
                           decoration: InputDecoration(
                             disabledBorder: InputBorder.none,
-                            hintText: 'Minimum',
+                            hintText: tr('minimum'),
                             hintStyle: TextStyle(color: Color(0xFFA4A4A4)),
                             border: OutlineInputBorder(
                                 gapPadding: 0, borderSide: BorderSide.none),
@@ -579,7 +580,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           ],
                           decoration: InputDecoration(
                             disabledBorder: InputBorder.none,
-                            hintText: 'Maximum',
+                            hintText: tr('maximum'),
                             hintStyle: TextStyle(color: Color(0xFFA4A4A4)),
                             border: OutlineInputBorder(
                                 gapPadding: 0, borderSide: BorderSide.none),
