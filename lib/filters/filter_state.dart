@@ -3,6 +3,7 @@ import 'package:maps_gg/class/videogame.dart';
 
 class FilterState {
   FilterState(
+    this.searchText,
     this.distance,
     this.measureUnit,
     this.selectedVideoGames,
@@ -12,6 +13,7 @@ class FilterState {
   );
 
   FilterState.empty() {
+    searchText = '';
     distance = 200;
     measureUnit = 'km';
     selectedVideoGames = [];
@@ -20,6 +22,7 @@ class FilterState {
     maxParticipants = null;
   }
 
+  String searchText = '';
   double distance = 200;
   String measureUnit = 'km';
   int? minParticipants;
@@ -28,12 +31,17 @@ class FilterState {
   DateTimeRange? selectedDateRange;
 
   bool isEmpty() {
-    return distance == 200 &&
+    return searchText == '' &&
+        distance == 200 &&
         measureUnit == 'km' &&
         selectedVideoGames.isEmpty &&
         selectedDateRange == null &&
         maxParticipants == null &&
         minParticipants == null;
+  }
+
+  bool isSearchTextChanged() {
+    return searchText.isNotEmpty;
   }
 
   bool isDistanceChanged() {

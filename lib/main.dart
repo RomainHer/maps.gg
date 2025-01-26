@@ -1,15 +1,16 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:maps_gg/firebase_options.dart';
 import 'map_smash.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   if (!kDebugMode) {
-    WidgetsFlutterBinding.ensureInitialized();
     try {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
@@ -21,7 +22,12 @@ void main() async {
   } else {
     debugPrint('Firebase not initialized in debug mode');
   }
-  initializeDateFormatting("fr", null).then((_) => runApp(const MapGGApp()));
+  runApp(EasyLocalization(
+    supportedLocales: [Locale('en'), Locale('fr')],
+    path: 'assets/translations',
+    fallbackLocale: Locale('fr'),
+    child: MapGGApp(),
+  ));
 }
 
 class MapGGApp extends StatelessWidget {
@@ -32,6 +38,9 @@ class MapGGApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Maps.gg',
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       theme: ThemeData(
         // This is the theme of your application.
         //

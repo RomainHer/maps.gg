@@ -1,5 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:maps_gg/class/event.dart';
 import 'package:maps_gg/tournament_info/item_list_info.dart';
 import 'package:maps_gg/tournament_info/itinary_bottom_sheet.dart';
@@ -34,7 +34,7 @@ class TournamentInfo extends StatefulWidget {
   @override
   State<TournamentInfo> createState() => _TournamentInfoState();
 
-  getNumberDaysBeforeTournament() {
+  getNumberDaysBeforeTournament(BuildContext context) {
     var daysBefore = getDifferenceInDays(
         DateTime.now(),
         DateTime.fromMillisecondsSinceEpoch(
@@ -45,17 +45,17 @@ class TournamentInfo extends StatefulWidget {
         getNextMidnight(DateTime.now()));
     var extraDays = hoursAfterNextMidnight > 0 ? 1 : 0;
     if (hoursAfterNextMidnight < 0) {
-      return "Aujourd'hui";
+      return tr("days-before.today");
     } else if (hoursAfterNextMidnight < 24) {
-      return "Demain";
+      return tr("days-before.tomorrow");
     } else if (daysBefore < 7) {
-      return "Dans ${daysBefore + extraDays} jours";
+      return plural("days-before.in-days", daysBefore + extraDays);
     } else if (daysBefore < 30) {
-      return "Dans ${daysBefore ~/ 7} semaines";
+      return plural("days-before.in-weeks", daysBefore ~/ 7);
     } else if (daysBefore < 365) {
-      return "Dans ${daysBefore ~/ 30} mois";
+      return plural("days-before.in-months", daysBefore ~/ 30);
     } else {
-      return "Dans ${daysBefore ~/ 365} ans";
+      return plural("days-before.in-years", daysBefore ~/ 365);
     }
   }
 
@@ -99,7 +99,7 @@ class _TournamentInfoState extends State<TournamentInfo> {
               children: [
                 Expanded(
                   child: Text(
-                    widget.tournamentInfoState.tournamentName ?? 'no-name',
+                    widget.tournamentInfoState.tournamentName ?? tr("no-name"),
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 16,
@@ -179,25 +179,28 @@ class _TournamentInfoState extends State<TournamentInfo> {
                           icon: Icons.place,
                           text: widget
                                   .tournamentInfoState.tournamentVenueAddress ??
-                              'no-address',
+                              tr("no-address"),
                         ),
                         ItemListInfo(
                           padding: const EdgeInsets.only(top: 5),
                           icon: Icons.calendar_today,
                           text:
-                              "${capitalizeFirstLetterOfEachWord(DateFormat.yMMMMEEEEd('fr').format(tournamentDateTime))} (${widget.getNumberDaysBeforeTournament()})",
+                              "${capitalizeFirstLetterOfEachWord(DateFormat.yMMMMEEEEd(context.locale.toLanguageTag()).format(tournamentDateTime))} (${widget.getNumberDaysBeforeTournament(context)})",
                         ),
                         ItemListInfo(
                           padding: const EdgeInsets.only(top: 5),
                           icon: Icons.schedule,
-                          text:
-                              "A ${tournamentDateTime.hour}h${tournamentDateTime.minute == 0 ? '' : tournamentDateTime.minute}",
+                          text: DateFormat.Hm(context.locale.toLanguageTag())
+                              .format(tournamentDateTime),
                         ),
                         ItemListInfo(
                           padding: const EdgeInsets.only(top: 5),
                           icon: Icons.group,
-                          text:
-                              "${widget.tournamentInfoState.tournamentNumAttendees} participants",
+                          text: plural(
+                              "attendees",
+                              widget.tournamentInfoState
+                                      .tournamentNumAttendees ??
+                                  0),
                         ),
                       ],
                     ),
@@ -209,7 +212,7 @@ class _TournamentInfoState extends State<TournamentInfo> {
           Container(
             padding: EdgeInsets.only(bottom: 10),
             child: Text(
-              "Events : ",
+              "${tr("events")} : ",
               style: const TextStyle(
                 fontSize: 16,
               ),
@@ -270,13 +273,13 @@ class _TournamentInfoState extends State<TournamentInfo> {
                                       ),
                                     ),
                                     Text(
-                                      "${event.numEntrants} inscrits",
+                                      "attendees",
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                         fontSize: 12,
                                         color: Colors.black,
                                       ),
-                                    ),
+                                    ).plural(event.numEntrants),
                                   ],
                                 ),
                               ),
@@ -304,7 +307,7 @@ class _TournamentInfoState extends State<TournamentInfo> {
                       borderRadius: BorderRadius.circular(7),
                     ),
                   ),
-                  child: const Text("S'inscrire/Détails"),
+                  child: const Text("signup-details").tr(),
                 ),
               ),
               const SizedBox(width: 10), // Add some spacing between buttons
@@ -337,7 +340,7 @@ class _TournamentInfoState extends State<TournamentInfo> {
                       borderRadius: BorderRadius.circular(7),
                     ),
                   ),
-                  child: const Text('Itinéraire'),
+                  child: const Text('itinerary').tr(),
                 ),
               ),
             ],

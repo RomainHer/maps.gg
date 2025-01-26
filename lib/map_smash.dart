@@ -146,7 +146,7 @@ Future<(List<dynamic>, Map<VideoGame, int>)> _requestApi(
       Duration(seconds: 15),
       onTimeout: () {
         throw TimeoutException(
-            "La requête pour la page $page a dépassé le délai de 15 secondes");
+            "The request for the $page page has exceeded the 15-second time limit");
       },
     );
 
@@ -293,6 +293,7 @@ class _MapSmashState extends State<MapSmash> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: FutureBuilder(
         future: _getLocationAndTournaments(),
         builder: (context, snapshot) {

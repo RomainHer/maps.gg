@@ -1,0 +1,58 @@
+{
+    "search": "Rechercher",
+    "no-name": "sans-nom",
+    "no-address": "sans-adresse",
+    "days-before": {
+        "today": "Aujourd'hui",
+        "tomorrow": "Demain",
+        "in-days": {
+            "zero": "Aujourd'hui",
+            "one": "Demain",
+            "other": "Dans {} jours"
+        },
+        "in-weeks": {
+            "zero": "Cette semaine",
+            "one": "Dans une semaine",
+            "other": "Dans {} semaines"
+        },
+        "in-months": {
+            "zero": "Ce mois-ci",
+            "one": "Dans un mois",
+            "other": "Dans {} mois"
+        },
+        "in-years": {
+            "zero": "Cette année",
+            "one": "Dans un an",
+            "other": "Dans {} ans"
+        }
+    },
+    "at-time": "At {}:{}",
+    "attendees": {
+        "zero": "Pas de participants",
+        "one": "{} participant",
+        "other": "{} participants"
+    },
+    "events": "Événements",
+    "signup-details": "S'inscrire/Détails",
+    "itinerary": "Itinéraire",
+    "copy-address": "Copier l'adresse",
+    "address-copied": "Adresse copiée dans le presse-papiers",
+    "x-results": {
+        "zero": "Aucun res",
+        "one": "1 res",
+        "other": "{} res"
+    },
+    "select-date-range": "Sélectionner une plage de dates",
+    "select-games": "Choisir des jeux",
+    "all-filters": "Tous les filtres",
+    "reset-filters": "réinitialiser les filtres",
+    "geographic-parameter": "Paramètre géographique",
+    "distance-device-location": "Distance de votre emplacement",
+    "video-games": "Jeux vidéo",
+    "choose-games": "Choisissez un ou plusieurs jeux",
+    "tournament-dates": "Dates des tournois",
+    "select-dates": "Sélectionner des dates",
+    "number-of-attendees": "Nombre de participants",
+    "minimum": "Minimum",
+    "maximum": "Maximum"
+}

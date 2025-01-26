@@ -1,10 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:maps_gg/class/videogame.dart';
 import 'package:maps_gg/filters/filter_bottom_sheet.dart';
@@ -35,6 +35,7 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
   TournamentInfoState tournamentInfoState = TournamentInfoState.empty();
   FilterState filterState = FilterState.empty();
   late List<dynamic> filteredTournaments;
+  final TextEditingController _searchController = TextEditingController();
 
   //final MapController _mapController = MapController();
   late final _animatedMapController = AnimatedMapController(vsync: this);
@@ -47,6 +48,17 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
   }
 
   bool tournamentFilter(dynamic tournament) {
+    if (filterState.searchText.isNotEmpty) {
+      if (!tournament['name']
+              .toLowerCase()
+              .contains(filterState.searchText.toLowerCase()) &&
+          !tournament['venueAddress']
+              .toLowerCase()
+              .contains(filterState.searchText.toLowerCase())) {
+        return false;
+      }
+    }
+
     if (filterState.isDistanceChanged()) {
       if (filterState.measureUnit == 'km') {
         if (tournament['distanceKm'] > filterState.distance) {
@@ -76,14 +88,6 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
           DateTime.fromMillisecondsSinceEpoch(tournament['date'] * 1000);
 
       if (selectedDateRange != null) {
-        /*debugPrint(
-            "${(tournamentDate.isBefore(selectedDateRange.start) || tournamentDate.isAfter(selectedDateRange.end))} - tournamentDate: $tournamentDate - selectedDateRange: $selectedDateRange");*/
-        debugPrint("--------------------");
-        debugPrint(selectedDateRange.start.toString());
-        debugPrint(selectedDateRange.end.toString());
-        debugPrint(tournament["date"].toString());
-        debugPrint(DateFormat("dd/MM/yyyy").format(tournamentDate));
-
         if (tournamentDate.isBefore(selectedDateRange.start) ||
             tournamentDate
                 .isAfter(selectedDateRange.end.add(Duration(days: 1)))) {
@@ -97,7 +101,6 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
       final minParticipants = filterState.minParticipants;
       final int tournamentParticipants = tournament['numAttendees'];
 
-      debugPrint("min : $minParticipants - max : $maxParticipants");
       if (maxParticipants != null && minParticipants != null) {
         int maxValue = max(maxParticipants, minParticipants);
         int minValue = min(maxParticipants, minParticipants);
@@ -154,7 +157,21 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
     );
   }
 
+  void toggleLanguage() {
+    if (context.locale == Locale('fr')) {
+      context.setLocale(Locale('en'));
+    } else {
+      context.setLocale(Locale('fr'));
+    }
+  }
+
   @override
+  void dispose() {
+    _animatedMapController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -230,54 +247,74 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: Card(
-                      elevation: 10,
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100.0),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              textAlignVertical: TextAlignVertical.top,
-                              decoration: InputDecoration(
-                                disabledBorder: InputBorder.none,
-                                hintText: 'Search',
-                                border: OutlineInputBorder(
-                                    gapPadding: 0, borderSide: BorderSide.none),
-                                contentPadding: const EdgeInsets.only(left: 20),
-                                isDense: true,
+              ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 50),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: Card(
+                        margin: const EdgeInsets.all(2),
+                        elevation: 10,
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100.0),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _searchController,
+                                onChanged: (value) => {
+                                  if (value.isEmpty)
+                                    setState(() {
+                                      filterState.searchText = '';
+                                      updateFilteredTournaments();
+                                    })
+                                },
+                                textAlignVertical: TextAlignVertical.top,
+                                decoration: InputDecoration(
+                                  disabledBorder: InputBorder.none,
+                                  hintText: tr('search'),
+                                  border: OutlineInputBorder(
+                                      gapPadding: 0,
+                                      borderSide: BorderSide.none),
+                                  contentPadding:
+                                      const EdgeInsets.only(left: 20),
+                                  isDense: true,
+                                ),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
                               ),
-                              style: TextStyle(
-                                fontSize: 14,
+                            ),
+                            Container(
+                              margin: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFD2767),
+                                shape: BoxShape.circle,
+                              ),
+                              child: IconButton(
+                                visualDensity: VisualDensity.compact,
+                                onPressed: () {
+                                  setState(() {
+                                    filterState.searchText =
+                                        _searchController.text;
+                                    updateFilterState(filterState);
+                                  });
+                                },
+                                icon: Icon(Icons.search),
+                                iconSize: 20,
+                                color: Colors.white,
                               ),
                             ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFD2767),
-                              shape: BoxShape.circle,
-                            ),
-                            child: IconButton(
-                              visualDensity: VisualDensity.compact,
-                              onPressed: () {},
-                              icon: Icon(Icons.search),
-                              iconSize: 20,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  //Like button (not use for now)
-                  /*Card(
+                    //Like button (not use for now)
+                    /*Card(
                     elevation: 10,
                     color: Colors.white,
                     shape: CircleBorder(),
@@ -290,20 +327,16 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                       ),
                     ),
                   ),*/
-                  Card(
-                    elevation: 10,
-                    color: Colors.white,
-                    shape: filterState.isEmpty()
-                        ? CircleBorder()
-                        : RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(100.0),
-                          ),
-                    child: Container(
-                      // Le Container permet d'imposer des contraintes spécifiques
-                      constraints: BoxConstraints(
-                        minHeight:
-                            50, // Hauteur minimale pour éviter les conflits
-                      ),
+                    //Filter button
+                    Card(
+                      margin: const EdgeInsets.all(2),
+                      elevation: 10,
+                      color: Colors.white,
+                      shape: filterState.isEmpty()
+                          ? CircleBorder()
+                          : RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100.0),
+                            ),
                       child: filterState.isEmpty()
                           ? IconButton(
                               onPressed: () {
@@ -339,61 +372,141 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                                   },
                                 );
                               },
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Color(0xFF252E37),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      padding: EdgeInsets.all(5),
-                                      child: Icon(
-                                        Icons.filter_alt,
-                                        color: Colors.white,
-                                        size: 25,
-                                      ),
-                                    ),
-                                    if (!filterState.isEmpty())
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.symmetric(horizontal: 5),
-                                        child: Text(
-                                          "${filteredTournaments.length} résultats",
-                                          style: TextStyle(
-                                            color: Color(0xFF252E37),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w900,
-                                          ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    height: double.infinity,
+                                    child: AspectRatio(
+                                      aspectRatio: 1,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFF252E37),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        padding: EdgeInsets.all(5),
+                                        margin: EdgeInsets.all(3),
+                                        child: Icon(
+                                          Icons.filter_alt,
+                                          color: Colors.white,
                                         ),
                                       ),
-                                  ],
-                                ),
+                                    ),
+                                  ),
+                                  if (!filterState.isEmpty())
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.only(right: 8, left: 5),
+                                      child: Text(
+                                        "x-results",
+                                        style: TextStyle(
+                                          color: Color(0xFF252E37),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ).plural(filteredTournaments.length),
+                                    ),
+                                ],
                               ),
                             ),
                     ),
-                  ),
-                  Card(
-                    elevation: 10,
-                    color: Colors.white,
-                    shape: CircleBorder(),
-                    child: IconButton(
-                      onPressed: () {
-                        _centerMapOnUser();
-                      },
-                      icon: const Icon(
-                        Icons.my_location,
+                    //Location button
+                    SizedBox(
+                      height: double.infinity,
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Card(
+                          margin: const EdgeInsets.all(2),
+                          elevation: 10,
+                          color: Colors.white,
+                          shape: CircleBorder(),
+                          child: IconButton(
+                            onPressed: () {
+                              _centerMapOnUser();
+                            },
+                            icon: const Icon(
+                              Icons.my_location,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                    //Language button
+                    SizedBox(
+                      height: double.infinity,
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Card(
+                          margin: const EdgeInsets.all(2),
+                          elevation: 10,
+                          color: Colors.white,
+                          shape: const CircleBorder(),
+                          child: GestureDetector(
+                            onTap: toggleLanguage,
+                            child: Center(
+                              child: Text(
+                                context.locale == Locale('fr')
+                                    ? '🇫🇷'
+                                    : '🇬🇧',
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.only(left: 20, right: 20, top: 5),
                 child: Wrap(
                   children: [
+                    if (filterState.isSearchTextChanged())
+                      Stack(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(top: 8, right: 8),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFAFC9FB),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Text(
+                              "\"${filterState.searchText}\"",
+                              style: TextStyle(
+                                color: Color(0xFF666666),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  filterState.searchText = '';
+                                  _searchController.clear();
+                                  updateFilteredTournaments();
+                                });
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF666666),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.close,
+                                  size: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     if (filterState.isDistanceChanged())
                       Stack(
                         children: [
