@@ -19,7 +19,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # <!-- [START AUTO UPDATE] -->
 # <!-- Please keep comment here to allow auto-update -->
-version: 1.0.0+1
+version: 1.0.0
 # <!-- [END AUTO UPDATE] -->
 
 environment:
