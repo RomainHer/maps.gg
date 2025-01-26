@@ -293,6 +293,7 @@ class _MapSmashState extends State<MapSmash> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: FutureBuilder(
         future: _getLocationAndTournaments(),
         builder: (context, snapshot) {

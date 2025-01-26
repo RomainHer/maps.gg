@@ -38,9 +38,9 @@
     "copy-address": "Copier l'adresse",
     "address-copied": "Adresse copiée dans le presse-papiers",
     "x-results": {
-        "zero": "Aucun résultat",
-        "one": "1 resultat",
-        "other": "{} resultats"
+        "zero": "Aucun res",
+        "one": "1 res",
+        "other": "{} res"
     },
     "select-date-range": "Sélectionner une plage de dates",
     "select-games": "Choisir des jeux",

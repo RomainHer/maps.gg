@@ -247,68 +247,74 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: Card(
-                      elevation: 10,
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100.0),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              onChanged: (value) => {
-                                if (value.isEmpty)
+              ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 50),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: Card(
+                        margin: const EdgeInsets.all(2),
+                        elevation: 10,
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100.0),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _searchController,
+                                onChanged: (value) => {
+                                  if (value.isEmpty)
+                                    setState(() {
+                                      filterState.searchText = '';
+                                      updateFilteredTournaments();
+                                    })
+                                },
+                                textAlignVertical: TextAlignVertical.top,
+                                decoration: InputDecoration(
+                                  disabledBorder: InputBorder.none,
+                                  hintText: tr('search'),
+                                  border: OutlineInputBorder(
+                                      gapPadding: 0,
+                                      borderSide: BorderSide.none),
+                                  contentPadding:
+                                      const EdgeInsets.only(left: 20),
+                                  isDense: true,
+                                ),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFD2767),
+                                shape: BoxShape.circle,
+                              ),
+                              child: IconButton(
+                                visualDensity: VisualDensity.compact,
+                                onPressed: () {
                                   setState(() {
-                                    filterState.searchText = '';
-                                    updateFilteredTournaments();
-                                  })
-                              },
-                              textAlignVertical: TextAlignVertical.top,
-                              decoration: InputDecoration(
-                                disabledBorder: InputBorder.none,
-                                hintText: tr('search'),
-                                border: OutlineInputBorder(
-                                    gapPadding: 0, borderSide: BorderSide.none),
-                                contentPadding: const EdgeInsets.only(left: 20),
-                                isDense: true,
-                              ),
-                              style: TextStyle(
-                                fontSize: 14,
+                                    filterState.searchText =
+                                        _searchController.text;
+                                    updateFilterState(filterState);
+                                  });
+                                },
+                                icon: Icon(Icons.search),
+                                iconSize: 20,
+                                color: Colors.white,
                               ),
                             ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFD2767),
-                              shape: BoxShape.circle,
-                            ),
-                            child: IconButton(
-                              visualDensity: VisualDensity.compact,
-                              onPressed: () {
-                                setState(() {
-                                  filterState.searchText =
-                                      _searchController.text;
-                                  updateFilterState(filterState);
-                                });
-                              },
-                              icon: Icon(Icons.search),
-                              iconSize: 20,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  //Like button (not use for now)
-                  /*Card(
+                    //Like button (not use for now)
+                    /*Card(
                     elevation: 10,
                     color: Colors.white,
                     shape: CircleBorder(),
@@ -321,19 +327,16 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                       ),
                     ),
                   ),*/
-                  //Filter button
-                  Card(
-                    elevation: 10,
-                    color: Colors.white,
-                    shape: filterState.isEmpty()
-                        ? CircleBorder()
-                        : RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(100.0),
-                          ),
-                    child: Container(
-                      constraints: BoxConstraints(
-                        minHeight: 50,
-                      ),
+                    //Filter button
+                    Card(
+                      margin: const EdgeInsets.all(2),
+                      elevation: 10,
+                      color: Colors.white,
+                      shape: filterState.isEmpty()
+                          ? CircleBorder()
+                          : RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100.0),
+                            ),
                       child: filterState.isEmpty()
                           ? IconButton(
                               onPressed: () {
@@ -369,77 +372,94 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                                   },
                                 );
                               },
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Color(0xFF252E37),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      padding: EdgeInsets.all(5),
-                                      child: Icon(
-                                        Icons.filter_alt,
-                                        color: Colors.white,
-                                        size: 25,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    height: double.infinity,
+                                    child: AspectRatio(
+                                      aspectRatio: 1,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFF252E37),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        padding: EdgeInsets.all(5),
+                                        margin: EdgeInsets.all(3),
+                                        child: Icon(
+                                          Icons.filter_alt,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
-                                    if (!filterState.isEmpty())
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.symmetric(horizontal: 5),
-                                        child: Text(
-                                          "x-results",
-                                          style: TextStyle(
-                                            color: Color(0xFF252E37),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ).plural(filteredTournaments.length),
-                                      ),
-                                  ],
-                                ),
+                                  ),
+                                  if (!filterState.isEmpty())
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.only(right: 8, left: 5),
+                                      child: Text(
+                                        "x-results",
+                                        style: TextStyle(
+                                          color: Color(0xFF252E37),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ).plural(filteredTournaments.length),
+                                    ),
+                                ],
                               ),
                             ),
                     ),
-                  ),
-                  //Location button
-                  Card(
-                    elevation: 10,
-                    color: Colors.white,
-                    shape: CircleBorder(),
-                    child: IconButton(
-                      onPressed: () {
-                        _centerMapOnUser();
-                      },
-                      icon: const Icon(
-                        Icons.my_location,
-                      ),
-                    ),
-                  ),
-                  //Language button
-                  Card(
-                    elevation: 10,
-                    color: Colors.white,
-                    shape: const CircleBorder(),
-                    child: GestureDetector(
-                      onTap: toggleLanguage,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          context.locale == Locale('fr') ? '🇫🇷' : '🇬🇧',
-                          style: const TextStyle(
-                              fontSize: 30), // Taille du drapeau
+                    //Location button
+                    SizedBox(
+                      height: double.infinity,
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Card(
+                          margin: const EdgeInsets.all(2),
+                          elevation: 10,
+                          color: Colors.white,
+                          shape: CircleBorder(),
+                          child: IconButton(
+                            onPressed: () {
+                              _centerMapOnUser();
+                            },
+                            icon: const Icon(
+                              Icons.my_location,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  )
-                ],
+                    //Language button
+                    SizedBox(
+                      height: double.infinity,
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Card(
+                          margin: const EdgeInsets.all(2),
+                          elevation: 10,
+                          color: Colors.white,
+                          shape: const CircleBorder(),
+                          child: GestureDetector(
+                            onTap: toggleLanguage,
+                            child: Center(
+                              child: Text(
+                                context.locale == Locale('fr')
+                                    ? '🇫🇷'
+                                    : '🇬🇧',
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.only(left: 20, right: 20, top: 5),
                 child: Wrap(
                   children: [
                     if (filterState.isSearchTextChanged())
