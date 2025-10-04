@@ -7,27 +7,18 @@
     {
       "name": "maps_gg",
       "request": "launch",
-      "type": "dart",
-      "toolArgs": [
-			  "--dart-define", "API_KEY=your_api_token",
-      ]
+      "type": "dart"
     },
     {
       "name": "maps_gg (profile mode)",
       "request": "launch",
       "type": "dart",
-      "toolArgs": [
-			  "--dart-define", "API_KEY=your_api_token",
-      ],
       "flutterMode": "profile"
     },
     {
       "name": "maps_gg (release mode)",
       "request": "launch",
       "type": "dart",
-      "toolArgs": [
-			  "--dart-define", "API_KEY=your_api_token",
-      ],
       "flutterMode": "release"
     }
   ]

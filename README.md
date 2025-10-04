@@ -60,12 +60,18 @@ To clone and run the project locally:
     flutter pub get
     ```
 
-4. Get your own API token from start.gg
+4. Configure your start.gg API token
 
     1. Go to **[start.gg](https://start.gg)**
     2. Create an **account**
     3. Go to **Developer Settings** > **Personal Access Tokens** to create your token
-    4. Save it everywhere you want (for example: in a .env file)
+    4. Copy the `.env.example` file to `.env`:
+
+        ```bash
+        cp .env.example .env
+        ```
+
+    5. Open the `.env` file and replace `your_startgg_api_token_here` with your actual API token
 
 5. Check if you have all the necessary tools
 
@@ -86,16 +92,20 @@ To clone and run the project locally:
 7. Run the app on a simulator or physical device:
 
     ```bash
-    flutter run --dart-define API_KEY=put_your_token_here
+    flutter run
     ```
 
     > **_NOTE:_** if the "Running Gradle task 'assembleDebug'..." takes too long, you can try to run `flutter clean` and then `flutter run` again. Or go to the android folder and run `./gradlew clean` and then `flutter run` again.
 
 ### Bonus : Run with VScode debugger
 
-1. Copy and rename launch.json.exemple to launch.json
+1. Make sure you have configured your `.env` file (see step 4 above)
 
-2. replace all "put_your_token_here" in the launch.json file by your Start.gg Token
+2. Copy and rename launch.json.exemple to launch.json:
+
+    ```bash
+    cp .vscode/launch.json.exemple .vscode/launch.json
+    ```
 
 3. Select your device :
 
@@ -110,7 +120,7 @@ To clone and run the project locally:
 1. Build APK
 
     ```bash
-    flutter build apk --dart-define API_KEY=your_api_key_startgg
+    flutter build apk
     ```
 
 2. Install on your device

@@ -5,10 +5,11 @@ import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:graphql/client.dart';
 import 'package:maps_gg/class/event.dart';
+import 'package:maps_gg/env/env.dart';
 import 'package:maps_gg/map/custom_map.dart';
 import 'package:maps_gg/class/videogame.dart';
 
-final String startGGApiToken = const String.fromEnvironment('API_KEY');
+final String startGGApiToken = Env.apiKey;
 
 Future<Map<String, dynamic>> _getLocationAndTournaments() async {
   try {
@@ -192,8 +193,8 @@ Future<(List<dynamic>, Map<VideoGame, int>)> _requestApi(
         'numAttendees': tournament['numAttendees'],
         'venueAddress': tournament['venueAddress'],
         'url': tournament['url'],
-        'facebook': tournament['links']['facebook'],
-        'discord': tournament['links']['discord'],
+        'facebook': tournament['links']?['facebook'],
+        'discord': tournament['links']?['discord'],
         'contact': {
           'link': tournament['primaryContact'],
           'type': tournament['primaryContactType'],
