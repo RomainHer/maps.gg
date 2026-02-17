@@ -93,6 +93,7 @@ class _TournamentInfoState extends State<TournamentInfo> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
+          // Header — fixe
           Container(
             padding: const EdgeInsets.only(bottom: 15),
             child: Row(
@@ -140,91 +141,93 @@ class _TournamentInfoState extends State<TournamentInfo> {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.only(bottom: 15),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Card(
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  elevation: 10,
-                  child: Image.network(
-                    widget.tournamentInfoState.tournamentUrlImage ?? '',
-                    width: 70,
-                    height: 70,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      height: 70,
-                      width: 70,
-                      color: Color(0xFFD8D8D8),
-                    ),
-                    loadingBuilder: (context, child, loadingProgress) =>
-                        loadingProgress == null
-                            ? child
-                            : const SizedBox(
-                                height: 70,
-                                width: 70,
-                                child: CircularProgressIndicator()),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
+          // Milieu — scrollable
+          Flexible(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(bottom: 15),
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ItemListInfo(
-                          icon: Icons.place,
-                          text: widget
-                                  .tournamentInfoState.tournamentVenueAddress ??
-                              tr("no-address"),
+                        Card(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          elevation: 10,
+                          child: Image.network(
+                            widget.tournamentInfoState.tournamentUrlImage ?? '',
+                            width: 70,
+                            height: 70,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                              height: 70,
+                              width: 70,
+                              color: const Color(0xFFD8D8D8),
+                            ),
+                            loadingBuilder: (context, child, loadingProgress) =>
+                                loadingProgress == null
+                                    ? child
+                                    : const SizedBox(
+                                        height: 70,
+                                        width: 70,
+                                        child: CircularProgressIndicator()),
+                          ),
                         ),
-                        ItemListInfo(
-                          padding: const EdgeInsets.only(top: 5),
-                          icon: Icons.calendar_today,
-                          text:
-                              "${capitalizeFirstLetterOfEachWord(DateFormat.yMMMMEEEEd(context.locale.toLanguageTag()).format(tournamentDateTime))} (${widget.getNumberDaysBeforeTournament(context)})",
-                        ),
-                        ItemListInfo(
-                          padding: const EdgeInsets.only(top: 5),
-                          icon: Icons.schedule,
-                          text: DateFormat.Hm(context.locale.toLanguageTag())
-                              .format(tournamentDateTime),
-                        ),
-                        ItemListInfo(
-                          padding: const EdgeInsets.only(top: 5),
-                          icon: Icons.group,
-                          text: plural(
-                              "attendees",
-                              widget.tournamentInfoState
-                                      .tournamentNumAttendees ??
-                                  0),
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ItemListInfo(
+                                  icon: Icons.place,
+                                  text: widget.tournamentInfoState
+                                          .tournamentVenueAddress ??
+                                      tr("no-address"),
+                                ),
+                                ItemListInfo(
+                                  padding: const EdgeInsets.only(top: 5),
+                                  icon: Icons.calendar_today,
+                                  text:
+                                      "${capitalizeFirstLetterOfEachWord(DateFormat.yMMMMEEEEd(context.locale.toLanguageTag()).format(tournamentDateTime))} (${widget.getNumberDaysBeforeTournament(context)})",
+                                ),
+                                ItemListInfo(
+                                  padding: const EdgeInsets.only(top: 5),
+                                  icon: Icons.schedule,
+                                  text: DateFormat.Hm(
+                                          context.locale.toLanguageTag())
+                                      .format(tournamentDateTime),
+                                ),
+                                ItemListInfo(
+                                  padding: const EdgeInsets.only(top: 5),
+                                  icon: Icons.group,
+                                  text: plural(
+                                      "attendees",
+                                      widget.tournamentInfoState
+                                              .tournamentNumAttendees ??
+                                          0),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.only(bottom: 10),
-            child: Text(
-              "${tr("events")} : ",
-              style: const TextStyle(
-                fontSize: 16,
-              ),
-            ),
-          ),
-          Container(
-            constraints: const BoxConstraints(
-              maxHeight: 200, // Hauteur maximale pour votre Column
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
+                  Container(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Text(
+                      "${tr("events")} : ",
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
                   if (widget.tournamentInfoState.tournamentEvents != null)
                     for (Event event
                         in widget.tournamentInfoState.tournamentEvents!)
@@ -246,16 +249,17 @@ class _TournamentInfoState extends State<TournamentInfo> {
                                     Container(
                                   height: 50,
                                   width: 50 * event.videoGame.imageRatio,
-                                  color: Color(0xFFD8D8D8),
+                                  color: const Color(0xFFD8D8D8),
                                 ),
-                                loadingBuilder: (context, child,
-                                        loadingProgress) =>
-                                    loadingProgress == null
-                                        ? child
-                                        : const SizedBox(
-                                            height: 50,
-                                            width: 50,
-                                            child: CircularProgressIndicator()),
+                                loadingBuilder:
+                                    (context, child, loadingProgress) =>
+                                        loadingProgress == null
+                                            ? child
+                                            : const SizedBox(
+                                                height: 50,
+                                                width: 50,
+                                                child:
+                                                    CircularProgressIndicator()),
                               ),
                             ),
                             Expanded(
@@ -291,6 +295,7 @@ class _TournamentInfoState extends State<TournamentInfo> {
               ),
             ),
           ),
+          // Footer — fixe
           const SizedBox(height: 10),
           Row(
             children: [
@@ -310,7 +315,7 @@ class _TournamentInfoState extends State<TournamentInfo> {
                   child: const Text("signup-details").tr(),
                 ),
               ),
-              const SizedBox(width: 10), // Add some spacing between buttons
+              const SizedBox(width: 10),
               Expanded(
                 child: TextButton(
                   onPressed: () {

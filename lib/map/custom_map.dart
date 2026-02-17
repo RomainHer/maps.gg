@@ -36,6 +36,9 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
   FilterState filterState = FilterState.empty();
   late List<dynamic> filteredTournaments;
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  List<dynamic> searchSuggestions = [];
+  bool showSuggestions = false;
 
   //final MapController _mapController = MapController();
   late final _animatedMapController = AnimatedMapController(vsync: this);
@@ -47,18 +50,68 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
     return tournamentInfoState.tournamentId ?? 0;
   }
 
-  bool tournamentFilter(dynamic tournament) {
-    if (filterState.searchText.isNotEmpty) {
-      if (!tournament['name']
-              .toLowerCase()
-              .contains(filterState.searchText.toLowerCase()) &&
-          !tournament['venueAddress']
-              .toLowerCase()
-              .contains(filterState.searchText.toLowerCase())) {
-        return false;
-      }
+  List<dynamic> _filterTournamentsByName(String query) {
+    if (query.isEmpty) {
+      return [];
     }
+    final queryLower = query.toLowerCase();
+    final filtered = widget.tournaments
+        .where((tournament) =>
+            tournament['name']?.toString().toLowerCase().contains(queryLower) ??
+            false)
+        .take(8)
+        .toList();
+    return filtered;
+  }
 
+  void _onSuggestionSelected(dynamic tournament) {
+    setState(() {
+      showSuggestions = false;
+      _searchController.clear();
+      _searchFocusNode.unfocus();
+    });
+
+    // Center map on tournament, offset so the marker appears in the upper half
+    // of the screen (above the detail card that occupies the bottom 50%)
+    final screenHeight = MediaQuery.of(context).size.height;
+    final offsetPixels = screenHeight / 6;
+    const crs = Epsg3857();
+    final tournamentPoint = crs.latLngToPoint(
+      LatLng(tournament['lat'], tournament['lng']),
+      14.0,
+    );
+    final shiftedPoint = Point<double>(
+      tournamentPoint.x,
+      tournamentPoint.y + offsetPixels,
+    );
+    final offsetCenter = crs.pointToLatLng(shiftedPoint, 14.0);
+    _animatedMapController.animateTo(
+      dest: offsetCenter,
+      zoom: 14.0,
+      duration: const Duration(milliseconds: 500),
+    );
+
+    // Open tournament detail
+    updateTournamentInfoState(
+      TournamentInfoState(
+        true,
+        tournament['id'],
+        tournament['name'] ?? '',
+        tournament['date'] ?? 0,
+        tournament['profileImage'] != null
+            ? tournament['profileImage']['url']
+            : '',
+        tournament['events'] ?? [],
+        tournament['venueAddress'] ?? '',
+        tournament['lat'] ?? 0,
+        tournament['lng'] ?? 0,
+        tournament['url'] ?? '',
+        tournament['numAttendees'] ?? 0,
+      ),
+    );
+  }
+
+  bool tournamentFilter(dynamic tournament) {
     if (filterState.isDistanceChanged()) {
       if (filterState.measureUnit == 'km') {
         if (tournament['distanceKm'] > filterState.distance) {
@@ -145,6 +198,8 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
     if (event is MapEventMoveStart || event is MapEventTap) {
       setState(() {
         tournamentInfoState = TournamentInfoState.empty();
+        showSuggestions = false;
+        _searchFocusNode.unfocus();
       });
     }
   }
@@ -169,6 +224,7 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
   void dispose() {
     _animatedMapController.dispose();
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -176,6 +232,13 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     filteredTournaments = widget.tournaments;
+    _searchFocusNode.addListener(() {
+      if (!_searchFocusNode.hasFocus && showSuggestions) {
+        setState(() {
+          showSuggestions = false;
+        });
+      }
+    });
   }
 
   @override
@@ -262,51 +325,67 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                           borderRadius: BorderRadius.circular(100.0),
                         ),
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Expanded(
                               child: TextField(
                                 controller: _searchController,
-                                onChanged: (value) => {
-                                  if (value.isEmpty)
-                                    setState(() {
-                                      filterState.searchText = '';
-                                      updateFilteredTournaments();
-                                    })
+                                focusNode: _searchFocusNode,
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value.isEmpty) {
+                                      searchSuggestions = [];
+                                      showSuggestions = false;
+                                    } else {
+                                      searchSuggestions =
+                                          _filterTournamentsByName(value);
+                                      showSuggestions =
+                                          _searchFocusNode.hasFocus &&
+                                              searchSuggestions.isNotEmpty;
+                                    }
+                                  });
                                 },
-                                textAlignVertical: TextAlignVertical.top,
+                                onTap: () {
+                                  if (_searchController.text.isNotEmpty &&
+                                      searchSuggestions.isNotEmpty) {
+                                    setState(() {
+                                      showSuggestions = true;
+                                    });
+                                  }
+                                },
+                                textAlignVertical: TextAlignVertical.center,
                                 decoration: InputDecoration(
                                   disabledBorder: InputBorder.none,
                                   hintText: tr('search'),
                                   border: OutlineInputBorder(
                                       gapPadding: 0,
                                       borderSide: BorderSide.none),
-                                  contentPadding:
-                                      const EdgeInsets.only(left: 20),
-                                  isDense: true,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
                                 ),
                                 style: TextStyle(
                                   fontSize: 14,
                                 ),
                               ),
                             ),
-                            Container(
-                              margin: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFD2767),
-                                shape: BoxShape.circle,
-                              ),
-                              child: IconButton(
-                                visualDensity: VisualDensity.compact,
-                                onPressed: () {
-                                  setState(() {
-                                    filterState.searchText =
-                                        _searchController.text;
-                                    updateFilterState(filterState);
-                                  });
-                                },
-                                icon: Icon(Icons.search),
-                                iconSize: 20,
-                                color: Colors.white,
+                            SizedBox(
+                              height: double.infinity,
+                              child: AspectRatio(
+                                aspectRatio: 1,
+                                child: Container(
+                                  margin: const EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFD2767),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.search,
+                                      size: 20,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -462,51 +541,6 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
                 padding: EdgeInsets.only(left: 20, right: 20, top: 5),
                 child: Wrap(
                   children: [
-                    if (filterState.isSearchTextChanged())
-                      Stack(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(top: 8, right: 8),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Color(0xFFAFC9FB),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Text(
-                              "\"${filterState.searchText}\"",
-                              style: TextStyle(
-                                color: Color(0xFF666666),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  filterState.searchText = '';
-                                  _searchController.clear();
-                                  updateFilteredTournaments();
-                                });
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(2),
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF666666),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.close,
-                                  size: 14,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     if (filterState.isDistanceChanged())
                       Stack(
                         children: [
@@ -699,18 +733,90 @@ class _CustomMapState extends State<CustomMap> with TickerProviderStateMixin {
             ],
           ),
         ),
+        if (showSuggestions && searchSuggestions.isNotEmpty)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 60,
+            left: 10,
+            right: 10,
+            child: Card(
+              elevation: 10,
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 300),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  itemCount: searchSuggestions.length,
+                  separatorBuilder: (context, index) => Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: Color(0xFFE5E5E5),
+                  ),
+                  itemBuilder: (context, index) {
+                    final tournament = searchSuggestions[index];
+                    return InkWell(
+                      onTap: () => _onSuggestionSelected(tournament),
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              tournament['name'] ?? '',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            if (tournament['venueAddress'] != null &&
+                                tournament['venueAddress']
+                                    .toString()
+                                    .isNotEmpty)
+                              Padding(
+                                padding: EdgeInsets.only(top: 4),
+                                child: Text(
+                                  tournament['venueAddress'],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xFF666666),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
         Positioned(
           bottom: 20,
           left: 20,
           right: 20,
-          child: Card(
-            color: Colors.white,
-            elevation: 20,
-            child: Visibility(
-              visible: tournamentInfoState.isTournamentSelected,
-              child: TournamentInfo(
-                tournamentInfoState: tournamentInfoState,
-                updateTournamentInfoState: updateTournamentInfoState,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.5,
+            ),
+            child: Card(
+              color: Colors.white,
+              elevation: 20,
+              child: Visibility(
+                visible: tournamentInfoState.isTournamentSelected,
+                child: TournamentInfo(
+                  tournamentInfoState: tournamentInfoState,
+                  updateTournamentInfoState: updateTournamentInfoState,
+                ),
               ),
             ),
           ),
